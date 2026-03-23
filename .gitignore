@@ -10,3 +10,5 @@ dist/
 *.log
 backend/uploads/
 verification/
+venv/
+backend/venv/

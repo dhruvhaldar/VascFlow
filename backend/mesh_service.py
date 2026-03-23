@@ -9,7 +9,9 @@ if not os.path.exists(UPLOAD_DIR):
     os.makedirs(UPLOAD_DIR)
 
 async def save_upload_file(upload_file: UploadFile) -> str:
-    file_path = os.path.join(UPLOAD_DIR, upload_file.filename)
+    # Sanitize the filename to prevent path traversal
+    safe_filename = os.path.basename(upload_file.filename)
+    file_path = os.path.join(UPLOAD_DIR, safe_filename)
     # Using async read and sync write
     content = await upload_file.read()
     with open(file_path, "wb") as buffer:
@@ -101,4 +103,6 @@ def get_mesh_metadata(file_path: str):
     return metadata
 
 def get_mesh_file_path(filename: str) -> str:
-    return os.path.join(UPLOAD_DIR, filename)
+    # Sanitize the filename to prevent path traversal
+    safe_filename = os.path.basename(filename)
+    return os.path.join(UPLOAD_DIR, safe_filename)
