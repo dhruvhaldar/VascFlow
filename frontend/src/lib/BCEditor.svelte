@@ -35,23 +35,23 @@
     <h3>Boundary Conditions</h3>
 
     <div class="add-bc">
-        <select bind:value={selectedFace}>
+        <select bind:value={selectedFace} aria-label="Select Face">
             <option value="" disabled selected>Select Face</option>
             {#each $meshMetadata.faces as face}
                 <option value={face.name}>{face.name} (ID: {face.id})</option>
             {/each}
         </select>
 
-        <select bind:value={bcType}>
+        <select bind:value={bcType} aria-label="Boundary Condition Type">
             <option value="Dirichlet">Dirichlet</option>
             <option value="Neumann">Neumann</option>
             <option value="Resistance">Resistance</option>
         </select>
 
-        <input type="text" bind:value={variable} placeholder="Variable (e.g. Velocity)" />
-        <input type="number" bind:value={value} step="0.1" />
+        <input type="text" bind:value={variable} aria-label="Variable Name" placeholder="Variable (e.g. Velocity)" />
+        <input type="number" bind:value={value} aria-label="Value" step="0.1" />
 
-        <select bind:value={profile}>
+        <select bind:value={profile} aria-label="Profile">
             <option value="Flat">Flat</option>
             <option value="Parabolic">Parabolic</option>
         </select>
@@ -59,14 +59,18 @@
         <button on:click={addBC} disabled={!selectedFace}>Add BC</button>
     </div>
 
-    <ul>
-        {#each $simulationConfig.boundary_conditions as bc, i}
-            <li>
-                {bc.face_name}: {bc.bc_type} {bc.variable}={bc.value} ({bc.profile})
-                <button on:click={() => removeBC(i)}>x</button>
-            </li>
-        {/each}
-    </ul>
+    {#if $simulationConfig.boundary_conditions.length === 0}
+        <p class="empty-state">No boundary conditions added yet.</p>
+    {:else}
+        <ul>
+            {#each $simulationConfig.boundary_conditions as bc, i}
+                <li>
+                    {bc.face_name}: {bc.bc_type} {bc.variable}={bc.value} ({bc.profile})
+                    <button on:click={() => removeBC(i)} aria-label="Remove boundary condition" title="Remove boundary condition">x</button>
+                </li>
+            {/each}
+        </ul>
+    {/if}
 </div>
 
 <style>
@@ -79,5 +83,10 @@
         display: flex;
         gap: 0.5rem;
         flex-wrap: wrap;
+    }
+    .empty-state {
+        color: #666;
+        font-style: italic;
+        margin-top: 1rem;
     }
 </style>
