@@ -8,12 +8,16 @@ UPLOAD_DIR = "uploads"
 if not os.path.exists(UPLOAD_DIR):
     os.makedirs(UPLOAD_DIR)
 
-async def save_upload_file(upload_file: UploadFile) -> str:
+def save_upload_file(upload_file: UploadFile) -> str:
+    """
+    ⚡ Bolt: Synchronous file save.
+    Using sync operations here allows FastAPI to run this in a threadpool
+    when called from a sync endpoint, preventing event loop blocking during
+    large file IO and CPU-heavy PyVista operations.
+    """
     file_path = os.path.join(UPLOAD_DIR, upload_file.filename)
-    # Using async read and sync write
-    content = await upload_file.read()
     with open(file_path, "wb") as buffer:
-        buffer.write(content)
+        shutil.copyfileobj(upload_file.file, buffer)
     return file_path
 
 def get_mesh_metadata(file_path: str):

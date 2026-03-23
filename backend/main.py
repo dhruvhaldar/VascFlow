@@ -31,9 +31,16 @@ def generate_input(config: SimulationConfig):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/process_mesh")
-async def process_mesh(file: UploadFile):
+def process_mesh(file: UploadFile):
+    """
+    ⚡ Bolt: Sync endpoint to offload CPU-bound work.
+    Using 'def' instead of 'async def' tells FastAPI to run this endpoint
+    in an external threadpool. This prevents heavy operations like
+    PyVista mesh reading and surface extraction from blocking the main
+    asyncio event loop.
+    """
     try:
-        file_path = await save_upload_file(file)
+        file_path = save_upload_file(file)
         metadata = get_mesh_metadata(file_path)
         return metadata
     except Exception as e:

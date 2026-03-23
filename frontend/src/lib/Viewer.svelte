@@ -26,9 +26,15 @@
         genericRenderWindow = vtkGenericRenderWindow.newInstance();
         genericRenderWindow.setContainer(container);
 
-        // Handle resize
+        // Handle resize with requestAnimationFrame debounce
+        let resizeTimeout;
         const resizeObserver = new ResizeObserver(() => {
-            genericRenderWindow.resize();
+            if (resizeTimeout) cancelAnimationFrame(resizeTimeout);
+            resizeTimeout = requestAnimationFrame(() => {
+                if (genericRenderWindow) {
+                    genericRenderWindow.resize();
+                }
+            });
         });
         resizeObserver.observe(container);
 
