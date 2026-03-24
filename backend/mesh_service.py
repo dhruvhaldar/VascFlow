@@ -15,7 +15,9 @@ def save_upload_file(upload_file: UploadFile) -> str:
     when called from a sync endpoint, preventing event loop blocking during
     large file IO and CPU-heavy PyVista operations.
     """
-    file_path = os.path.join(UPLOAD_DIR, upload_file.filename)
+    # Sanitize filename to prevent path traversal
+    safe_filename = os.path.basename(upload_file.filename.replace('\\', '/'))
+    file_path = os.path.join(UPLOAD_DIR, safe_filename)
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(upload_file.file, buffer)
     return file_path
@@ -105,4 +107,6 @@ def get_mesh_metadata(file_path: str):
     return metadata
 
 def get_mesh_file_path(filename: str) -> str:
-    return os.path.join(UPLOAD_DIR, filename)
+    # Sanitize filename to prevent path traversal
+    safe_filename = os.path.basename(filename.replace('\\', '/'))
+    return os.path.join(UPLOAD_DIR, safe_filename)
