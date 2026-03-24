@@ -70,15 +70,16 @@ def get_mesh_metadata(file_path: str):
             break
 
     if face_ids is not None:
-        unique_ids = np.unique(face_ids)
+        # ⚡ Bolt: Use return_counts=True to compute all counts in a single O(N log N) pass
+        # instead of O(N*K) where we sum the boolean array for each unique ID.
+        unique_ids, counts = np.unique(face_ids, return_counts=True)
         # Convert to list of dicts
         face_list = []
-        for uid in unique_ids:
-            count = int(np.sum(face_ids == uid))
+        for uid, count in zip(unique_ids, counts):
             face_list.append({
                 "id": int(uid),
                 "name": f"{face_array_name} {uid}",
-                "count": count
+                "count": int(count)
             })
         metadata["faces"] = face_list
     else:
@@ -87,14 +88,14 @@ def get_mesh_metadata(file_path: str):
             conn = surface.connectivity(largest=False)
             if "RegionId" in conn.cell_data:
                 region_ids = conn.cell_data["RegionId"]
-                unique_ids = np.unique(region_ids)
+                # ⚡ Bolt: Use return_counts=True for performance.
+                unique_ids, counts = np.unique(region_ids, return_counts=True)
                 face_list = []
-                for uid in unique_ids:
-                    count = int(np.sum(region_ids == uid))
+                for uid, count in zip(unique_ids, counts):
                     face_list.append({
                         "id": int(uid),
                         "name": f"Region {uid}",
-                        "count": count
+                        "count": int(count)
                     })
                 metadata["faces"] = face_list
             else:
