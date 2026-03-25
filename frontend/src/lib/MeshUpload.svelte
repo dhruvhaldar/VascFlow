@@ -44,7 +44,7 @@
         <p>Processing mesh...</p>
     {/if}
     {#if error}
-        <p style="color: red;">{error}</p>
+        <p class="error">{error}</p>
     {/if}
     {#if $meshMetadata.n_cells > 0}
         <div class="mesh-info">
@@ -57,8 +57,20 @@
 
 <style>
     .mesh-upload {
-        border: 1px solid #ccc;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 12px;
         padding: 1rem;
         margin-bottom: 1rem;
+    }
+
+    .error {
+        color: #ffc2c2;
+    }
+
+    .mesh-info {
+        margin-top: 0.65rem;
+        font-size: 0.93rem;
+        color: #dbe4ff;
     }
 </style>

@@ -1,5 +1,5 @@
 <script>
-    import { onMount, onDestroy } from 'svelte';
+    import { onMount } from 'svelte';
     import { meshMetadata } from '../stores';
     import vtkGenericRenderWindow from '@kitware/vtk.js/Rendering/Misc/GenericRenderWindow';
     import vtkXMLPolyDataReader from '@kitware/vtk.js/IO/XML/XMLPolyDataReader';
@@ -12,7 +12,6 @@
     let renderWindow;
     let currentVizFile = "";
 
-    // React to mesh changes in metadata
     $: {
         if ($meshMetadata.viz_file && $meshMetadata.viz_file !== currentVizFile) {
             currentVizFile = $meshMetadata.viz_file;
@@ -26,7 +25,6 @@
         genericRenderWindow = vtkGenericRenderWindow.newInstance();
         genericRenderWindow.setContainer(container);
 
-        // Handle resize with requestAnimationFrame debounce
         let resizeTimeout;
         const resizeObserver = new ResizeObserver(() => {
             if (resizeTimeout) cancelAnimationFrame(resizeTimeout);
@@ -41,7 +39,7 @@
         renderer = genericRenderWindow.getRenderer();
         renderWindow = genericRenderWindow.getRenderWindow();
 
-        renderer.setBackground(0.1, 0.2, 0.3); // Dark blue-ish
+        renderer.setBackground(0.03, 0.05, 0.12);
         renderWindow.render();
 
         return () => {
@@ -56,8 +54,6 @@
         if (!renderer) return;
 
         const url = `http://localhost:8000/files/${filename}`;
-
-        // Always assume PolyData (.vtp) as backend converts/extracts surface
         const reader = vtkXMLPolyDataReader.newInstance();
 
         try {
@@ -80,14 +76,39 @@
     }
 </script>
 
-<div class="viewer-container" bind:this={container}></div>
+<div class="viewer-wrap">
+    <div class="viewer-header">
+        <h3>3D Visualizer</h3>
+        <span>{$meshMetadata.viz_file ? `Previewing ${$meshMetadata.viz_file}` : 'Upload a mesh to render it'}</span>
+    </div>
+    <div class="viewer-container" data-testid="viewer-canvas" bind:this={container}></div>
+</div>
 
 <style>
+    .viewer-wrap {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .viewer-header h3 {
+        margin: 0;
+    }
+
+    .viewer-header span {
+        color: #9fb0e6;
+        font-size: 0.85rem;
+    }
+
     .viewer-container {
         width: 100%;
-        height: 500px;
-        background: #000;
-        border: 1px solid #444;
+        flex: 1;
+        min-height: 330px;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 14px;
+        background: radial-gradient(circle at 10% 10%, rgba(59, 94, 176, 0.35), rgba(4, 5, 14, 0.8));
         position: relative;
+        overflow: hidden;
     }
 </style>

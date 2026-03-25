@@ -75,18 +75,26 @@
 
 <style>
     .bc-editor {
-        border: 1px solid #ccc;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 12px;
         padding: 1rem;
         margin-bottom: 1rem;
     }
+
     .add-bc {
         display: flex;
         gap: 0.5rem;
         flex-wrap: wrap;
     }
+
     .empty-state {
-        color: #666;
+        color: #b8c5ef;
         font-style: italic;
         margin-top: 1rem;
+    }
+
+    ul {
+        padding-left: 1rem;
     }
 </style>
