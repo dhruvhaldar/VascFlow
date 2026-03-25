@@ -17,6 +17,13 @@ def save_upload_file(upload_file: UploadFile) -> str:
     """
     # Sanitize filename to prevent path traversal
     safe_filename = os.path.basename(upload_file.filename.replace('\\', '/'))
+
+    # Validate file extension to prevent unrestricted file upload
+    ALLOWED_EXTENSIONS = {'.vtu', '.vtp', '.vtk'}
+    _, ext = os.path.splitext(safe_filename)
+    if ext.lower() not in ALLOWED_EXTENSIONS:
+        raise ValueError(f"Invalid file extension. Allowed extensions are: {', '.join(ALLOWED_EXTENSIONS)}")
+
     file_path = os.path.join(UPLOAD_DIR, safe_filename)
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(upload_file.file, buffer)
