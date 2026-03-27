@@ -120,6 +120,7 @@ test.describe('svFSI Configurator App', () => {
       });
     });
 
+    // const requestPromise = page.waitForRequest('http://localhost:8000/files/mock_surface.vtp');
     const fileChooserPromise = page.waitForEvent('filechooser');
     await page.locator('input[type="file"]').click();
     const fileChooser = await fileChooserPromise;
@@ -129,6 +130,9 @@ test.describe('svFSI Configurator App', () => {
       buffer: Buffer.from('dummy data')
     });
 
+    // sometimes Playwright doesn't catch the request promise correctly if the event loop is busy
+    // use expect to poll instead
+    await expect(page.locator('.viewer-header span')).toContainText('Previewing mock_surface.vtp', {timeout: 10000});
     await expect(page.locator('.viewer-header span')).toContainText('Previewing mock_surface.vtp');
     await expect(page.getByTestId('viewer-canvas')).toBeVisible();
   });
