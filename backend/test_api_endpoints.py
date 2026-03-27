@@ -44,7 +44,7 @@ def test_generate_input_endpoint_returns_xml():
 
     assert response.status_code == 200
     data = response.json()
-    assert "<svFSIFile>" in data["xml"]
+    assert "<svFSIFile version=\"0.1\">" in data["xml"]
     assert "<MeshFilePath>mesh.vtu</MeshFilePath>" in data["xml"]
 
 
@@ -82,5 +82,5 @@ def test_process_mesh_rejects_unsupported_extension():
         files={"file": ("bad.txt", b"plain-text", "text/plain")},
     )
 
-    assert response.status_code == 500
+    assert response.status_code == 400
     assert "Invalid file extension" in response.json()["detail"]

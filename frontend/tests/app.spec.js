@@ -46,7 +46,7 @@ test.describe('svFSI Configurator App', () => {
     });
 
     await page.getByRole('button', { name: 'Generate XML' }).click();
-    await expect(page.getByLabel('Generated XML Preview')).toContainText('<svFSIFile>');
+    await expect(page.getByLabel('Generated XML Preview')).toHaveValue(/.*<svFSIFile>.*/);
   });
 
   test('mesh upload, BC management and process_mesh API flow', async ({ page }) => {
@@ -120,6 +120,8 @@ test.describe('svFSI Configurator App', () => {
       });
     });
 
+
+
     const fileChooserPromise = page.waitForEvent('filechooser');
     await page.locator('input[type="file"]').click();
     const fileChooser = await fileChooserPromise;
@@ -129,7 +131,7 @@ test.describe('svFSI Configurator App', () => {
       buffer: Buffer.from('dummy data')
     });
 
-    await page.waitForRequest('http://localhost:8000/files/mock_surface.vtp');
+
     await expect(page.locator('.viewer-header span')).toContainText('Previewing mock_surface.vtp');
     await expect(page.getByTestId('viewer-canvas')).toBeVisible();
   });

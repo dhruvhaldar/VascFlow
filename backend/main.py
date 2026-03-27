@@ -4,15 +4,23 @@ from pydantic import BaseModel
 import uvicorn
 import shutil
 import os
+import logging
 from models import SimulationConfig
 from xml_generator import generate_svfsi_xml
 from mesh_service import save_upload_file, get_mesh_metadata
 
+logger = logging.getLogger(__name__)
+
 app = FastAPI()
+
+# 🛡️ Sentinel: Restrict CORS origins to prevent unauthorized cross-origin requests
+# Origins can be configured via VITE_ALLOWED_ORIGINS environment variable
+allowed_origins_env = os.environ.get("VITE_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173")
+allowed_origins = [origin.strip() for origin in allowed_origins_env.split(",") if origin.strip()]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -28,7 +36,9 @@ def generate_input(config: SimulationConfig):
         xml_content = generate_svfsi_xml(config)
         return {"xml": xml_content}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        # 🛡️ Sentinel: Log internal error and return generic message to prevent info leakage
+        logger.error(f"Error generating XML: {e}")
+        raise HTTPException(status_code=500, detail="An error occurred while generating the input file.")
 
 @app.post("/process_mesh")
 def process_mesh(file: UploadFile):
@@ -43,8 +53,13 @@ def process_mesh(file: UploadFile):
         file_path = save_upload_file(file)
         metadata = get_mesh_metadata(file_path)
         return metadata
+    except ValueError as e:
+        # 🛡️ Sentinel: Return 400 for bad input (like invalid file extension)
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        # 🛡️ Sentinel: Log internal error and return generic message to prevent info leakage
+        logger.error(f"Error processing mesh: {e}")
+        raise HTTPException(status_code=500, detail="An error occurred while processing the mesh.")
 
 # Serve static files for mesh visualization
 from fastapi.staticfiles import StaticFiles
