@@ -39,7 +39,7 @@
 
 <div class="mesh-upload">
     <h3>Mesh Upload</h3>
-    <input type="file" bind:this={fileInput} on:change={handleFileSelect} accept=".vtu,.vtp,.vtk" />
+    <input type="file" bind:this={fileInput} on:change={handleFileSelect} accept=".vtu,.vtp,.vtk" aria-label="Upload Mesh File" />
     {#if loading}
         <p>Processing mesh...</p>
     {/if}
