@@ -12,6 +12,11 @@
     let renderWindow;
     let currentVizFile = "";
 
+    // ⚡ Bolt: Track vtk.js objects for explicit memory management
+    let currentReader = null;
+    let currentMapper = null;
+    let currentActor = null;
+
     $: {
         if ($meshMetadata.viz_file && $meshMetadata.viz_file !== currentVizFile) {
             currentVizFile = $meshMetadata.viz_file;
@@ -47,27 +52,47 @@
             if (genericRenderWindow) {
                 genericRenderWindow.delete();
             }
+            if (currentActor) currentActor.delete();
+            if (currentMapper) currentMapper.delete();
+            if (currentReader) currentReader.delete();
         };
     });
 
     async function loadMesh(filename) {
         if (!renderer) return;
 
+        // ⚡ Bolt: Explicitly delete old vtk.js instances before creating new ones.
+        // vtk.js objects maintain WebGL buffers and heap memory. Failing to call .delete()
+        // causes severe WebGL memory leaks when loading multiple meshes.
+        if (currentActor) {
+            renderer.removeActor(currentActor);
+            currentActor.delete();
+            currentActor = null;
+        }
+        if (currentMapper) {
+            currentMapper.delete();
+            currentMapper = null;
+        }
+        if (currentReader) {
+            currentReader.delete();
+            currentReader = null;
+        }
+
         const url = `http://localhost:8000/files/${filename}`;
-        const reader = vtkXMLPolyDataReader.newInstance();
+        currentReader = vtkXMLPolyDataReader.newInstance();
 
         try {
-            await reader.setUrl(url);
-            await reader.loadData();
+            await currentReader.setUrl(url);
+            await currentReader.loadData();
 
-            const mapper = vtkMapper.newInstance();
-            mapper.setInputConnection(reader.getOutputPort());
+            currentMapper = vtkMapper.newInstance();
+            currentMapper.setInputConnection(currentReader.getOutputPort());
 
-            const actor = vtkActor.newInstance();
-            actor.setMapper(mapper);
+            currentActor = vtkActor.newInstance();
+            currentActor.setMapper(currentMapper);
 
             renderer.removeAllViewProps();
-            renderer.addActor(actor);
+            renderer.addActor(currentActor);
             renderer.resetCamera();
             renderWindow.render();
         } catch (e) {

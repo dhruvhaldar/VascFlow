@@ -46,7 +46,7 @@ test.describe('svFSI Configurator App', () => {
     });
 
     await page.getByRole('button', { name: 'Generate XML' }).click();
-    await expect(page.getByLabel('Generated XML Preview')).toContainText('<svFSIFile>');
+    await expect(page.getByLabel('Generated XML Preview')).toHaveValue(/<svFSIFile>/);
   });
 
   test('mesh upload, BC management and process_mesh API flow', async ({ page }) => {
