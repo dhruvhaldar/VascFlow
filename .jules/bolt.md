@@ -5,3 +5,7 @@
 ## 2024-03-22 - Python XML Generation Performance Trap
 **Learning:** Using `minidom.parseString(ET.tostring(root)).toprettyxml(indent="   ")` to format ElementTree objects is a major performance bottleneck because it re-parses the entire XML tree back into memory as a DOM structure just to add indentation.
 **Action:** Always use `xml.etree.ElementTree.indent(tree, space="   ")` (introduced in Python 3.9) to modify the ElementTree in place, avoiding the expensive double parsing and string conversion steps.
+
+## 2024-05-20 - vtk.js WebGL Memory Leaks
+**Learning:** `vtk.js` does not rely on JavaScript garbage collection. Objects like `vtkXMLPolyDataReader`, `vtkMapper`, and `vtkActor` retain WebGL buffers and heap memory even if no longer referenced in JS. Failing to call `.delete()` on these instances when they are replaced or when components unmount leads to severe memory leaks and eventual browser tab crashes.
+**Action:** Always track `vtk.js` instances (especially readers, mappers, actors, and render windows) and explicitly call `.delete()` on the old instances before creating new ones or when tearing down a component.
