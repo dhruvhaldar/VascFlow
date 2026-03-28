@@ -60,8 +60,13 @@ def get_mesh_metadata(file_path: str):
         viz_filename = viz_filename + "_surface.vtp"
 
     viz_path = os.path.join(os.path.dirname(file_path), viz_filename)
-    # PyVista saves binary VTP by default which vtk.js can read
-    surface.save(viz_path)
+    # ⚡ Bolt: Only save the surface if it's a new file.
+    # If the user uploaded a .vtp file, viz_path == file_path, and calling
+    # surface.save(viz_path) would unnecessarily rewrite the entire file to disk.
+    # Avoiding this redundant write saves significant I/O time on large meshes.
+    if viz_path != file_path:
+        # PyVista saves binary VTP by default which vtk.js can read
+        surface.save(viz_path)
 
     metadata["viz_file"] = viz_filename
 
