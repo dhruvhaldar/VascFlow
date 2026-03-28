@@ -28,9 +28,13 @@
 
     <div class="main-layout">
         <aside class="sidebar glass-shell">
-            <nav>
+            <nav role="tablist" aria-label="Configuration Tabs">
                 {#each tabs as tab}
                     <button
+                        role="tab"
+                        id="tab-{tab.key}"
+                        aria-controls="panel-{tab.key}"
+                        aria-selected={activeTab === tab.key}
                         class:active={activeTab === tab.key}
                         on:click={() => activeTab = tab.key}
                     >
@@ -39,7 +43,7 @@
                 {/each}
             </nav>
 
-            <div class="config-panel">
+            <div class="config-panel" role="tabpanel" id="panel-{activeTab}" aria-labelledby="tab-{activeTab}">
                 {#if activeTab === 'mesh'}
                     <MeshUpload />
                     <div class="note glass-inline">
@@ -87,6 +91,16 @@
         font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
         color: #eef2ff;
         background: radial-gradient(circle at 20% 20%, #1f3f80 0%, #101325 40%, #080911 100%);
+    }
+
+    :global(*:focus-visible) {
+        outline: 2px solid #6093ff;
+        outline-offset: 2px;
+    }
+
+    :global(button:disabled) {
+        opacity: 0.5;
+        cursor: not-allowed;
     }
 
     .app-container {
