@@ -9,3 +9,7 @@
 ## 2024-05-20 - vtk.js WebGL Memory Leaks
 **Learning:** `vtk.js` does not rely on JavaScript garbage collection. Objects like `vtkXMLPolyDataReader`, `vtkMapper`, and `vtkActor` retain WebGL buffers and heap memory even if no longer referenced in JS. Failing to call `.delete()` on these instances when they are replaced or when components unmount leads to severe memory leaks and eventual browser tab crashes.
 **Action:** Always track `vtk.js` instances (especially readers, mappers, actors, and render windows) and explicitly call `.delete()` on the old instances before creating new ones or when tearing down a component.
+
+## 2024-05-24 - Redundant Disk I/O on Mesh Upload
+**Learning:** The FastAPI backend offloads `process_mesh` to a threadpool for synchronous operations (like reading PyVista meshes). When users upload `.vtp` files, PyVista was configured to unnecessarily rewrite the entire mesh back to the same path before returning it to the frontend.
+**Action:** Always check if a target visualization file path equals the original uploaded file path to avoid redundant write operations (`if viz_path != file_path:`), particularly when working with large files and large datasets where disk I/O blocks a thread for significant amounts of time.
