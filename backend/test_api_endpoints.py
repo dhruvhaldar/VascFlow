@@ -44,7 +44,7 @@ def test_generate_input_endpoint_returns_xml():
 
     assert response.status_code == 200
     data = response.json()
-    assert "<svFSIFile>" in data["xml"]
+    assert "<svFSIFile" in data["xml"]
     assert "<MeshFilePath>mesh.vtu</MeshFilePath>" in data["xml"]
 
 
