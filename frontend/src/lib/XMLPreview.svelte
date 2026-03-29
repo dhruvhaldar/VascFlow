@@ -33,6 +33,7 @@
         readonly
         value={$generatedXML}
         aria-label="Generated XML Preview"
+        aria-live="polite"
         placeholder="Click 'Generate XML' to preview your input file."
     ></textarea>
 </div>
