@@ -82,5 +82,5 @@ def test_process_mesh_rejects_unsupported_extension():
         files={"file": ("bad.txt", b"plain-text", "text/plain")},
     )
 
-    assert response.status_code == 500
+    assert response.status_code == 400
     assert "Invalid file extension" in response.json()["detail"]

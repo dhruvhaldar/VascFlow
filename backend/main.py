@@ -4,6 +4,7 @@ from pydantic import BaseModel
 import uvicorn
 import shutil
 import os
+import logging
 from models import SimulationConfig
 from xml_generator import generate_svfsi_xml
 from mesh_service import save_upload_file, get_mesh_metadata
@@ -32,7 +33,8 @@ def generate_input(config: SimulationConfig):
         xml_content = generate_svfsi_xml(config)
         return {"xml": xml_content}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logging.error("Failed to generate XML input: %s", str(e))
+        raise HTTPException(status_code=500, detail="An error occurred while generating the input XML.")
 
 @app.post("/process_mesh")
 def process_mesh(file: UploadFile):
@@ -47,8 +49,12 @@ def process_mesh(file: UploadFile):
         file_path = save_upload_file(file)
         metadata = get_mesh_metadata(file_path)
         return metadata
+    except ValueError as e:
+        # Validation errors like invalid extension
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logging.error("Failed to process mesh file: %s", str(e))
+        raise HTTPException(status_code=500, detail="An error occurred while processing the mesh.")
 
 # Serve static files for mesh visualization
 from fastapi.staticfiles import StaticFiles
