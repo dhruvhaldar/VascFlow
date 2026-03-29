@@ -1,5 +1,6 @@
 import pyvista as pv
 import os
+import logging
 from fastapi import UploadFile
 import shutil
 import numpy as np
@@ -38,7 +39,8 @@ def get_mesh_metadata(file_path: str):
     try:
         mesh = pv.read(file_path)
     except Exception as e:
-        return {"error": str(e)}
+        logging.error("Failed to read mesh file using PyVista: %s", str(e))
+        return {"error": "Failed to read mesh file."}
 
     metadata = {
         "n_points": mesh.n_points,

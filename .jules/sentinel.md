@@ -7,3 +7,8 @@
 **Vulnerability:** Unrestricted file upload risk found in `save_upload_file` in `backend/mesh_service.py` where any file type could be uploaded.
 **Learning:** Validating file extensions for untrusted uploads is critical to prevent attackers from uploading potentially harmful files (e.g. executable scripts) which might compromise the backend.
 **Prevention:** Validate file extensions against an allowlist of expected types (e.g. `.vtu`, `.vtp`, `.vtk`) before processing or saving the file.
+
+## 2026-03-29 - [Fix Information Leakage in Error Responses]
+**Vulnerability:** Information exposure risk found in `backend/main.py` and `backend/mesh_service.py` where raw exception strings (`str(e)`) were being returned directly to the client in HTTP 500 responses.
+**Learning:** Returning raw exception details in API responses can leak sensitive system internals, stack traces, or file paths to attackers, which could aid in further exploitation.
+**Prevention:** Catch expected validation errors (like `ValueError` for invalid extensions) separately and return safe 400 Bad Request responses. For all other unexpected `Exception`s, log the detailed error internally using Python's `logging` module and return a generic, non-descriptive HTTP 500 error message to the client.
