@@ -41,10 +41,10 @@
     <h3>Mesh Upload</h3>
     <input type="file" bind:this={fileInput} on:change={handleFileSelect} accept=".vtu,.vtp,.vtk" aria-label="Upload Mesh File" />
     {#if loading}
-        <p>Processing mesh...</p>
+        <p role="status" aria-live="polite">Processing mesh...</p>
     {/if}
     {#if error}
-        <p class="error">{error}</p>
+        <p class="error" role="alert" aria-live="assertive">{error}</p>
     {/if}
     {#if $meshMetadata.n_cells > 0}
         <div class="mesh-info">
