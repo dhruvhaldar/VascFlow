@@ -17,3 +17,7 @@
 ## 2024-03-29 - [Massive vtk.js Bundle Code Splitting]
 **Learning:** Svelte synchronously importing heavy 3D rendering libraries like `vtk.js` in root components blocks initial load, turning an SPA into a massive 1MB+ monolithic download.
 **Action:** Use Svelte's `{#await import('./Component.svelte')}...{:then {default: Component}}...{/await}` syntax to lazily load and code-split the 3D Viewer. This cleanly separates visualization logic into async chunks while maintaining UI layout with loading placeholders.
+
+## 2023-10-24 - Added GZipMiddleware to FastAPI
+**Learning:** FastAPI's default static files and JSON responses are uncompressed. Serving large VTP mesh files and XML configs uncompressed causes unnecessary network bottlenecks.
+**Action:** Always add `GZipMiddleware` when serving large text-based payloads (like XML, JSON, or VTP) to drastically reduce transfer sizes.

@@ -1,5 +1,6 @@
 from fastapi import FastAPI, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from pydantic import BaseModel
 import uvicorn
 import shutil
@@ -22,6 +23,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ⚡ Bolt: Compress large text payloads.
+# Adding GZip middleware drastically reduces the transfer size of large
+# XML configurations and text-based mesh files (like .vtp) served from StaticFiles,
+# preventing network bottlenecks.
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 @app.get("/")
 def read_root():
