@@ -2,6 +2,24 @@
     import { simulationConfig, generatedXML } from '../stores';
 
     let generating = false;
+    let copying = false;
+    let copied = false;
+
+    async function copyXML() {
+        if (!$generatedXML) return;
+        copying = true;
+        try {
+            await navigator.clipboard.writeText($generatedXML);
+            copied = true;
+            setTimeout(() => {
+                copied = false;
+            }, 2000);
+        } catch (err) {
+            console.error('Failed to copy text: ', err);
+        } finally {
+            copying = false;
+        }
+    }
 
     async function generate() {
         generating = true;
@@ -25,9 +43,22 @@
 <div class="xml-preview">
     <div class="header">
         <h3>Input File Preview</h3>
-        <button on:click={generate} disabled={generating} aria-busy={generating}>
-            {generating ? 'Generating...' : 'Generate XML'}
-        </button>
+        <div class="actions">
+            {#if $generatedXML && $generatedXML !== "Error generating XML"}
+                <button
+                    on:click={copyXML}
+                    disabled={copying}
+                    aria-label={copied ? "Copied to clipboard" : "Copy generated XML to clipboard"}
+                    aria-live="polite"
+                    class="secondary-button"
+                >
+                    {copied ? 'Copied!' : 'Copy XML'}
+                </button>
+            {/if}
+            <button on:click={generate} disabled={generating} aria-busy={generating}>
+                {generating ? 'Generating...' : 'Generate XML'}
+            </button>
+        </div>
     </div>
     <textarea
         readonly
@@ -56,6 +87,12 @@
         margin-bottom: 0.5rem;
     }
 
+    .actions {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
     button {
         border: 1px solid rgba(255, 255, 255, 0.2);
         background: rgba(80, 126, 246, 0.45);
@@ -63,6 +100,14 @@
         border-radius: 10px;
         padding: 0.45rem 0.8rem;
         cursor: pointer;
+    }
+
+    button.secondary-button {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    button.secondary-button:hover {
+        background: rgba(255, 255, 255, 0.2);
     }
 
     textarea {
