@@ -4,6 +4,7 @@ import logging
 from fastapi import UploadFile
 import shutil
 import numpy as np
+import uuid
 
 UPLOAD_DIR = "uploads"
 if not os.path.exists(UPLOAD_DIR):
@@ -25,7 +26,11 @@ def save_upload_file(upload_file: UploadFile) -> str:
     if ext.lower() not in ALLOWED_EXTENSIONS:
         raise ValueError(f"Invalid file extension. Allowed extensions are: {', '.join(ALLOWED_EXTENSIONS)}")
 
-    file_path = os.path.join(UPLOAD_DIR, safe_filename)
+    # 🛡️ Sentinel: Use UUIDs for uploaded files instead of original filenames to prevent
+    # file overwriting by concurrent uploads and Insecure Direct Object Reference (IDOR).
+    unique_filename = f"{uuid.uuid4()}{ext.lower()}"
+    file_path = os.path.join(UPLOAD_DIR, unique_filename)
+
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(upload_file.file, buffer)
     return file_path
