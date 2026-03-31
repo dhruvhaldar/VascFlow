@@ -35,32 +35,32 @@
     <h3>Boundary Conditions</h3>
 
     <div class="add-bc">
-        <select bind:value={selectedFace} aria-label="Select Face">
+        <select bind:value={selectedFace} aria-label="Select Face" title="Select Face">
             <option value="" disabled selected>Select Face</option>
             {#each $meshMetadata.faces as face}
                 <option value={face.name}>{face.name} (ID: {face.id})</option>
             {/each}
         </select>
 
-        <select bind:value={bcType} aria-label="Boundary Condition Type">
+        <select bind:value={bcType} aria-label="Boundary Condition Type" title="Boundary Condition Type">
             <option value="Dirichlet">Dirichlet</option>
             <option value="Neumann">Neumann</option>
             <option value="Resistance">Resistance</option>
         </select>
 
-        <input type="text" bind:value={variable} aria-label="Variable Name" placeholder="Variable (e.g. Velocity)" />
-        <input type="number" bind:value={value} aria-label="Value" step="0.1" />
+        <input type="text" bind:value={variable} aria-label="Variable Name" title="Variable Name" placeholder="Variable (e.g. Velocity)" />
+        <input type="number" bind:value={value} aria-label="Value" title="Value" step="0.1" />
 
-        <select bind:value={profile} aria-label="Profile">
+        <select bind:value={profile} aria-label="Profile" title="Profile">
             <option value="Flat">Flat</option>
             <option value="Parabolic">Parabolic</option>
         </select>
 
-        <button on:click={addBC} disabled={!selectedFace}>Add BC</button>
+        <button on:click={addBC} disabled={!selectedFace} title={!selectedFace ? "Select a face first to add a boundary condition" : "Add boundary condition"}>Add BC</button>
     </div>
 
     {#if $simulationConfig.boundary_conditions.length === 0}
-        <p class="empty-state">No boundary conditions added yet.</p>
+        <p class="empty-state">No boundary conditions added yet. Select a face and configure parameters above to add one.</p>
     {:else}
         <ul>
             {#each $simulationConfig.boundary_conditions as bc, i}
