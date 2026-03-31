@@ -1,5 +1,6 @@
 from fastapi import FastAPI, UploadFile, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from pydantic import BaseModel
 import uvicorn
 import shutil
@@ -22,6 +23,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ⚡ Bolt: Compress large text-based responses (like XML configs and .vtp files).
+# This reduces network payload sizes significantly, improving load times for
+# large simulations or visualization tasks.
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 @app.middleware("http")
 async def add_security_headers(request: Request, call_next):
