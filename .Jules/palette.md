@@ -13,3 +13,6 @@
 ## 2025-03-31 - Sighted Context for Disabled States and Inline Controls
 **Learning:** While `aria-label` provides context for screen readers on inline form controls without visual `<label>`s, sighted users still lack context, especially for naked number inputs. Additionally, initially disabled buttons (like "Add") create confusion if the required prior action isn't explicitly stated.
 **Action:** Always provide native `title` tooltips for inline form controls that lack visual labels to assist sighted users. Use dynamic `title` attributes on disabled buttons to explain exactly *why* they are disabled (e.g., `title={!selected ? "Select an option first" : "Add item"}`) and prevent user frustration.
+## 2025-04-01 - Hiding Dependent Form Controls
+**Learning:** Displaying complex inline form controls (like Boundary Condition configuration with multiple dropdowns and inputs) when their prerequisite data (like mesh faces) is missing causes user confusion. Users interact with disabled or empty dropdowns and inactive buttons, leading to a frustrating experience.
+**Action:** Always wrap dependent form sections in conditional blocks and display a clear, accessible empty state (`role="alert"`) explaining the prerequisite action (e.g., "Please upload a file first") instead of showing inactive, empty form controls.
