@@ -75,8 +75,10 @@ def process_mesh(file: UploadFile):
         metadata = get_mesh_metadata(file_path)
         return metadata
     except ValueError as e:
-        # Validation errors like invalid extension
-        raise HTTPException(status_code=400, detail=str(e))
+        # 🛡️ Sentinel: Prevent Information Exposure by logging the actual error
+        # internally and returning a generic response to the client.
+        logging.error("Validation error: %s", str(e))
+        raise HTTPException(status_code=400, detail="Invalid file extension or validation error")
     except Exception as e:
         logging.error("Failed to process mesh file: %s", str(e))
         raise HTTPException(status_code=500, detail="An error occurred while processing the mesh.")
