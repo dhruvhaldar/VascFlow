@@ -11,6 +11,7 @@
     let renderer;
     let renderWindow;
     let currentVizFile = "";
+    let isLoading = false;
 
     // ⚡ Bolt: Track vtk.js objects for explicit memory management
     let currentReader = null;
@@ -61,6 +62,8 @@
     async function loadMesh(filename) {
         if (!renderer) return;
 
+        isLoading = true;
+
         // ⚡ Bolt: Explicitly delete old vtk.js instances before creating new ones.
         // vtk.js objects maintain WebGL buffers and heap memory. Failing to call .delete()
         // causes severe WebGL memory leaks when loading multiple meshes.
@@ -97,6 +100,8 @@
             renderWindow.render();
         } catch (e) {
             console.error("Failed to load mesh", e);
+        } finally {
+            isLoading = false;
         }
     }
 </script>
@@ -104,7 +109,15 @@
 <div class="viewer-wrap">
     <div class="viewer-header">
         <h3>3D Visualizer</h3>
-        <span>{$meshMetadata.viz_file ? `Previewing ${$meshMetadata.viz_file}` : 'Upload a mesh to render it'}</span>
+        <span role="status" aria-live="polite">
+            {#if isLoading}
+                Loading 3D model...
+            {:else if $meshMetadata.viz_file}
+                Previewing {$meshMetadata.viz_file}
+            {:else}
+                Upload a mesh to render it
+            {/if}
+        </span>
     </div>
     <div class="viewer-container" data-testid="viewer-canvas" bind:this={container}></div>
 </div>

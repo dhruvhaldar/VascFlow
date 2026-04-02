@@ -41,6 +41,7 @@ test.describe('svFSI Configurator App', () => {
   test('generate_input API is called and XML response is rendered', async ({ page }) => {
     await page.route('http://localhost:8000/generate_input', async route => {
       await route.fulfill({
+        headers: { 'Access-Control-Allow-Origin': '*' },
         json: { xml: '<svFSIFile><GeneralSimulationParameters /></svFSIFile>' }
       });
     });
@@ -51,7 +52,7 @@ test.describe('svFSI Configurator App', () => {
 
   test('mesh upload, BC management and process_mesh API flow', async ({ page }) => {
     await page.route('http://localhost:8000/process_mesh', async route => {
-      await route.fulfill({ json: MOCK_MESH_RESPONSE });
+      await route.fulfill({ headers: { 'Access-Control-Allow-Origin': '*' }, json: MOCK_MESH_RESPONSE });
     });
 
     const fileChooserPromise = page.waitForEvent('filechooser');
@@ -109,11 +110,12 @@ test.describe('svFSI Configurator App', () => {
 
   test('visualizer requests processed mesh file from static files endpoint', async ({ page }) => {
     await page.route('http://localhost:8000/process_mesh', async route => {
-      await route.fulfill({ json: MOCK_MESH_RESPONSE });
+      await route.fulfill({ headers: { 'Access-Control-Allow-Origin': '*' }, json: MOCK_MESH_RESPONSE });
     });
 
     await page.route('http://localhost:8000/files/mock_surface.vtp', async route => {
       await route.fulfill({
+        headers: { 'Access-Control-Allow-Origin': '*' },
         status: 200,
         contentType: 'application/xml',
         body: `<?xml version="1.0"?>\n<VTKFile type="PolyData" version="0.1" byte_order="LittleEndian"><PolyData><Piece NumberOfPoints="0" NumberOfVerts="0" NumberOfLines="0" NumberOfStrips="0" NumberOfPolys="0"><Points><DataArray type="Float32" NumberOfComponents="3" format="ascii"></DataArray></Points></Piece></PolyData></VTKFile>`
