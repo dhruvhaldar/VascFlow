@@ -84,3 +84,34 @@ def test_process_mesh_rejects_unsupported_extension():
 
     assert response.status_code == 400
     assert "Invalid file extension" in response.json()["detail"]
+
+
+def test_process_mesh_rejects_large_files():
+    # Create a dummy large file upload mock using a large bytes payload that exceeds 50MB conceptually,
+    # or just rely on overriding the `size` property dynamically during the request if feasible.
+    # FastAPI's TestClient correctly sets the `size` property of UploadFile when given a bytes payload,
+    # but instead of generating a 51MB payload (which would consume a lot of RAM during tests),
+    # we can monkeypatch `MAX_FILE_SIZE` in the module or use a smaller threshold.
+    # However, since we defined MAX_FILE_SIZE inside the function, we must send a payload larger than 50MB.
+    # To keep test memory low, we can patch the UploadFile size validation directly in testing if needed,
+    # but TestClient allows injecting mock files. Let's mock the `UploadFile` class temporarily or send a small payload but mock `file.size`.
+
+    class MockLargeFile:
+        filename = "huge.vtu"
+        size = 51 * 1024 * 1024  # 51 MB
+
+    # Since fastapi reads `file.size` from the injected UploadFile object, let's mock it inside the endpoint:
+    import main
+
+    # We can test by sending a request where the UploadFile is initialized by TestClient,
+    # but we can monkeypatch `main.process_mesh` size check if we don't want to send 51MB.
+    # Actually, sending a 51MB string of zeros takes about 51MB of RAM, which is completely fine for a test.
+    large_payload = b"0" * (50 * 1024 * 1024 + 1)
+
+    response = client.post(
+        "/process_mesh",
+        files={"file": ("huge.vtu", large_payload, "application/octet-stream")},
+    )
+
+    assert response.status_code == 413
+    assert "File too large" in response.json()["detail"]

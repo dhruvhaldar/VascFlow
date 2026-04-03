@@ -10,3 +10,7 @@ dist/
 *.log
 backend/uploads/
 verification/
+venv/
+__pycache__/
+.pytest_cache/
+test_uploads/
