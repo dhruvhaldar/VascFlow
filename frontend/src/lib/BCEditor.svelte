@@ -67,7 +67,7 @@
                 {#each $simulationConfig.boundary_conditions as bc, i}
                     <li>
                         {bc.face_name}: {bc.bc_type} {bc.variable}={bc.value} ({bc.profile})
-                        <button on:click={() => removeBC(i)} aria-label="Remove boundary condition" title="Remove boundary condition">x</button>
+                        <button on:click={() => removeBC(i)} aria-label="Remove boundary condition" title="Remove boundary condition">&times;</button>
                     </li>
                 {/each}
             </ul>

@@ -16,3 +16,7 @@
 ## 2025-04-01 - Hiding Dependent Form Controls
 **Learning:** Displaying complex inline form controls (like Boundary Condition configuration with multiple dropdowns and inputs) when their prerequisite data (like mesh faces) is missing causes user confusion. Users interact with disabled or empty dropdowns and inactive buttons, leading to a frustrating experience.
 **Action:** Always wrap dependent form sections in conditional blocks and display a clear, accessible empty state (`role="alert"`) explaining the prerequisite action (e.g., "Please upload a file first") instead of showing inactive, empty form controls.
+
+## 2025-04-02 - Valid ARIA Roles for Svelte Components
+**Learning:** Native `<nav>` elements implicitly have the `navigation` role and should not be explicitly overridden with the interactive `tablist` role, which triggers an `a11y_no_noninteractive_element_to_interactive_role` error in Svelte during build. Additionally, tabpanels mapped to tablists should have `tabindex="0"` for proper keyboard navigability into their content area.
+**Action:** When building interactive tab systems, avoid using `<nav>` for the tab container. Instead, use a semantic `<div>` with explicit `role="tablist"` and class styling, and ensure associated `role="tabpanel"` elements have `tabindex="0"`.

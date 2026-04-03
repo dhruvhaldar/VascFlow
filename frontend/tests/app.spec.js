@@ -22,19 +22,19 @@ test.describe('svFSI Configurator App', () => {
   });
 
   test('sidebar navigation works', async ({ page }) => {
-    await expect(page.locator('.sidebar nav button.active')).toHaveText('Mesh');
+    await expect(page.locator('.sidebar .tabs-nav button.active')).toHaveText('Mesh');
     await expect(page.locator('.config-panel')).toContainText('Upload a .vtu or .vtp file');
 
     await page.click('text="Physics"');
-    await expect(page.locator('.sidebar nav button.active')).toHaveText('Physics');
+    await expect(page.locator('.sidebar .tabs-nav button.active')).toHaveText('Physics');
     await expect(page.locator('.physics-config')).toBeVisible();
 
     await page.click('text="Boundary Conditions"');
-    await expect(page.locator('.sidebar nav button.active')).toHaveText('Boundary Conditions');
+    await expect(page.locator('.sidebar .tabs-nav button.active')).toHaveText('Boundary Conditions');
     await expect(page.locator('h3:has-text("Boundary Conditions")')).toBeVisible();
 
     await page.click('text="General"');
-    await expect(page.locator('.sidebar nav button.active')).toHaveText('General');
+    await expect(page.locator('.sidebar .tabs-nav button.active')).toHaveText('General');
     await expect(page.locator('.general-config')).toBeVisible();
   });
 
