@@ -72,19 +72,19 @@ def get_mesh_metadata(file_path: str):
     # surface.save(viz_path) would unnecessarily rewrite the entire file to disk.
     # Avoiding this redundant write saves significant I/O time on large meshes.
     if viz_path != file_path:
-        # ⚡ Bolt: Clear cell/point data arrays before saving visualization mesh.
-        # This significantly reduces file size (e.g., 90% reduction) and I/O time
-        # for visualization, as the frontend only needs the geometry.
-        viz_surface = surface.copy()
+        # ⚡ Bolt: Optimize PyVista surface copy for visualization.
+        # Instead of deep copying the entire surface (which duplicates all heavy
+        # simulation arrays like Pressure/Velocity) and then deleting them one by one,
+        # we copy only the structural geometry/topology, then selectively carry over
+        # the minimal rendering arrays. This drastically reduces CPU and Memory overhead.
+        viz_surface = pv.PolyData()
+        viz_surface.copy_structure(surface)
 
-        # Keep Normals and TCoords for correct visualization if they exist, but remove other heavy arrays like Pressure/Velocity
-        for name in list(viz_surface.point_data.keys()):
-            if name not in ['Normals', 'TCoords']:
-                viz_surface.point_data.remove(name)
-
-        for name in list(viz_surface.cell_data.keys()):
-            if name not in ['Normals', 'TCoords']:
-                viz_surface.cell_data.remove(name)
+        for name in ['Normals', 'TCoords']:
+            if name in surface.point_data:
+                viz_surface.point_data[name] = surface.point_data[name]
+            if name in surface.cell_data:
+                viz_surface.cell_data[name] = surface.cell_data[name]
 
         # PyVista saves binary VTP by default which vtk.js can read
         viz_surface.save(viz_path)
