@@ -70,6 +70,13 @@ def process_mesh(file: UploadFile):
     PyVista mesh reading and surface extraction from blocking the main
     asyncio event loop.
     """
+    # 🛡️ Sentinel: Enforce application-layer file size limit (50MB) to prevent
+    # DoS attacks via disk or memory exhaustion.
+    MAX_FILE_SIZE = 50 * 1024 * 1024 # 50 MB
+    if file.size is not None and file.size > MAX_FILE_SIZE:
+        logging.error("File size %s exceeds the 50MB limit", file.size)
+        raise HTTPException(status_code=413, detail="File too large. Maximum size is 50MB.")
+
     try:
         file_path = save_upload_file(file)
         metadata = get_mesh_metadata(file_path)
