@@ -14,6 +14,10 @@
 **Learning:** The FastAPI backend offloads `process_mesh` to a threadpool for synchronous operations (like reading PyVista meshes). When users upload `.vtp` files, PyVista was configured to unnecessarily rewrite the entire mesh back to the same path before returning it to the frontend.
 **Action:** Always check if a target visualization file path equals the original uploaded file path to avoid redundant write operations (`if viz_path != file_path:`), particularly when working with large files and large datasets where disk I/O blocks a thread for significant amounts of time.
 
-## 2024-03-29 - [Massive vtk.js Bundle Code Splitting]
+## 2024-03-29 - Massive vtk.js Bundle Code Splitting
 **Learning:** Svelte synchronously importing heavy 3D rendering libraries like `vtk.js` in root components blocks initial load, turning an SPA into a massive 1MB+ monolithic download.
 **Action:** Use Svelte's `{#await import('./Component.svelte')}...{:then {default: Component}}...{/await}` syntax to lazily load and code-split the 3D Viewer. This cleanly separates visualization logic into async chunks while maintaining UI layout with loading placeholders.
+
+## 2024-05-28 - PyVista Deep Copy Performance Bottleneck
+**Learning:** Using `surface.copy()` on a large PyVista mesh performs a deep copy of all point and cell data arrays (e.g., pressure, velocity). Subsequent `remove()` calls on these large arrays are extremely slow and CPU intensive.
+**Action:** Instead of deep copying the entire object and deleting unwanted arrays, use `viz_surface = pv.PolyData()` followed by `viz_surface.CopyStructure(surface)`. This instantly duplicates the geometry/topology, allowing for a fast, selective copy of only the essential rendering arrays (like 'Normals' and 'TCoords').
