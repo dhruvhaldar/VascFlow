@@ -84,3 +84,25 @@ def test_process_mesh_rejects_unsupported_extension():
 
     assert response.status_code == 400
     assert "Invalid file extension" in response.json()["detail"]
+
+
+def test_process_mesh_rejects_large_file(monkeypatch):
+
+    import starlette.datastructures
+
+    # Store original
+    original_init = starlette.datastructures.UploadFile.__init__
+
+    def mock_init(self, *args, **kwargs):
+        original_init(self, *args, **kwargs)
+        self.size = 51 * 1024 * 1024  # Force size to be > 50MB
+
+    monkeypatch.setattr(starlette.datastructures.UploadFile, "__init__", mock_init)
+
+    response = client.post(
+        "/process_mesh",
+        files={"file": ("sample.vtu", b"dummy-data", "application/octet-stream")},
+    )
+
+    assert response.status_code == 413
+    assert "File too large. Maximum size is 50MB." in response.json()["detail"]
