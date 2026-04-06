@@ -1,7 +1,7 @@
 import pyvista as pv
 import os
 import logging
-from fastapi import UploadFile
+from fastapi import UploadFile, HTTPException
 import shutil
 import numpy as np
 import uuid
@@ -25,6 +25,12 @@ def save_upload_file(upload_file: UploadFile) -> str:
     _, ext = os.path.splitext(safe_filename)
     if ext.lower() not in ALLOWED_EXTENSIONS:
         raise ValueError(f"Invalid file extension. Allowed extensions are: {', '.join(ALLOWED_EXTENSIONS)}")
+
+    # 🛡️ Sentinel: Enforce a strict application-layer file size limit (50MB)
+    # to prevent Denial of Service (DoS) attacks via disk or memory exhaustion.
+    MAX_FILE_SIZE = 50 * 1024 * 1024  # 50 MB
+    if upload_file.size is not None and upload_file.size > MAX_FILE_SIZE:
+        raise HTTPException(status_code=413, detail="File too large. Maximum size is 50MB.")
 
     # 🛡️ Sentinel: Use UUIDs for uploaded files instead of original filenames to prevent
     # file overwriting by concurrent uploads and Insecure Direct Object Reference (IDOR).
