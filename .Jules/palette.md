@@ -1,18 +1,3 @@
-## 2026-36-23 - Adding Accessible Empty State and Input Labels
-**Learning:** Svelte form inputs in rapid prototypes frequently omit explicit labels or `aria-label` attributes. Without them, screen readers announce `select` or `input` with no context. Icon-only delete buttons in dynamic lists must have `aria-label` for screen readers and `title` for sighted users who need tooltips.
-**Action:** Proactively check all new Svelte forms for missing `aria-label` attributes on fields that rely on visual context (like adjacent placeholders or table headers) rather than explicit `<label>` elements.
-
-## 2025-03-28 - Native HTML Attributes and Svelte Interactivity
-**Learning:** For conditional UI elements inside a generic interface like tabs or buttons, screen readers cannot detect visual changes driven purely by classes (`class:active`). You must manually map and bind `aria-selected` to the same condition (e.g. `aria-selected={activeTab === tab.key}`) to announce state changes correctly. Moreover, setting global `:global(button:disabled)` provides an immediate fallback UX enhancement that implicitly handles many components that set `disabled={condition}` but forget a visual disabled state.
-**Action:** When building interactive layout components (like tabs) with Svelte, always pair class-based active states with standard ARIA roles (`tablist`, `tab`, `tabpanel`) and explicitly bind aria attributes (`aria-selected`) to identical boolean conditions. Implement `:global(*:focus-visible)` and `:global(button:disabled)` to broadly enforce visible interactivity boundaries across the app.
-
-## 2025-03-29 - Dynamic Async Feedback Accessibility in Svelte
-**Learning:** When using Svelte conditional blocks (`{#if loading}`, `{#if error}`) to render dynamic text for async operations like file uploads, screen readers do not automatically announce the newly inserted text. This leads to silent failures or silent "processing" states for non-sighted users.
-**Action:** Always add explicit ARIA live regions (`role="status" aria-live="polite"` for loading states, `role="alert" aria-live="assertive"` for errors) to the HTML elements that contain the async feedback messages. Also ensure dynamic inputs like textareas have `aria-live="polite"` if their content updates asynchronously.
-
-## 2025-03-31 - Sighted Context for Disabled States and Inline Controls
-**Learning:** While `aria-label` provides context for screen readers on inline form controls without visual `<label>`s, sighted users still lack context, especially for naked number inputs. Additionally, initially disabled buttons (like "Add") create confusion if the required prior action isn't explicitly stated.
-**Action:** Always provide native `title` tooltips for inline form controls that lack visual labels to assist sighted users. Use dynamic `title` attributes on disabled buttons to explain exactly *why* they are disabled (e.g., `title={!selected ? "Select an option first" : "Add item"}`) and prevent user frustration.
-## 2025-04-01 - Hiding Dependent Form Controls
-**Learning:** Displaying complex inline form controls (like Boundary Condition configuration with multiple dropdowns and inputs) when their prerequisite data (like mesh faces) is missing causes user confusion. Users interact with disabled or empty dropdowns and inactive buttons, leading to a frustrating experience.
-**Action:** Always wrap dependent form sections in conditional blocks and display a clear, accessible empty state (`role="alert"`) explaining the prerequisite action (e.g., "Please upload a file first") instead of showing inactive, empty form controls.
+## 2024-05-24 - [Svelte Interactive Roles on Structural Elements]
+**Learning:** Svelte's accessibility compiler enforces strict native HTML ARIA constraints (`a11y_no_noninteractive_element_to_interactive_role`). Applying `role="tablist"` to a semantic non-interactive element like `<nav>` violates this constraint.
+**Action:** When implementing interactive ARIA patterns (like tabs) in Svelte, use structurally neutral elements (like `<div>` with descriptive classes) instead of semantic tags, and ensure the corresponding target containers (like `role="tabpanel"`) are given `tabindex="0"` for keyboard focusability.

@@ -27,7 +27,7 @@
 
     <div class="main-layout">
         <aside class="sidebar glass-shell">
-            <nav role="tablist" aria-label="Configuration Tabs">
+            <div class="tabs-nav" role="tablist" aria-label="Configuration Tabs">
                 {#each tabs as tab}
                     <button
                         role="tab"
@@ -40,9 +40,9 @@
                         {tab.label}
                     </button>
                 {/each}
-            </nav>
+            </div>
 
-            <div class="config-panel" role="tabpanel" id="panel-{activeTab}" aria-labelledby="tab-{activeTab}">
+            <div class="config-panel" role="tabpanel" id="panel-{activeTab}" aria-labelledby="tab-{activeTab}" tabindex="0">
                 {#if activeTab === 'mesh'}
                     <MeshUpload />
                     <div class="note glass-inline">
@@ -197,14 +197,14 @@
         overflow-y: auto;
     }
 
-    nav {
+    .tabs-nav {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 0.6rem;
         margin-bottom: 1rem;
     }
 
-    nav button {
+    .tabs-nav button {
         border: 1px solid rgba(255, 255, 255, 0.2);
         background: rgba(255, 255, 255, 0.08);
         color: #dbe3ff;
@@ -214,12 +214,12 @@
         transition: 0.2s ease;
     }
 
-    nav button:hover {
+    .tabs-nav button:hover {
         transform: translateY(-1px);
         border-color: rgba(255, 255, 255, 0.35);
     }
 
-    nav button.active {
+    .tabs-nav button.active {
         background: linear-gradient(135deg, rgba(96, 147, 255, 0.65), rgba(155, 116, 255, 0.65));
         color: #fff;
     }
