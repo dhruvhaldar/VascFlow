@@ -84,3 +84,25 @@ def test_process_mesh_rejects_unsupported_extension():
 
     assert response.status_code == 400
     assert "Invalid file extension" in response.json()["detail"]
+
+
+def test_process_mesh_rejects_large_files(monkeypatch):
+    import main
+    from io import BytesIO
+    from fastapi import HTTPException
+    import pytest
+
+    # Simulate a large file upload by passing a mock object to the endpoint function directly.
+    class MockFile:
+        def __init__(self):
+            self.filename = "sample.vtu"
+            self.size = 50 * 1024 * 1024 + 1
+            self.file = BytesIO(b"dummy")
+
+    mock_upload = MockFile()
+
+    with pytest.raises(HTTPException) as exc_info:
+        main.process_mesh(mock_upload)
+
+    assert exc_info.value.status_code == 413
+    assert "File too large" in exc_info.value.detail
