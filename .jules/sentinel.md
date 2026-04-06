@@ -1,4 +1,4 @@
-## 2023-10-27 - FastAPI Security Headers & Swagger Documentation
-**Vulnerability:** Missing default security headers (`X-Content-Type-Options`, `X-Frame-Options`, `Strict-Transport-Security`, `Content-Security-Policy`). This leaves standard endpoints susceptible to clickjacking, MIME-sniffing, and XSS without layered defense.
-**Learning:** Adding a global strict `Content-Security-Policy: default-src 'self'` middleware directly to the FastAPI `app` inherently breaks `/docs` (Swagger UI) and `/redoc` because they fetch static assets (CSS, JS) from external CDNs (like `unpkg.com` or `jsdelivr.net`) and rely on inline scripts.
-**Prevention:** When injecting a strict `Content-Security-Policy` via middleware in FastAPI, always condition the CSP application to explicitly exclude the API documentation routes (e.g., `request.url.path.startswith(("/docs", "/redoc", "/openapi.json"))`).
+## 2024-04-05 - Enforce File Size Limit
+**Vulnerability:** Unrestricted File Upload Size
+**Learning:** FastAPI's `UploadFile` does not automatically restrict file size, which can lead to memory exhaustion and DoS attacks if users upload very large files.
+**Prevention:** Implement file size checking in the API endpoint by explicitly checking `file.size` and returning HTTP 413 (Payload Too Large) if the size exceeds a safe limit.
