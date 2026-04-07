@@ -1,3 +1,7 @@
 ## 2025-04-06 - [Optimize PyVista mesh processing]
 **Learning:** PyVista's `surface.copy()` performs a deep copy, which is very inefficient when only the topology/geometry is needed (e.g. for generating visualization meshes from large simulation meshes with heavy point/cell data arrays). Copying only the required attributes via `CopyStructure()` and selectively attaching visualization arrays reduces processing time by a factor of >1000x for large meshes and saves considerable memory.
 **Action:** When deriving structural visualization meshes from rich VTK/VTU data with PyVista, use `pv.PolyData().CopyStructure(surface)` instead of `.copy()` and selectively transfer only necessary visualization arrays like 'Normals' or 'TCoords'.
+
+## 2025-05-18 - [Client-side File Validation Optimization]
+**Learning:** Adding a client-side file size limit (e.g., 50MB) is an excellent network performance optimization to avoid transferring large payloads that will fail anyway. However, it can be flagged as a risky functional or breaking change during review if it isn't explicitly clear that the backend already enforces the exact same limit.
+**Action:** When implementing fail-fast client-side validation to save network/server I/O performance, explicitly verify and document that the backend strictly enforces the same constraint (e.g., `MAX_FILE_SIZE` in FastAPI) to ensure no valid user workflows are broken.

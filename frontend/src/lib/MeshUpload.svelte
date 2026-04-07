@@ -9,6 +9,15 @@
         if (!fileInput.files.length) return;
         const file = fileInput.files[0];
 
+        // ⚡ Bolt: Client-side file size validation (50MB) to prevent transferring
+        // large invalid files over the network, saving bandwidth and wait time.
+        const MAX_FILE_SIZE = 50 * 1024 * 1024;
+        if (file.size > MAX_FILE_SIZE) {
+            error = "File too large. Maximum size is 50MB.";
+            loading = false;
+            return;
+        }
+
         loading = true;
         error = "";
 
