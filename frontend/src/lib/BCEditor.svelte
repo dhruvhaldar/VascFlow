@@ -24,10 +24,13 @@
     }
 
     function removeBC(index) {
-        simulationConfig.update(c => {
-            c.boundary_conditions = c.boundary_conditions.filter((_, i) => i !== index);
-            return c;
-        });
+        const bcName = $simulationConfig.boundary_conditions[index].face_name;
+        if (confirm(`Are you sure you want to remove the boundary condition for ${bcName}?`)) {
+            simulationConfig.update(c => {
+                c.boundary_conditions = c.boundary_conditions.filter((_, i) => i !== index);
+                return c;
+            });
+        }
     }
 </script>
 
@@ -66,8 +69,13 @@
             <ul>
                 {#each $simulationConfig.boundary_conditions as bc, i}
                     <li>
-                        {bc.face_name}: {bc.bc_type} {bc.variable}={bc.value} ({bc.profile})
-                        <button on:click={() => removeBC(i)} aria-label="Remove boundary condition" title="Remove boundary condition">x</button>
+                        <span class="bc-info">{bc.face_name}: {bc.bc_type} {bc.variable}={bc.value} ({bc.profile})</span>
+                        <button class="delete-btn" on:click={() => removeBC(i)} aria-label="Remove boundary condition for {bc.face_name}" title="Remove boundary condition">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                        </button>
                     </li>
                 {/each}
             </ul>
@@ -99,6 +107,39 @@
     }
 
     ul {
-        padding-left: 1rem;
+        list-style: none;
+        padding: 0;
+        margin-top: 1rem;
+    }
+
+    li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 0.5rem 0.75rem;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+    }
+
+    .bc-info {
+        font-size: 0.95rem;
+    }
+
+    .delete-btn {
+        background: rgba(255, 100, 100, 0.1);
+        color: #ffb3b3;
+        border: 1px solid rgba(255, 100, 100, 0.2);
+        padding: 0.3rem 0.4rem;
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        transition: 0.2s ease;
+    }
+
+    .delete-btn:hover {
+        background: rgba(255, 100, 100, 0.2);
     }
 </style>
