@@ -60,18 +60,20 @@
             <button on:click={addBC} disabled={!selectedFace} title={!selectedFace ? "Select a face first to add a boundary condition" : "Add boundary condition"}>Add BC</button>
         </div>
 
-        {#if $simulationConfig.boundary_conditions.length === 0}
-            <p class="empty-state">No boundary conditions added yet. Select a face and configure parameters above to add one.</p>
-        {:else}
-            <ul>
-                {#each $simulationConfig.boundary_conditions as bc, i}
-                    <li>
-                        {bc.face_name}: {bc.bc_type} {bc.variable}={bc.value} ({bc.profile})
-                        <button on:click={() => removeBC(i)} aria-label="Remove boundary condition" title="Remove boundary condition">x</button>
-                    </li>
-                {/each}
-            </ul>
-        {/if}
+        <div aria-live="polite">
+            {#if $simulationConfig.boundary_conditions.length === 0}
+                <p class="empty-state">No boundary conditions added yet. Select a face and configure parameters above to add one.</p>
+            {:else}
+                <ul>
+                    {#each $simulationConfig.boundary_conditions as bc, i}
+                        <li>
+                            {bc.face_name}: {bc.bc_type} {bc.variable}={bc.value} ({bc.profile})
+                            <button on:click={() => removeBC(i)} aria-label="Remove boundary condition for {bc.face_name}" title="Remove boundary condition for {bc.face_name}">&times;</button>
+                        </li>
+                    {/each}
+                </ul>
+            {/if}
+        </div>
     {:else}
         <p class="empty-state" role="alert">Please upload a mesh file first to detect faces and configure boundary conditions.</p>
     {/if}
