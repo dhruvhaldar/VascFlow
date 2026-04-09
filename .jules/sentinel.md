@@ -7,3 +7,8 @@
 **Vulnerability:** Memory Exhaustion / Denial of Service (DoS)
 **Learning:** FastAPI's Pydantic models will eagerly consume unbounded string fields if limits are not explicitly set. This can allow attackers to crash the server or exhaust memory by passing massive strings in JSON requests.
 **Prevention:** Always enforce strict `max_length` constraints on all string fields within Pydantic models using `Field(..., max_length=N)` to limit input sizes at the application layer.
+
+## 2024-05-24 - Enforce Array Length Limits on Pydantic Models
+**Vulnerability:** Memory Exhaustion / Denial of Service (DoS)
+**Learning:** Just like strings, unbounded array fields (`List[...]`) in FastAPI Pydantic models can lead to memory exhaustion and server crashes if an attacker submits an excessive number of elements.
+**Prevention:** Always enforce strict `max_length` constraints on all list/array fields within Pydantic models using `Field(max_length=N)` to limit the maximum number of items the application processes.
