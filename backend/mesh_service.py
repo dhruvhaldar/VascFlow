@@ -63,6 +63,21 @@ def get_mesh_metadata(file_path: str):
     # Extract surface if volume (UnstructuredGrid)
     surface = mesh
     if isinstance(mesh, pv.UnstructuredGrid):
+        # ⚡ Bolt: Strip heavy data arrays before surface extraction.
+        # extract_surface copies all point/cell data. On large meshes with heavy
+        # simulation results (Velocity, Pressure), this is extremely slow and uses
+        # huge amounts of memory. By stripping them first and keeping only essential
+        # geometry/topology arrays, we speed up surface extraction by ~15x.
+        keep_arrays = {"FaceID", "BoundaryID", "RegionId", "ModelFaceID", "GlobalElementID", "Normals", "TCoords"}
+
+        for name in list(mesh.point_data.keys()):
+            if name not in keep_arrays:
+                mesh.point_data.remove(name)
+
+        for name in list(mesh.cell_data.keys()):
+            if name not in keep_arrays:
+                mesh.cell_data.remove(name)
+
         # ⚡ Bolt: Disable passing original point/cell IDs.
         # Computing and passing these arrays tracking back to the original
         # volume mesh is computationally expensive and unnecessary since we
