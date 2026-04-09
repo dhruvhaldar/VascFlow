@@ -23,11 +23,13 @@
         });
     }
 
-    function removeBC(index) {
-        simulationConfig.update(c => {
-            c.boundary_conditions = c.boundary_conditions.filter((_, i) => i !== index);
-            return c;
-        });
+    function removeBC(index, faceName) {
+        if (window.confirm(`Are you sure you want to remove the boundary condition for ${faceName}?`)) {
+            simulationConfig.update(c => {
+                c.boundary_conditions = c.boundary_conditions.filter((_, i) => i !== index);
+                return c;
+            });
+        }
     }
 </script>
 
@@ -68,7 +70,7 @@
                     {#each $simulationConfig.boundary_conditions as bc, i}
                         <li>
                             {bc.face_name}: {bc.bc_type} {bc.variable}={bc.value} ({bc.profile})
-                            <button on:click={() => removeBC(i)} aria-label="Remove boundary condition for {bc.face_name}" title="Remove boundary condition for {bc.face_name}">&times;</button>
+                            <button on:click={() => removeBC(i, bc.face_name)} aria-label="Remove boundary condition for {bc.face_name}" title="Remove boundary condition for {bc.face_name}">&times;</button>
                         </li>
                     {/each}
                 </ul>

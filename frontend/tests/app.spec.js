@@ -102,6 +102,12 @@ test.describe('svFSI Configurator App', () => {
     await expect(bcList.nth(1)).toContainText('outlet: Neumann Velocity=0 (Flat)');
 
     const removeButton = bcList.first().locator('button');
+
+    page.once('dialog', dialog => dialog.dismiss());
+    await removeButton.click();
+    await expect(bcList).toHaveCount(2);
+
+    page.once('dialog', dialog => dialog.accept());
     await removeButton.click();
 
     await expect(bcList).toHaveCount(1);

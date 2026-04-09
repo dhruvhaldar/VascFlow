@@ -58,16 +58,16 @@
                                 <option value="Structure">Structure</option>
                             </select>
                         </label>
-                        <label>Density <input type="number" bind:value={$simulationConfig.physics.density} step="0.1" /></label>
-                        <label>Viscosity <input type="number" bind:value={$simulationConfig.physics.viscosity} step="0.01" /></label>
+                        <label>Density <input type="number" bind:value={$simulationConfig.physics.density} step="0.1" min="0" /></label>
+                        <label>Viscosity <input type="number" bind:value={$simulationConfig.physics.viscosity} step="0.01" min="0" /></label>
                     </div>
                 {:else if activeTab === 'bcs'}
                     <BCEditor />
                 {:else if activeTab === 'general'}
                     <div class="general-config">
                         <h3>General Settings</h3>
-                        <label>Time Steps <input type="number" bind:value={$simulationConfig.general.num_time_steps} /></label>
-                        <label>Step Size <input type="number" bind:value={$simulationConfig.general.time_step_size} step="0.001" /></label>
+                        <label>Time Steps <input type="number" bind:value={$simulationConfig.general.num_time_steps} min="1" /></label>
+                        <label>Step Size <input type="number" bind:value={$simulationConfig.general.time_step_size} step="0.001" min="0.001" /></label>
                     </div>
                 {/if}
             </div>
