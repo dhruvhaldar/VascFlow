@@ -28,10 +28,10 @@ class PhysicsConfig(BaseModel):
     density: float = 1.06
     viscosity: float = 0.04
     material_model: str = Field("Newtonian", max_length=100, description="Material model")
-    properties: List[MaterialProperty] = []
+    properties: List[MaterialProperty] = Field([], max_length=1000, description="List of material properties")
 
 class SimulationConfig(BaseModel):
     general: GeneralConfig
     mesh: MeshConfig
     physics: PhysicsConfig
-    boundary_conditions: List[BoundaryCondition]
+    boundary_conditions: List[BoundaryCondition] = Field(..., max_length=1000, description="List of boundary conditions")
