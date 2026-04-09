@@ -5,3 +5,11 @@
 ## 2024-05-25 - [Dynamic Context for List Item Actions]
 **Learning:** For repetitive list items with action buttons (like delete buttons), using static ARIA labels (e.g., `aria-label="Remove boundary condition"`) fails to provide screen reader users context about *which* item they are about to delete. Additionally, list elements that are dynamically updated need an `aria-live` region.
 **Action:** Always use dynamic, contextual ARIA labels (e.g., `aria-label="Remove boundary condition for {bc.face_name}"`) by interpolating item data. Also, wrap the dynamic list and its empty state in a `<div aria-live="polite">` so additions/removals are announced.
+
+## 2024-05-26 - [Playwright Interaction with Native Dialogs]
+**Learning:** When implementing UX improvements that utilize native browser dialogs (such as `window.confirm` for destructive actions), automated testing environments like Playwright will hang because they do not automatically accept or dismiss these dialogs, leading to test timeouts and failures.
+**Action:** Always update the corresponding Playwright tests by explicitly handling the dialog event using `page.once('dialog', dialog => dialog.accept())` or `.dismiss()` immediately before triggering the action that spawns the dialog. This ensures the automated test suite continues to function correctly and accurately tests both confirmation states.
+
+## 2024-05-26 - [HTML5 Validation in Engineering Inputs]
+**Learning:** In physics/engineering applications, unbounded number inputs can allow users to enter physically impossible values (e.g., negative density or negative time steps), which can lead to simulation failures or invalid data generation later in the pipeline.
+**Action:** Always pair `type="number"` inputs with explicit `min` and/or `max` attributes (e.g., `min="0"`) for physical parameters. This utilizes the native browser HTML5 form validation to provide immediate, accessible UX boundaries without requiring complex custom validation logic.
