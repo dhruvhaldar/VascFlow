@@ -13,3 +13,7 @@
 ## 2024-05-26 - [HTML5 Validation in Engineering Inputs]
 **Learning:** In physics/engineering applications, unbounded number inputs can allow users to enter physically impossible values (e.g., negative density or negative time steps), which can lead to simulation failures or invalid data generation later in the pipeline.
 **Action:** Always pair `type="number"` inputs with explicit `min` and/or `max` attributes (e.g., `min="0"`) for physical parameters. This utilizes the native browser HTML5 form validation to provide immediate, accessible UX boundaries without requiring complex custom validation logic.
+
+## 2024-05-27 - [Detailed API Error Feedback & Input Reset]
+**Learning:** Returning generic "Failed" messages from the frontend hides valuable API-level constraints (like "File size exceeds 50MB"). Additionally, if an `<input type="file">` is not cleared after an error, the user cannot easily select the *same* file to try again, leading to broken retry interactions.
+**Action:** When handling form or file submission errors, attempt to extract and display the specific API error detail instead of a generic fallback. Furthermore, always reset the `<input>` value in the catch block so the user can seamlessly retry their action.

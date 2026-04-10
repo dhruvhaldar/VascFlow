@@ -21,7 +21,10 @@
                 body: formData
             });
 
-            if (!response.ok) throw new Error("Failed to process mesh");
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.detail || "Failed to process mesh");
+            }
 
             const data = await response.json();
             meshMetadata.set(data);
@@ -31,6 +34,7 @@
             });
         } catch (e) {
             error = e.message;
+            if (fileInput) fileInput.value = "";
         } finally {
             loading = false;
         }
