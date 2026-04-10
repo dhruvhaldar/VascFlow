@@ -106,3 +106,36 @@ def test_process_mesh_rejects_large_files(monkeypatch):
 
     assert exc_info.value.status_code == 413
     assert "File too large" in exc_info.value.detail
+
+def test_chunked_upload_size_limit():
+    # Simulate an upload file with unknown size (size=None) to test
+    # the chunked reading size enforcement
+    from fastapi import HTTPException
+    import main
+
+    class FakeFile:
+        def __init__(self):
+            self.bytes_read = 0
+            self.limit = 55 * 1024 * 1024  # 55MB
+
+        def read(self, size=-1):
+            if self.bytes_read >= self.limit:
+                return b""
+            chunk_size = size if size > 0 else (self.limit - self.bytes_read)
+            self.bytes_read += chunk_size
+            return b"A" * chunk_size
+
+    class FakeUploadFile:
+        def __init__(self):
+            self.filename = "large.vtu"
+            self.size = None
+            self.file = FakeFile()
+
+    mock_upload = FakeUploadFile()
+
+    import pytest
+    with pytest.raises(HTTPException) as exc_info:
+        main.process_mesh(mock_upload)
+
+    assert exc_info.value.status_code == 413
+    assert "File too large" in exc_info.value.detail

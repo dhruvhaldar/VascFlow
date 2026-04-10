@@ -12,3 +12,8 @@
 **Vulnerability:** Memory Exhaustion / Denial of Service (DoS)
 **Learning:** Just like strings, unbounded array fields (`List[...]`) in FastAPI Pydantic models can lead to memory exhaustion and server crashes if an attacker submits an excessive number of elements.
 **Prevention:** Always enforce strict `max_length` constraints on all list/array fields within Pydantic models using `Field(max_length=N)` to limit the maximum number of items the application processes.
+
+## 2024-06-15 - Enforce File Size Limit During Stream Read
+**Vulnerability:** Disk Exhaustion / Denial of Service (DoS) via Chunked Uploads
+**Learning:** Checking `upload_file.size` in FastAPI is insufficient for enforcing file size limits because it relies on the client-provided `Content-Length` header. If a client omits the header or uses streaming chunked uploads, `upload_file.size` evaluates to `None`. Relying solely on this allows attackers to bypass size limits and exhaust disk space by streaming unlimited data directly to disk.
+**Prevention:** Do not rely exclusively on the `Content-Length` header (`upload_file.size`). Read the uploaded file stream in chunks, keeping an accumulated count of total bytes written. If the total exceeds the allowed limit during the transfer, immediately raise an error (HTTP 413) and delete the partially written file to ensure limits are strictly enforced on disk.
