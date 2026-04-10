@@ -85,6 +85,9 @@ def process_mesh(file: UploadFile):
         # internally and returning a generic response to the client.
         logging.error("Validation error: %s", str(e))
         raise HTTPException(status_code=400, detail="Invalid file extension or validation error")
+    except HTTPException as e:
+        # If it's already an HTTPException (e.g. 413 from save_upload_file), re-raise it directly
+        raise e
     except Exception as e:
         logging.error("Failed to process mesh file: %s", str(e))
         raise HTTPException(status_code=500, detail="An error occurred while processing the mesh.")
