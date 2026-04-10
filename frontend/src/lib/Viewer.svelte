@@ -81,7 +81,13 @@
             currentReader = null;
         }
 
-        const url = `http://localhost:8000/files/${filename}`;
+        // ⚡ Bolt: Handle both external backend URLs and local Blob URLs.
+        // If it's a blob: URL (from MeshUpload bypass), we load it directly without
+        // prefixing the backend address.
+        const url = filename.startsWith('blob:')
+            ? filename
+            : `http://localhost:8000/files/${filename}`;
+
         currentReader = vtkXMLPolyDataReader.newInstance();
 
         try {

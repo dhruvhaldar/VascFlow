@@ -8,3 +8,7 @@
 ## 2024-04-09 - [PyVista extract_surface Performance Bottleneck]
 **Learning:** PyVista's `UnstructuredGrid.extract_surface` natively processes and deep-copies all `point_data` and `cell_data` arrays to the newly generated surface mesh. When processing large volume meshes containing heavy multi-physics simulation results (e.g., Velocity, Pressure over many time steps), this deep copy becomes a severe bottleneck, taking seconds to process and consuming massive amounts of memory.
 **Action:** Always strip non-essential simulation arrays from `mesh.point_data` and `mesh.cell_data` (using `.remove(name)`) *before* calling `extract_surface`. Retain only the critical arrays needed for rendering and topological mapping (e.g., `Normals`, `TCoords`, `FaceID`, `RegionId`). In benchmarking, this strategy reduced surface extraction time from ~2.5s down to ~0.15s (a ~15x speedup) for large meshes.
+
+## 2024-05-24 - [Blob URL Revocation Risk]
+**Learning:** When using `URL.createObjectURL()` to create local blob references for large files (to avoid redundant network downloads), immediately calling `URL.revokeObjectURL()` after the first load is dangerous if the URL string is stored in global state (like a Svelte store). If the component unmounts and remounts, or the user navigates away and back, the app will try to fetch a revoked URL and break.
+**Action:** Let the browser handle garbage collection on page unload for single-file optimizations, or implement a robust cleanup system that only revokes the old URL when a *new* file is explicitly uploaded to replace it.
