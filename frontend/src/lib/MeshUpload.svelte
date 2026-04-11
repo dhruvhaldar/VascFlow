@@ -34,6 +34,12 @@
             // from re-downloading the exact same file from the server, saving huge amounts
             // of network bandwidth and instantly rendering the mesh.
             if (file.name.toLowerCase().endsWith('.vtp')) {
+                // ⚡ Bolt: Revoke the old Blob URL to prevent memory leaks.
+                // Creating a new blob URL for every upload without revoking the old one
+                // leaves large mesh files in memory indefinitely.
+                if ($meshMetadata.viz_file && $meshMetadata.viz_file.startsWith('blob:')) {
+                    URL.revokeObjectURL($meshMetadata.viz_file);
+                }
                 data.viz_file = URL.createObjectURL(file);
             }
 
