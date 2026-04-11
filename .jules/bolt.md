@@ -12,3 +12,6 @@
 ## 2024-05-24 - [Blob URL Revocation Risk]
 **Learning:** When using `URL.createObjectURL()` to create local blob references for large files (to avoid redundant network downloads), immediately calling `URL.revokeObjectURL()` after the first load is dangerous if the URL string is stored in global state (like a Svelte store). If the component unmounts and remounts, or the user navigates away and back, the app will try to fetch a revoked URL and break.
 **Action:** Let the browser handle garbage collection on page unload for single-file optimizations, or implement a robust cleanup system that only revokes the old URL when a *new* file is explicitly uploaded to replace it.
+## 2024-05-25 - Fix Memory Leak from Stale Blob URLs in Svelte Store
+**Learning:** While creating local Blob URLs (`URL.createObjectURL`) directly from File inputs provides a massive performance boost by bypassing backend roundtrips for rendering, it creates a subtle but severe memory leak in SPAs if users upload files repeatedly. The browser's garbage collector cannot free the large file buffers because the old blob URLs remain valid until explicitly revoked.
+**Action:** When saving Blob URLs into global state (like Svelte stores), always verify if the *existing* store value is a Blob URL and explicitly call `URL.revokeObjectURL(old_url)` before replacing it with the new URL.
