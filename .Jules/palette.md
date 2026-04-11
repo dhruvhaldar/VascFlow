@@ -17,3 +17,7 @@
 ## 2024-05-27 - [Detailed API Error Feedback & Input Reset]
 **Learning:** Returning generic "Failed" messages from the frontend hides valuable API-level constraints (like "File size exceeds 50MB"). Additionally, if an `<input type="file">` is not cleared after an error, the user cannot easily select the *same* file to try again, leading to broken retry interactions.
 **Action:** When handling form or file submission errors, attempt to extract and display the specific API error detail instead of a generic fallback. Furthermore, always reset the `<input>` value in the catch block so the user can seamlessly retry their action.
+
+## 2024-06-25 - [Preventing Duplicate State Interactions in Form Selects]
+**Learning:** When users populate lists from a `<select>` dropdown (like adding Boundary Conditions for faces), leaving already-used options selectable can lead to duplicate, erroneous entries that break downstream processing. Additionally, failing to reset the select input after an action leaves the UI in a confusing state.
+**Action:** Conditionally apply the `disabled` attribute to `<option>` tags whose corresponding values already exist in the active collection, and append contextual text (like "(Already Added)"). Additionally, explicitly reset the bound variable (e.g., `selectedFace = ""`) upon successful insertion to prompt a fresh selection cycle.
