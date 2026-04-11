@@ -21,6 +21,7 @@
             c.boundary_conditions = [...c.boundary_conditions, newBC];
             return c;
         });
+        selectedFace = "";
     }
 
     function removeBC(index, faceName) {
@@ -41,7 +42,12 @@
             <select bind:value={selectedFace} aria-label="Select Face" title="Select Face">
                 <option value="" disabled selected>Select Face</option>
                 {#each $meshMetadata.faces as face}
-                    <option value={face.name}>{face.name} (ID: {face.id})</option>
+                    <option
+                        value={face.name}
+                        disabled={$simulationConfig.boundary_conditions.some(bc => bc.face_name === face.name)}
+                    >
+                        {face.name} (ID: {face.id}) {$simulationConfig.boundary_conditions.some(bc => bc.face_name === face.name) ? '(Already Added)' : ''}
+                    </option>
                 {/each}
             </select>
 
