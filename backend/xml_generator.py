@@ -1,5 +1,4 @@
-import xml.etree.ElementTree as ET
-from xml.dom import minidom
+import xml.etree.ElementTree as ET  # nosec B405
 from models import SimulationConfig
 
 def generate_svfsi_xml(config: SimulationConfig) -> str:
