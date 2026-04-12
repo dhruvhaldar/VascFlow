@@ -7,6 +7,13 @@
     let value = 0.0;
     let profile = "Flat";
 
+    // ⚡ Bolt: Cache used face names in a reactive Set for O(1) lookups.
+    // Calling array.some() twice per option inside an #each loop creates an
+    // O(N*M) rendering bottleneck for meshes with many faces. Using a Set
+    // reduces this to O(N+M), significantly improving UI responsiveness when
+    // opening the dropdown or adding new boundary conditions.
+    $: usedFaceNames = new Set($simulationConfig.boundary_conditions.map(bc => bc.face_name));
+
     function addBC() {
         if (!selectedFace) return;
         simulationConfig.update(c => {
@@ -44,9 +51,9 @@
                 {#each $meshMetadata.faces as face}
                     <option
                         value={face.name}
-                        disabled={$simulationConfig.boundary_conditions.some(bc => bc.face_name === face.name)}
+                        disabled={usedFaceNames.has(face.name)}
                     >
-                        {face.name} (ID: {face.id}) {$simulationConfig.boundary_conditions.some(bc => bc.face_name === face.name) ? '(Already Added)' : ''}
+                        {face.name} (ID: {face.id}) {usedFaceNames.has(face.name) ? '(Already Added)' : ''}
                     </option>
                 {/each}
             </select>
