@@ -15,3 +15,6 @@
 ## 2024-05-25 - Fix Memory Leak from Stale Blob URLs in Svelte Store
 **Learning:** While creating local Blob URLs (`URL.createObjectURL`) directly from File inputs provides a massive performance boost by bypassing backend roundtrips for rendering, it creates a subtle but severe memory leak in SPAs if users upload files repeatedly. The browser's garbage collector cannot free the large file buffers because the old blob URLs remain valid until explicitly revoked.
 **Action:** When saving Blob URLs into global state (like Svelte stores), always verify if the *existing* store value is a Blob URL and explicitly call `URL.revokeObjectURL(old_url)` before replacing it with the new URL.
+## 2025-04-12 - [Optimize Svelte Dropdown Rendering]
+**Learning:** Calling array.some() repeatedly inside an {#each} block to check for existing entries creates an O(N*M) rendering bottleneck, making dropdowns sluggish on large data sets.
+**Action:** Use a reactive Set ($: usedItems = new Set(...)) to cache existing values, converting the check to an O(1) operation and significantly improving UI responsiveness.
