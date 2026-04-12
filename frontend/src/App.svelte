@@ -82,7 +82,7 @@
                     <div class="viewer-fallback">
                         <div class="viewer-header">
                             <h3>3D Visualizer</h3>
-                            <span>Loading 3D Engine...</span>
+                            <span role="status" aria-live="polite">Loading 3D Engine...</span>
                         </div>
                         <div class="viewer-container" data-testid="viewer-canvas"></div>
                     </div>
@@ -92,7 +92,7 @@
                     <div class="viewer-fallback">
                         <div class="viewer-header">
                             <h3>3D Visualizer</h3>
-                            <span class="error">Failed to load 3D Engine</span>
+                            <span class="error" role="alert" aria-live="assertive">Failed to load 3D Engine</span>
                         </div>
                         <div class="viewer-container" data-testid="viewer-canvas"></div>
                     </div>

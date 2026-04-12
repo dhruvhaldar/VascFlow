@@ -21,3 +21,7 @@
 ## 2024-06-25 - [Preventing Duplicate State Interactions in Form Selects]
 **Learning:** When users populate lists from a `<select>` dropdown (like adding Boundary Conditions for faces), leaving already-used options selectable can lead to duplicate, erroneous entries that break downstream processing. Additionally, failing to reset the select input after an action leaves the UI in a confusing state.
 **Action:** Conditionally apply the `disabled` attribute to `<option>` tags whose corresponding values already exist in the active collection, and append contextual text (like "(Already Added)"). Additionally, explicitly reset the bound variable (e.g., `selectedFace = ""`) upon successful insertion to prompt a fresh selection cycle.
+
+## 2024-07-28 - [Accessible Fallbacks for Async Svelte Components]
+**Learning:** When using Svelte's `{#await}` blocks to lazy-load heavy components (like 3D viewers), the dynamically rendered `{:catch}` error states and initial loading fallbacks are not automatically announced by screen readers since they are inserted asynchronously into the DOM.
+**Action:** Always pair visual loading indicators in async component fallbacks with an explicit ARIA live region (e.g., `role="status" aria-live="polite"` for loading, and `role="alert" aria-live="assertive"` for errors) to ensure assistive technologies announce the state transition.
