@@ -1,6 +1,6 @@
 from models import SimulationConfig, GeneralConfig, MeshConfig, PhysicsConfig, BoundaryCondition
 from xml_generator import generate_svfsi_xml
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as ET  # nosec B405
 
 def test_xml_generation():
     config = SimulationConfig(
@@ -15,7 +15,7 @@ def test_xml_generation():
     xml_str = generate_svfsi_xml(config)
 
     # Check basic structure
-    root = ET.fromstring(xml_str)
+    root = ET.fromstring(xml_str)  # nosec B314
     assert root.tag == "svFSIFile"
 
     gen_sim = root.find("GeneralSimulationParameters")
