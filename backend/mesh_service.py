@@ -65,8 +65,26 @@ def get_mesh_metadata(file_path: str):
     If it's a volume mesh, extracts the surface.
     Attempts to identify face patches.
     """
+    # ⚡ Bolt: Lazy load the mesh using get_reader instead of pv.read.
+    # By selectively enabling only essential topological and rendering arrays,
+    # we bypass parsing massive physics simulation data arrays from disk into memory.
+    keep_arrays = {"FaceID", "BoundaryID", "RegionId", "ModelFaceID", "GlobalElementID", "Normals", "TCoords"}
+
     try:
-        mesh = pv.read(file_path)
+        reader = pv.get_reader(file_path)
+        if hasattr(reader, 'disable_all_point_arrays'):
+            reader.disable_all_point_arrays()
+            for name in getattr(reader, 'point_array_names', []):
+                if name in keep_arrays:
+                    reader.enable_point_array(name)
+
+        if hasattr(reader, 'disable_all_cell_arrays'):
+            reader.disable_all_cell_arrays()
+            for name in getattr(reader, 'cell_array_names', []):
+                if name in keep_arrays:
+                    reader.enable_cell_array(name)
+
+        mesh = reader.read()
     except Exception as e:
         logging.error("Failed to read mesh file using PyVista: %s", str(e))
         raise ValueError("Failed to read mesh file.")
@@ -81,21 +99,6 @@ def get_mesh_metadata(file_path: str):
     # Extract surface if volume (UnstructuredGrid)
     surface = mesh
     if isinstance(mesh, pv.UnstructuredGrid):
-        # ⚡ Bolt: Strip heavy data arrays before surface extraction.
-        # extract_surface copies all point/cell data. On large meshes with heavy
-        # simulation results (Velocity, Pressure), this is extremely slow and uses
-        # huge amounts of memory. By stripping them first and keeping only essential
-        # geometry/topology arrays, we speed up surface extraction by ~15x.
-        keep_arrays = {"FaceID", "BoundaryID", "RegionId", "ModelFaceID", "GlobalElementID", "Normals", "TCoords"}
-
-        for name in list(mesh.point_data.keys()):
-            if name not in keep_arrays:
-                mesh.point_data.remove(name)
-
-        for name in list(mesh.cell_data.keys()):
-            if name not in keep_arrays:
-                mesh.cell_data.remove(name)
-
         # ⚡ Bolt: Disable passing original point/cell IDs.
         # Computing and passing these arrays tracking back to the original
         # volume mesh is computationally expensive and unnecessary since we
