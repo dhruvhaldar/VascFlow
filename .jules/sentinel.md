@@ -21,3 +21,7 @@
 **Vulnerability:** Integer Overflow / Resource Exhaustion (DoS)
 **Learning:** While string and array length limits are enforced, numerical fields (int, float) in Pydantic models lack bounds by default. Massive inputs can cause integer overflows or exhaust memory when passed to downstream C++ physics solvers.
 **Prevention:** Always apply strict numerical bounds (`ge`, `le`, `gt`, `lt`) to integer and float fields in Pydantic models using `Field(..., ge=1, le=10000000)` to fail securely at the API layer.
+## 2024-04-13 - Enforce Numerical Input Limits (Bounds)
+**Vulnerability:** Integer Overflow / Resource Exhaustion (DoS)
+**Learning:** While string and array length limits are enforced, numerical fields (int, float) in Pydantic models lack bounds by default. Massive inputs can cause integer overflows or exhaust memory when passed to downstream C++ physics solvers.
+**Prevention:** Always apply strict numerical bounds (`ge`, `le`, `gt`, `lt`) to integer and float fields in Pydantic models using `Field(..., ge=1, le=10000000)` to fail securely at the API layer.
