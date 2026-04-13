@@ -45,7 +45,7 @@
     <h3>Boundary Conditions</h3>
 
     {#if $meshMetadata.faces.length > 0}
-        <div class="add-bc">
+        <form class="add-bc" on:submit|preventDefault={addBC}>
             <select bind:value={selectedFace} aria-label="Select Face" title="Select Face">
                 <option value="" disabled selected>Select Face</option>
                 {#each $meshMetadata.faces as face}
@@ -72,8 +72,8 @@
                 <option value="Parabolic">Parabolic</option>
             </select>
 
-            <button on:click={addBC} disabled={!selectedFace} title={!selectedFace ? "Select a face first to add a boundary condition" : "Add boundary condition"}>Add BC</button>
-        </div>
+            <button type="submit" disabled={!selectedFace} title={!selectedFace ? "Select a face first to add a boundary condition" : "Add boundary condition"}>Add BC</button>
+        </form>
 
         <div aria-live="polite">
             {#if $simulationConfig.boundary_conditions.length === 0}

@@ -25,15 +25,15 @@ test.describe('svFSI Configurator App', () => {
     await expect(page.locator('.sidebar .tabs-nav button.active')).toHaveText('Mesh');
     await expect(page.locator('.config-panel')).toContainText('Upload a .vtu or .vtp file');
 
-    await page.click('text="Physics"');
+    await page.getByRole('tab', { name: 'Physics' }).click();
     await expect(page.locator('.sidebar .tabs-nav button.active')).toHaveText('Physics');
     await expect(page.locator('.physics-config')).toBeVisible();
 
-    await page.click('text="Boundary Conditions"');
+    await page.getByRole('tab', { name: 'Boundary Conditions' }).click();
     await expect(page.locator('.sidebar .tabs-nav button.active')).toHaveText('Boundary Conditions');
     await expect(page.locator('h3:has-text("Boundary Conditions")')).toBeVisible();
 
-    await page.click('text="General"');
+    await page.getByRole('tab', { name: 'General' }).click();
     await expect(page.locator('.sidebar .tabs-nav button.active')).toHaveText('General');
     await expect(page.locator('.general-config')).toBeVisible();
   });
@@ -68,7 +68,7 @@ test.describe('svFSI Configurator App', () => {
     await expect(page.locator('.mesh-info')).toContainText('Cells: 100, Points: 50');
     await expect(page.locator('.mesh-info')).toContainText('Detected Faces: 2');
 
-    await page.click('text="Boundary Conditions"');
+    await page.getByRole('tab', { name: 'Boundary Conditions' }).click();
 
     const faceSelect = page.locator('.add-bc select').nth(0);
     await faceSelect.selectOption('inlet');
