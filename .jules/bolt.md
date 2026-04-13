@@ -18,3 +18,7 @@
 ## 2025-04-12 - [Optimize Svelte Dropdown Rendering]
 **Learning:** Calling array.some() repeatedly inside an {#each} block to check for existing entries creates an O(N*M) rendering bottleneck, making dropdowns sluggish on large data sets.
 **Action:** Use a reactive Set ($: usedItems = new Set(...)) to cache existing values, converting the check to an O(1) operation and significantly improving UI responsiveness.
+
+## 2025-04-13 - [Optimize PyVista Mesh Reading with Lazy Loading]
+**Learning:** Calling `pv.read(file_path)` parses the entire mesh file and all its data arrays (e.g. huge velocity, pressure arrays from physics simulations) into memory. On large meshes, this creates severe memory bottlenecks and slow IO wait times. By using the lazy reader API `pv.get_reader(file_path)`, we can explicitly call `reader.disable_all_point_arrays()` and `reader.disable_all_cell_arrays()`, and selectively enable only the topological/rendering arrays we care about (like `FaceID`, `Normals`) before calling `reader.read()`.
+**Action:** Always use `pv.get_reader()` instead of `pv.read()` when extracting metadata or topological structures from large volume meshes where full multi-physics simulation arrays are unnecessary.
