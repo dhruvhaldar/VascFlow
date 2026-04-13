@@ -25,3 +25,6 @@
 ## 2024-07-28 - [Accessible Fallbacks for Async Svelte Components]
 **Learning:** When using Svelte's `{#await}` blocks to lazy-load heavy components (like 3D viewers), the dynamically rendered `{:catch}` error states and initial loading fallbacks are not automatically announced by screen readers since they are inserted asynchronously into the DOM.
 **Action:** Always pair visual loading indicators in async component fallbacks with an explicit ARIA live region (e.g., `role="status" aria-live="polite"` for loading, and `role="alert" aria-live="assertive"` for errors) to ensure assistive technologies announce the state transition.
+## 2024-04-13 - [Semantic Forms for Keyboard UX]
+**Learning:** Standard HTML `<div>` wrappers and `<button on:click={handler}>` implementations for cohesive data entry sets completely break native implicit form submission (pressing the "Enter" key).
+**Action:** Replace cohesive input `<div>` clusters with semantic `<form on:submit|preventDefault={handler}>` tags, and ensure the primary action uses a `<button type="submit">`. This instantly restores Enter-to-submit functionality natively without needing custom keydown event listeners, significantly improving both accessibility and power-user workflow speeds.
