@@ -15,13 +15,13 @@ class BoundaryCondition(BaseModel):
     face_name: str = Field(..., max_length=255)
     bc_type: str = Field("Dirichlet", max_length=100, description="Type: Dirichlet, Neumann, Resistance, etc.")
     variable: str = Field("Velocity", max_length=100, description="Variable: Velocity, Pressure, Displacement")
-    value: float = Field(0.0, description="Value for constant BC")
+    value: float = Field(0.0, ge=-1e10, le=1e10, description="Value for constant BC")
     profile: Optional[str] = Field("Flat", max_length=100, description="Profile: Flat, Parabolic, User_Defined")
-    face_id: Optional[int] = None # Filled from mesh metadata
+    face_id: Optional[int] = Field(None, ge=0, le=10000000) # Filled from mesh metadata
 
 class MaterialProperty(BaseModel):
     name: str = Field(..., max_length=255)
-    value: float
+    value: float = Field(..., ge=-1e10, le=1e10)
 
 class PhysicsConfig(BaseModel):
     physics_type: str = Field("Fluid", max_length=100, description="Physics type: Fluid, Structure, FSI")
