@@ -125,10 +125,44 @@
             {/if}
         </span>
     </div>
-    <div class="viewer-container" data-testid="viewer-canvas" bind:this={container}></div>
+    <div class="viewer-container" data-testid="viewer-canvas">
+        {#if !$meshMetadata.viz_file && !isLoading}
+            <div class="empty-state">
+                <p>No mesh uploaded yet.</p>
+                <p class="subtext">Upload a .vtu or .vtp file from the Mesh tab to visualize it here.</p>
+            </div>
+        {/if}
+        <div class="canvas-mount" bind:this={container}></div>
+    </div>
 </div>
 
 <style>
+    .empty-state {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #b8c5ef;
+        text-align: center;
+        pointer-events: none;
+        z-index: 10;
+    }
+
+    .empty-state p {
+        margin: 0.25rem 0;
+    }
+
+    .empty-state .subtext {
+        font-size: 0.85rem;
+        opacity: 0.8;
+    }
+
+    .canvas-mount {
+        width: 100%;
+        height: 100%;
+    }
     .viewer-wrap {
         height: 100%;
         display: flex;
