@@ -25,3 +25,8 @@
 **Vulnerability:** Integer Overflow / Resource Exhaustion (DoS)
 **Learning:** While string and array length limits are enforced, numerical fields (int, float) in Pydantic models lack bounds by default. Massive inputs can cause integer overflows or exhaust memory when passed to downstream C++ physics solvers.
 **Prevention:** Always apply strict numerical bounds (`ge`, `le`, `gt`, `lt`) to integer and float fields in Pydantic models using `Field(..., ge=1, le=10000000)` to fail securely at the API layer.
+
+## 2025-02-28 - [500 Error via Unhandled Null Filename in FastAPI]
+**Vulnerability:** FastAPIs `UploadFile.filename` can be `None` or an empty string, leading to unhandled `AttributeError` exceptions (causing 500 errors) when string manipulation functions like `.replace()` or `os.path.basename()` are called on it.
+**Learning:** This specific unhandled exception can easily lead to a Denial of Service or information exposure if not caught, and often happens natively when files are uploaded without standard browser-supplied filenames (e.g. from a script).
+**Prevention:** Always validate that `upload_file.filename` exists before calling string methods or path operations on it to ensure graceful handling (returning a 400 Bad Request instead of 500 Internal Server Error).

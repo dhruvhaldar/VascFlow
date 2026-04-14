@@ -86,6 +86,26 @@ def test_process_mesh_rejects_unsupported_extension():
     assert "Invalid file extension" in response.json()["detail"]
 
 
+def test_process_mesh_missing_filename():
+    import main
+    from fastapi import UploadFile, HTTPException
+    import pytest
+
+    class MockFile:
+        def read(self, size=-1):
+            return b""
+
+    # Test that a missing filename throws a 400 error instead of a 500
+    mock_upload = UploadFile(file=MockFile(), filename=None)
+    mock_upload.size = 100
+
+    with pytest.raises(HTTPException) as exc_info:
+        main.process_mesh(mock_upload)
+
+    assert exc_info.value.status_code == 400
+    assert "validation error" in exc_info.value.detail.lower()
+
+
 def test_process_mesh_rejects_large_files(monkeypatch):
     import main
     from io import BytesIO

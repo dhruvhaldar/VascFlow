@@ -17,6 +17,11 @@ def save_upload_file(upload_file: UploadFile) -> str:
     when called from a sync endpoint, preventing event loop blocking during
     large file IO and CPU-heavy PyVista operations.
     """
+    # 🛡️ Sentinel: Validate that the filename exists before performing string operations
+    # to prevent unhandled AttributeError exceptions that cause 500 Internal Server Errors.
+    if not upload_file.filename:
+        raise ValueError("File name is missing.")
+
     # Sanitize filename to prevent path traversal
     safe_filename = os.path.basename(upload_file.filename.replace('\\', '/'))
 
