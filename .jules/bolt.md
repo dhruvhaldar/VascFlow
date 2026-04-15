@@ -22,3 +22,7 @@
 ## 2025-04-13 - [Optimize PyVista Mesh Reading with Lazy Loading]
 **Learning:** Calling `pv.read(file_path)` parses the entire mesh file and all its data arrays (e.g. huge velocity, pressure arrays from physics simulations) into memory. On large meshes, this creates severe memory bottlenecks and slow IO wait times. By using the lazy reader API `pv.get_reader(file_path)`, we can explicitly call `reader.disable_all_point_arrays()` and `reader.disable_all_cell_arrays()`, and selectively enable only the topological/rendering arrays we care about (like `FaceID`, `Normals`) before calling `reader.read()`.
 **Action:** Always use `pv.get_reader()` instead of `pv.read()` when extracting metadata or topological structures from large volume meshes where full multi-physics simulation arrays are unnecessary.
+
+## 2025-04-14 - [Cache Expensive API Call Results in Svelte]
+**Learning:** In interactive UI configurators, users frequently trigger generation/preview actions multiple times without modifying the underlying configuration. Sending identical JSON payloads to the backend repeatedly incurs unnecessary network latency and backend processing overhead.
+**Action:** When creating components that trigger expensive API calls based on a reactive state (like `$simulationConfig`), cache a stringified version of the payload (e.g., `JSON.stringify($simulationConfig)`) as `lastConfigStr`. On subsequent requests, check if the current payload matches the cached version. If it does and the previous result is still valid, return early to skip the network request entirely.
