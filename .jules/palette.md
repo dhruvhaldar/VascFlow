@@ -9,3 +9,7 @@
 ## 2026-04-14 - DOM Isolation for WebGL Empty States
 **Learning:** When adding empty states or loaders inside containers managed by third-party WebGL libraries (like `vtk.js`), the library will often clear or overwrite the container's inner HTML upon initialization. Mixing Svelte conditional blocks with WebGL canvas mounts in the same element leads to visual glitches or missing UI.
 **Action:** Always extract the `bind:this` canvas mount point to a dedicated inner sibling element (e.g., `<div class="canvas-mount">`) separate from the Svelte UI overlays (like empty states) to ensure DOM isolation.
+
+## 2024-05-24 - Form Input Validation
+**Learning:** In Svelte applications utilizing semantic `<form on:submit|preventDefault={...}>` handlers, it is essential to leverage native browser validation to enforce constraints like requiring values. Adding the `required` attribute to constituent `<input>` and `<select>` elements prevents incomplete submissions entirely within the browser, providing localized tooltip feedback before the JS event is even triggered.
+**Action:** When creating form flows, always pair the `<form>` wrapper with the HTML5 `required` attribute on essential input fields to gracefully block incomplete data submissions and provide native inline error notifications.
