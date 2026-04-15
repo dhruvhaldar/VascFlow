@@ -4,6 +4,7 @@
     let generating = false;
     let copying = false;
     let copied = false;
+    let lastConfigStr = null;
 
     async function copyXML() {
         if (!$generatedXML) return;
@@ -22,18 +23,30 @@
     }
 
     async function generate() {
+        const currentConfigStr = JSON.stringify($simulationConfig);
+
+        // ⚡ Bolt: Cache generated XML to prevent redundant API calls.
+        // If the simulation configuration hasn't changed since the last generation,
+        // we skip the backend network request entirely. This saves network bandwidth
+        // and eliminates API latency for repeated clicks.
+        if (currentConfigStr === lastConfigStr && $generatedXML && $generatedXML !== "Error generating XML") {
+            return;
+        }
+
         generating = true;
         try {
             const response = await fetch("http://localhost:8000/generate_input", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify($simulationConfig)
+                body: currentConfigStr
             });
             const data = await response.json();
             generatedXML.set(data.xml);
+            lastConfigStr = currentConfigStr;
         } catch (e) {
             console.error(e);
             generatedXML.set("Error generating XML");
+            lastConfigStr = null;
         } finally {
             generating = false;
         }
