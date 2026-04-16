@@ -31,10 +31,13 @@
         selectedFace = "";
     }
 
-    function removeBC(index, faceName) {
+    // ⚡ Bolt: Remove by unique ID instead of array index.
+    // By passing faceName instead of the array index, we remove the
+    // index dependency from the rendered DOM elements.
+    function removeBC(faceName) {
         if (window.confirm(`Are you sure you want to remove the boundary condition for ${faceName}?`)) {
             simulationConfig.update(c => {
-                c.boundary_conditions = c.boundary_conditions.filter((_, i) => i !== index);
+                c.boundary_conditions = c.boundary_conditions.filter(bc => bc.face_name !== faceName);
                 return c;
             });
         }
@@ -48,7 +51,8 @@
         <form class="add-bc" on:submit|preventDefault={addBC}>
             <select bind:value={selectedFace} aria-label="Select Face" title="Select Face" required>
                 <option value="" disabled selected>Select Face</option>
-                {#each $meshMetadata.faces as face}
+                <!-- ⚡ Bolt: Use a keyed each block for face options. -->
+                {#each $meshMetadata.faces as face (face.id)}
                     <option
                         value={face.name}
                         disabled={usedFaceNames.has(face.name)}
@@ -80,10 +84,15 @@
                 <p class="empty-state">No boundary conditions added yet. Select a face and configure parameters above to add one.</p>
             {:else}
                 <ul>
-                    {#each $simulationConfig.boundary_conditions as bc, i}
+                    <!-- ⚡ Bolt: Use a keyed each block based on face_name.
+                         Combined with removing the index dependency in removeBC,
+                         this guarantees O(1) DOM updates when removing an item,
+                         rather than triggering an O(N) cascade update to re-bind
+                         shifted array indices for all subsequent sibling elements. -->
+                    {#each $simulationConfig.boundary_conditions as bc (bc.face_name)}
                         <li>
                             {bc.face_name}: {bc.bc_type} {bc.variable}={bc.value} ({bc.profile})
-                            <button on:click={() => removeBC(i, bc.face_name)} aria-label="Remove boundary condition for {bc.face_name}" title="Remove boundary condition for {bc.face_name}">&times;</button>
+                            <button on:click={() => removeBC(bc.face_name)} aria-label="Remove boundary condition for {bc.face_name}" title="Remove boundary condition for {bc.face_name}">&times;</button>
                         </li>
                     {/each}
                 </ul>
