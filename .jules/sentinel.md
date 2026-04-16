@@ -30,3 +30,8 @@
 **Vulnerability:** FastAPIs `UploadFile.filename` can be `None` or an empty string, leading to unhandled `AttributeError` exceptions (causing 500 errors) when string manipulation functions like `.replace()` or `os.path.basename()` are called on it.
 **Learning:** This specific unhandled exception can easily lead to a Denial of Service or information exposure if not caught, and often happens natively when files are uploaded without standard browser-supplied filenames (e.g. from a script).
 **Prevention:** Always validate that `upload_file.filename` exists before calling string methods or path operations on it to ensure graceful handling (returning a 400 Bad Request instead of 500 Internal Server Error).
+
+## 2024-04-16 - Prevent Hardcoded Bind All Interfaces (B104)
+**Vulnerability:** Hardcoded Bind All Interfaces (`0.0.0.0`)
+**Learning:** Hardcoding `host="0.0.0.0"` in `uvicorn.run()` unconditionally binds the server to all available network interfaces. In local development or misconfigured environments, this can unintentionally expose the application to the local network or the public internet, violating the principle of least privilege.
+**Prevention:** Default to local loopback (`127.0.0.1`) and use environment variables (e.g., `os.environ.get("HOST", "127.0.0.1")`) to explicitly control the bind address. This allows secure local development while still enabling `0.0.0.0` bindings when explicitly required (e.g., inside Docker containers).
