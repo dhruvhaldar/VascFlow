@@ -6,6 +6,9 @@
     let copied = false;
     let lastConfigStr = null;
 
+    $: currentConfigStr = JSON.stringify($simulationConfig);
+    $: isUpToDate = $generatedXML && $generatedXML !== "Error generating XML" && currentConfigStr === lastConfigStr;
+
     async function copyXML() {
         if (!$generatedXML) return;
         copying = true;
@@ -23,13 +26,11 @@
     }
 
     async function generate() {
-        const currentConfigStr = JSON.stringify($simulationConfig);
-
         // ⚡ Bolt: Cache generated XML to prevent redundant API calls.
         // If the simulation configuration hasn't changed since the last generation,
         // we skip the backend network request entirely. This saves network bandwidth
         // and eliminates API latency for repeated clicks.
-        if (currentConfigStr === lastConfigStr && $generatedXML && $generatedXML !== "Error generating XML") {
+        if (isUpToDate) {
             return;
         }
 
@@ -68,18 +69,30 @@
                     {copied ? 'Copied!' : 'Copy XML'}
                 </button>
             {/if}
-            <button on:click={generate} disabled={generating} aria-busy={generating}>
-                {generating ? 'Generating...' : 'Generate XML'}
+            <button
+                on:click={generate}
+                disabled={generating || isUpToDate}
+                aria-busy={generating}
+                title={isUpToDate ? "XML is up to date with current settings" : "Generate XML"}
+            >
+                {generating ? 'Generating...' : (isUpToDate ? 'Up to Date' : 'Generate XML')}
             </button>
         </div>
     </div>
-    <textarea
-        readonly
-        value={$generatedXML}
-        aria-label="Generated XML Preview"
-        aria-live="polite"
-        placeholder="Click 'Generate XML' to preview your input file."
-    ></textarea>
+    <div class="preview-container">
+        {#if !$generatedXML}
+            <div class="empty-state">
+                <p>No XML generated yet.</p>
+                <p class="subtext">Configure your simulation and click 'Generate XML'.</p>
+            </div>
+        {/if}
+        <textarea
+            readonly
+            value={$generatedXML}
+            aria-label="Generated XML Preview"
+            aria-live="polite"
+        ></textarea>
+    </div>
 </div>
 
 <style>
@@ -123,16 +136,43 @@
         background: rgba(255, 255, 255, 0.2);
     }
 
+    .preview-container {
+        flex: 1;
+        position: relative;
+        display: flex;
+        min-height: 220px;
+    }
+
     textarea {
         flex: 1;
         width: 100%;
         font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
         resize: none;
-        min-height: 220px;
         border-radius: 10px;
         border: 1px solid rgba(255, 255, 255, 0.2);
         background: rgba(8, 10, 24, 0.55);
         color: #ebf0ff;
         padding: 0.65rem;
+    }
+
+    .empty-state {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #b8c5ef;
+        text-align: center;
+        pointer-events: none;
+    }
+
+    .empty-state p {
+        margin: 0.25rem 0;
+    }
+
+    .empty-state .subtext {
+        font-size: 0.85rem;
+        opacity: 0.8;
     }
 </style>
