@@ -28,3 +28,7 @@
 ## 2024-04-13 - [Semantic Forms for Keyboard UX]
 **Learning:** Standard HTML `<div>` wrappers and `<button on:click={handler}>` implementations for cohesive data entry sets completely break native implicit form submission (pressing the "Enter" key).
 **Action:** Replace cohesive input `<div>` clusters with semantic `<form on:submit|preventDefault={handler}>` tags, and ensure the primary action uses a `<button type="submit">`. This instantly restores Enter-to-submit functionality natively without needing custom keydown event listeners, significantly improving both accessibility and power-user workflow speeds.
+
+## 2024-08-15 - [Contextualizing Empty States and Disabled Buttons]
+**Learning:** Using `placeholder` text within a `<textarea>` for an empty state is often insufficiently accessible and visually rigid. Furthermore, disabling a primary action button (like "Generate") without explaining *why* it is disabled leaves users confused about the system state.
+**Action:** Replace `placeholder` text on empty textareas with explicitly styled, absolute-positioned empty state overlays containing clear instructions. Additionally, when disabling buttons based on state (like caching), update the button text to reflect the state (e.g., "Up to Date") and provide a `title` attribute explaining the condition to sighted users.
