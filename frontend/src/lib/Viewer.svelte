@@ -1,6 +1,6 @@
 <script>
     import { onMount } from 'svelte';
-    import { meshMetadata } from '../stores';
+    import { meshMetadata, simulationConfig } from '../stores';
     import vtkGenericRenderWindow from '@kitware/vtk.js/Rendering/Misc/GenericRenderWindow';
     import vtkXMLPolyDataReader from '@kitware/vtk.js/IO/XML/XMLPolyDataReader';
     import vtkActor from '@kitware/vtk.js/Rendering/Core/Actor';
@@ -119,7 +119,7 @@
             {#if isLoading}
                 Loading 3D model...
             {:else if $meshMetadata.viz_file}
-                Previewing {$meshMetadata.viz_file}
+                Previewing {$simulationConfig.mesh.mesh_path || 'Mesh'}
             {:else}
                 Upload a mesh to render it
             {/if}
