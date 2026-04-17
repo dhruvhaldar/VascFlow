@@ -35,3 +35,8 @@
 **Vulnerability:** Hardcoded Bind All Interfaces (`0.0.0.0`)
 **Learning:** Hardcoding `host="0.0.0.0"` in `uvicorn.run()` unconditionally binds the server to all available network interfaces. In local development or misconfigured environments, this can unintentionally expose the application to the local network or the public internet, violating the principle of least privilege.
 **Prevention:** Default to local loopback (`127.0.0.1`) and use environment variables (e.g., `os.environ.get("HOST", "127.0.0.1")`) to explicitly control the bind address. This allows secure local development while still enabling `0.0.0.0` bindings when explicitly required (e.g., inside Docker containers).
+
+## 2025-02-28 - [Disk Exhaustion / DoS via Uncleaned Invalid Files]
+**Vulnerability:** Disk Exhaustion / Denial of Service (DoS)
+**Learning:** Returning an HTTP error inside an exception handler (e.g. `except ValueError: raise HTTPException(...)`) does not automatically clean up physical resources like temporary files that were already saved to disk. When uploading mesh files, if PyVista parsing failed, the endpoint threw a 400 Bad Request error but left the 50MB uploaded mesh file orphaned in the `uploads/` directory indefinitely.
+**Prevention:** Always ensure that temporary files generated during an API request are explicitly cleaned up (e.g. `os.remove(file_path)`) within exception handlers (or a `finally` block) if the subsequent validation or processing fails.
