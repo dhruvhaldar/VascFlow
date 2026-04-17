@@ -30,3 +30,7 @@
 ## 2025-04-15 - [O(1) DOM updates with Keyed {#each} and Index Removal]
 **Learning:** In Svelte, using an unkeyed `{#each}` loop causes the framework to reuse DOM nodes sequentially. If an item is deleted from the middle of the list, Svelte updates all subsequent nodes and destroys the last one (O(N) operations). Furthermore, even if you add a key `(item.id)`, if your event handlers depend on the array index (e.g. `on:click={() => remove(index)}`), Svelte is STILL forced to perform O(N) updates to re-bind the new shifted indices to all subsequent elements.
 **Action:** To achieve true O(1) DOM removals in lists, you must strictly combine two optimizations: 1) Use a unique key in the `{#each}` block `(item.id)`, AND 2) Completely remove array index dependencies from the loop body (e.g., pass the unique ID to the handler `on:click={() => remove(item.id)}` instead of the index).
+
+## 2024-05-18 - [Safe O(N) integer counting]
+**Learning:** `np.bincount` optimizes unique integer counting from O(N log N) to O(N), but its space complexity is `O(max - min)`. In applications handling untrusted data (like mesh uploads), this introduces a critical OOM/DoS vulnerability where artificially large IDs cause massive memory allocation.
+**Action:** Always wrap `np.bincount` with a safety check that calculates `max(ids) - min(ids)` and falls back to `np.unique` if the spread exceeds a safe threshold (e.g. 100,000).
