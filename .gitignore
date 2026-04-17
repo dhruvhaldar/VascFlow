@@ -10,3 +10,4 @@ dist/
 *.log
 backend/uploads/
 verification/
+*.vtp

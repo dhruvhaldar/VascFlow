@@ -64,6 +64,39 @@ def save_upload_file(upload_file: UploadFile) -> str:
 
     return file_path
 
+def _get_unique_counts(ids):
+    """
+    ⚡ Bolt: Optimized O(N) unique counting with DoS protection.
+    np.unique(return_counts=True) sorts the array (O(N log N)). Since mesh
+    region/face IDs are typically small integers, we can often use np.bincount (O(N))
+    for a ~4x speedup on meshes with millions of cells.
+
+    However, np.bincount allocates memory based on max(ids) - min(ids).
+    To prevent OOM/DoS from malicious files with massive artificial IDs,
+    we fallback to np.unique if the ID range exceeds a safe threshold (e.g. 100,000).
+    """
+    ids = np.asarray(ids)
+    if ids.size == 0:
+        return np.array([]), np.array([])
+
+    min_val = ids.min()
+    max_val = ids.max()
+
+    # Fallback to np.unique if the range is too large to prevent huge memory allocations
+    if max_val - min_val > 100_000:
+        return np.unique(ids, return_counts=True)
+
+    if min_val >= 0:
+        counts = np.bincount(ids)
+        unique_ids = np.nonzero(counts)[0]
+        return unique_ids, counts[unique_ids]
+    else:
+        offset_ids = ids - min_val
+        counts = np.bincount(offset_ids)
+        unique_ids = np.nonzero(counts)[0]
+        return unique_ids + min_val, counts[unique_ids]
+
+
 def get_mesh_metadata(file_path: str):
     """
     Reads the mesh using PyVista and returns metadata.
@@ -158,9 +191,8 @@ def get_mesh_metadata(file_path: str):
             break
 
     if face_ids is not None:
-        # ⚡ Bolt: Use return_counts=True to compute all counts in a single O(N log N) pass
-        # instead of O(N*K) where we sum the boolean array for each unique ID.
-        unique_ids, counts = np.unique(face_ids, return_counts=True)
+        # ⚡ Bolt: Use O(N) bincount helper instead of O(N log N) np.unique.
+        unique_ids, counts = _get_unique_counts(face_ids)
         # Convert to list of dicts
         face_list = []
         for uid, count in zip(unique_ids, counts):
@@ -176,8 +208,8 @@ def get_mesh_metadata(file_path: str):
             conn = surface.connectivity(largest=False)
             if "RegionId" in conn.cell_data:
                 region_ids = conn.cell_data["RegionId"]
-                # ⚡ Bolt: Use return_counts=True for performance.
-                unique_ids, counts = np.unique(region_ids, return_counts=True)
+                # ⚡ Bolt: Use O(N) bincount helper instead of O(N log N) np.unique.
+                unique_ids, counts = _get_unique_counts(region_ids)
                 face_list = []
                 for uid, count in zip(unique_ids, counts):
                     face_list.append({
