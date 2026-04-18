@@ -34,3 +34,6 @@
 ## 2024-05-18 - [Safe O(N) integer counting]
 **Learning:** `np.bincount` optimizes unique integer counting from O(N log N) to O(N), but its space complexity is `O(max - min)`. In applications handling untrusted data (like mesh uploads), this introduces a critical OOM/DoS vulnerability where artificially large IDs cause massive memory allocation.
 **Action:** Always wrap `np.bincount` with a safety check that calculates `max(ids) - min(ids)` and falls back to `np.unique` if the spread exceeds a safe threshold (e.g. 100,000).
+## 2024-04-18 - Tab Unmounting Performance
+**Learning:** In Svelte (and other modern frontend frameworks), using `{#if}` blocks to switch tabs completely destroys and rebuilds the component DOM and its local state. When a component is heavy (e.g. `BCEditor` rendering thousands of `<option>` elements for mesh faces) or contains local form state, this unmount/remount cycle causes severe rendering bottlenecks and poor UX (lost local variables).
+**Action:** Use CSS visibility toggling (`display: {activeTab === 'tabName' ? 'block' : 'none'}`) instead of `{#if}` to keep heavy child components mounted. This prevents expensive DOM rebuilds and preserves component state, delivering O(1) tab switching performance.
