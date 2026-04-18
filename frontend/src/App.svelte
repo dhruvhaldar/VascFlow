@@ -12,6 +12,28 @@
         { key: 'bcs', label: 'Boundary Conditions' },
         { key: 'general', label: 'General' }
     ];
+
+    function handleKeydown(e, index) {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+            const newIndex = (index + 1) % tabs.length;
+            e.preventDefault();
+            activeTab = tabs[newIndex].key;
+            document.getElementById(`tab-${tabs[newIndex].key}`)?.focus();
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            const newIndex = (index - 1 + tabs.length) % tabs.length;
+            e.preventDefault();
+            activeTab = tabs[newIndex].key;
+            document.getElementById(`tab-${tabs[newIndex].key}`)?.focus();
+        } else if (e.key === 'Home') {
+            e.preventDefault();
+            activeTab = tabs[0].key;
+            document.getElementById(`tab-${tabs[0].key}`)?.focus();
+        } else if (e.key === 'End') {
+            e.preventDefault();
+            activeTab = tabs[tabs.length - 1].key;
+            document.getElementById(`tab-${tabs[tabs.length - 1].key}`)?.focus();
+        }
+    }
 </script>
 
 <div class="app-container">
@@ -28,14 +50,16 @@
     <div class="main-layout">
         <aside class="sidebar glass-shell">
             <div class="tabs-nav" role="tablist" aria-label="Configuration Tabs">
-                {#each tabs as tab}
+                {#each tabs as tab, i}
                     <button
                         role="tab"
                         id="tab-{tab.key}"
                         aria-controls="panel-{tab.key}"
                         aria-selected={activeTab === tab.key}
+                        tabindex={activeTab === tab.key ? 0 : -1}
                         class:active={activeTab === tab.key}
                         on:click={() => activeTab = tab.key}
+                        on:keydown={(e) => handleKeydown(e, i)}
                     >
                         {tab.label}
                     </button>

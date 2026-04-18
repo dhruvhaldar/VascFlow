@@ -17,3 +17,7 @@
 ## 2024-05-24 - Masking Internal System URLs in UI
 **Learning:** Exposing internal system identifiers like generated UUIDs or `blob:http://...` URLs in the UI (specifically within `aria-live` regions or status text) creates a poor experience for all users, but is especially detrimental to screen reader accessibility. Screen readers will painfully read out the entire noisy URL character-by-character, obscuring the actual state context.
 **Action:** Always map internal system references (like generated backend filenames or Blob URLs) to the user's original context (e.g., the original uploaded filename) when displaying status information. Provide human-readable text fallbacks if the original context is temporarily unavailable.
+
+## 2024-05-24 - WAI-ARIA Tab Keyboard Navigation
+**Learning:** Standard `<button role="tab">` elements rely on default tabbing logic (`tabindex="0"` for all), meaning keyboard users must Tab through every unselected tab. The WAI-ARIA standard tab pattern expects inactive tabs to be excluded from the native tab sequence (`tabindex="-1"`) and allows users to traverse the tablist quickly using arrow keys.
+**Action:** When implementing custom Tab components, ensure `tabindex="0"` is only active on the currently selected tab, and `tabindex="-1"` on all others. Attach a `keydown` handler to support Arrow, Home, and End key navigation between the tabs to enhance keyboard accessibility.
