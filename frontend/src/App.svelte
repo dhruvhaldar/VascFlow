@@ -43,33 +43,36 @@
             </div>
 
             <div class="config-panel" role="tabpanel" id="panel-{activeTab}" aria-labelledby="tab-{activeTab}" tabindex="0">
-                {#if activeTab === 'mesh'}
+                <!-- ⚡ Bolt: Keep tab contents mounted to prevent expensive DOM unmounting/remounting.
+                     By toggling visibility with CSS instead of {#if} blocks, we avoid destroying
+                     and rebuilding DOM nodes (like the BCEditor's <select> with potentially
+                     thousands of faces) on every tab switch, and we preserve local component state. -->
+                <div style="display: {activeTab === 'mesh' ? 'block' : 'none'}">
                     <MeshUpload />
                     <div class="note glass-inline">
                         <p>Upload a .vtu or .vtp file to visualize and assign BCs.</p>
                     </div>
-                {:else if activeTab === 'physics'}
-                    <div class="physics-config">
-                        <h3>Physics</h3>
-                        <label>
-                            Type
-                            <select bind:value={$simulationConfig.physics.physics_type}>
-                                <option value="Fluid">Fluid</option>
-                                <option value="Structure">Structure</option>
-                            </select>
-                        </label>
-                        <label>Density <input type="number" bind:value={$simulationConfig.physics.density} step="0.1" min="0" /></label>
-                        <label>Viscosity <input type="number" bind:value={$simulationConfig.physics.viscosity} step="0.01" min="0" /></label>
-                    </div>
-                {:else if activeTab === 'bcs'}
+                </div>
+                <div class="physics-config" style="display: {activeTab === 'physics' ? 'block' : 'none'}">
+                    <h3>Physics</h3>
+                    <label>
+                        Type
+                        <select bind:value={$simulationConfig.physics.physics_type}>
+                            <option value="Fluid">Fluid</option>
+                            <option value="Structure">Structure</option>
+                        </select>
+                    </label>
+                    <label>Density <input type="number" bind:value={$simulationConfig.physics.density} step="0.1" min="0" /></label>
+                    <label>Viscosity <input type="number" bind:value={$simulationConfig.physics.viscosity} step="0.01" min="0" /></label>
+                </div>
+                <div style="display: {activeTab === 'bcs' ? 'block' : 'none'}">
                     <BCEditor />
-                {:else if activeTab === 'general'}
-                    <div class="general-config">
-                        <h3>General Settings</h3>
-                        <label>Time Steps <input type="number" bind:value={$simulationConfig.general.num_time_steps} min="1" /></label>
-                        <label>Step Size <input type="number" bind:value={$simulationConfig.general.time_step_size} step="0.001" min="0.001" /></label>
-                    </div>
-                {/if}
+                </div>
+                <div class="general-config" style="display: {activeTab === 'general' ? 'block' : 'none'}">
+                    <h3>General Settings</h3>
+                    <label>Time Steps <input type="number" bind:value={$simulationConfig.general.num_time_steps} min="1" /></label>
+                    <label>Step Size <input type="number" bind:value={$simulationConfig.general.time_step_size} step="0.001" min="0.001" /></label>
+                </div>
             </div>
         </aside>
 
