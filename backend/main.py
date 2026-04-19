@@ -40,6 +40,9 @@ async def add_security_headers(request: Request, call_next):
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    # 🛡️ Sentinel: Enhanced security headers to prevent XSS and cross-origin leaks
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
 
     # Exclude Swagger/ReDoc docs from strict CSP as they require external CDNs
     # and inline scripts to render properly.
@@ -81,21 +84,31 @@ def process_mesh(file: UploadFile):
         file_path = save_upload_file(file)
         metadata = get_mesh_metadata(file_path)
         return metadata
-    except ValueError as e:
-        if file_path and os.path.exists(file_path):
-            os.remove(file_path)
-        # 🛡️ Sentinel: Prevent Information Exposure by logging the actual error
-        # internally and returning a generic response to the client.
-        logging.error("Validation error: %s", str(e))
-        raise HTTPException(status_code=400, detail="Invalid file extension or validation error")
-    except HTTPException as e:
-        # If it's already an HTTPException (e.g. 413 from save_upload_file), re-raise it directly
-        raise e
     except Exception as e:
-        if file_path and os.path.exists(file_path):
-            os.remove(file_path)
-        logging.error("Failed to process mesh file: %s", str(e))
-        raise HTTPException(status_code=500, detail="An error occurred while processing the mesh.")
+        # 🛡️ Sentinel: Ensure both original and derived visualization files are cleaned up
+        # on ANY error to prevent Resource Leak / Disk Exhaustion DoS.
+        if file_path:
+            if os.path.exists(file_path):
+                os.remove(file_path)
+
+            viz_filename = os.path.basename(file_path)
+            if viz_filename.endswith(".vtu"):
+                viz_filename = viz_filename.replace(".vtu", "_surface.vtp")
+            elif not viz_filename.endswith(".vtp"):
+                viz_filename = viz_filename + "_surface.vtp"
+
+            viz_path = os.path.join(os.path.dirname(file_path), viz_filename)
+            if viz_path != file_path and os.path.exists(viz_path):
+                os.remove(viz_path)
+
+        if isinstance(e, ValueError):
+            logging.error("Validation error: %s", str(e).replace('\n', ' '))
+            raise HTTPException(status_code=400, detail="Invalid file extension or validation error")
+        elif isinstance(e, HTTPException):
+            raise e
+        else:
+            logging.error("Failed to process mesh file: %s", str(e).replace('\n', ' '))
+            raise HTTPException(status_code=500, detail="An error occurred while processing the mesh.")
 
 # Serve static files for mesh visualization
 from fastapi.staticfiles import StaticFiles
