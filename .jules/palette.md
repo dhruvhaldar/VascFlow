@@ -17,3 +17,6 @@
 ## 2024-05-24 - Masking Internal System URLs in UI
 **Learning:** Exposing internal system identifiers like generated UUIDs or `blob:http://...` URLs in the UI (specifically within `aria-live` regions or status text) creates a poor experience for all users, but is especially detrimental to screen reader accessibility. Screen readers will painfully read out the entire noisy URL character-by-character, obscuring the actual state context.
 **Action:** Always map internal system references (like generated backend filenames or Blob URLs) to the user's original context (e.g., the original uploaded filename) when displaying status information. Provide human-readable text fallbacks if the original context is temporarily unavailable.
+## 2024-04-19 - Removed Empty Readonly Textarea from Accessibility Tree
+**Learning:** When using an absolute-positioned "empty state" overlay to cover a readonly `<textarea>`, the underlying textarea remains in the DOM. This causes screen readers to still read the empty textarea and allows keyboard users to tab into a visually obscured, useless element.
+**Action:** When implementing full-coverage empty states over interactive elements, explicitly remove the underlying elements from the focus order (`tabindex="-1"`) and the accessibility tree (`aria-hidden="true"`).
