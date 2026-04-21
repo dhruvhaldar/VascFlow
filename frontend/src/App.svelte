@@ -42,13 +42,18 @@
                 {/each}
             </div>
 
+            <!-- ⚡ Bolt: Optimize tab navigation rendering.
+                 Replacing {#if} blocks with CSS display toggling prevents expensive DOM
+                 unmounting/remounting cycles when switching tabs. It also preserves local component state
+                 (e.g., file input selections or half-filled boundary condition forms). -->
             <div class="config-panel" role="tabpanel" id="panel-{activeTab}" aria-labelledby="tab-{activeTab}" tabindex="0">
-                {#if activeTab === 'mesh'}
+                <div style="display: {activeTab === 'mesh' ? 'block' : 'none'}">
                     <MeshUpload />
                     <div class="note glass-inline">
                         <p>Upload a .vtu or .vtp file to visualize and assign BCs.</p>
                     </div>
-                {:else if activeTab === 'physics'}
+                </div>
+                <div style="display: {activeTab === 'physics' ? 'block' : 'none'}">
                     <div class="physics-config">
                         <h3>Physics</h3>
                         <label>
@@ -61,15 +66,17 @@
                         <label>Density <input type="number" bind:value={$simulationConfig.physics.density} step="0.1" min="0" /></label>
                         <label>Viscosity <input type="number" bind:value={$simulationConfig.physics.viscosity} step="0.01" min="0" /></label>
                     </div>
-                {:else if activeTab === 'bcs'}
+                </div>
+                <div style="display: {activeTab === 'bcs' ? 'block' : 'none'}">
                     <BCEditor />
-                {:else if activeTab === 'general'}
+                </div>
+                <div style="display: {activeTab === 'general' ? 'block' : 'none'}">
                     <div class="general-config">
                         <h3>General Settings</h3>
                         <label>Time Steps <input type="number" bind:value={$simulationConfig.general.num_time_steps} min="1" /></label>
                         <label>Step Size <input type="number" bind:value={$simulationConfig.general.time_step_size} step="0.001" min="0.001" /></label>
                     </div>
-                {/if}
+                </div>
             </div>
         </aside>
 
