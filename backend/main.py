@@ -8,7 +8,7 @@ import os
 import logging
 from models import SimulationConfig
 from xml_generator import generate_svfsi_xml
-from mesh_service import save_upload_file, get_mesh_metadata
+from mesh_service import save_upload_file, get_mesh_metadata, cleanup_mesh_files
 
 app = FastAPI()
 
@@ -82,8 +82,8 @@ def process_mesh(file: UploadFile):
         metadata = get_mesh_metadata(file_path)
         return metadata
     except ValueError as e:
-        if file_path and os.path.exists(file_path):
-            os.remove(file_path)
+        if file_path:
+            cleanup_mesh_files(file_path)
         # 🛡️ Sentinel: Prevent Information Exposure by logging the actual error
         # internally and returning a generic response to the client.
         logging.error("Validation error: %s", str(e))
@@ -92,8 +92,8 @@ def process_mesh(file: UploadFile):
         # If it's already an HTTPException (e.g. 413 from save_upload_file), re-raise it directly
         raise e
     except Exception as e:
-        if file_path and os.path.exists(file_path):
-            os.remove(file_path)
+        if file_path:
+            cleanup_mesh_files(file_path)
         logging.error("Failed to process mesh file: %s", str(e))
         raise HTTPException(status_code=500, detail="An error occurred while processing the mesh.")
 
