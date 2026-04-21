@@ -65,6 +65,7 @@
                     aria-label={copied ? "Copied to clipboard" : "Copy generated XML to clipboard"}
                     aria-live="polite"
                     class="secondary-button"
+                    class:success={copied}
                 >
                     {copied ? 'Copied!' : 'Copy XML'}
                 </button>
@@ -91,6 +92,8 @@
             value={$generatedXML}
             aria-label="Generated XML Preview"
             aria-live="polite"
+            tabindex={!$generatedXML ? -1 : 0}
+            aria-hidden={!$generatedXML ? "true" : "false"}
         ></textarea>
     </div>
 </div>
@@ -126,14 +129,20 @@
         border-radius: 10px;
         padding: 0.45rem 0.8rem;
         cursor: pointer;
+        transition: all 0.2s ease;
     }
 
     button.secondary-button {
         background: rgba(255, 255, 255, 0.1);
     }
 
-    button.secondary-button:hover {
+    button.secondary-button:hover:not(:disabled) {
         background: rgba(255, 255, 255, 0.2);
+    }
+
+    button.success {
+        background: rgba(76, 175, 80, 0.35);
+        border-color: rgba(76, 175, 80, 0.5);
     }
 
     .preview-container {
