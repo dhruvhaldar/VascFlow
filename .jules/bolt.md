@@ -34,3 +34,7 @@
 ## 2024-05-18 - [Safe O(N) integer counting]
 **Learning:** `np.bincount` optimizes unique integer counting from O(N log N) to O(N), but its space complexity is `O(max - min)`. In applications handling untrusted data (like mesh uploads), this introduces a critical OOM/DoS vulnerability where artificially large IDs cause massive memory allocation.
 **Action:** Always wrap `np.bincount` with a safety check that calculates `max(ids) - min(ids)` and falls back to `np.unique` if the spread exceeds a safe threshold (e.g. 100,000).
+
+## 2025-04-21 - [Optimize Svelte Tab Navigation]
+**Learning:** Using `{#if}` blocks in Svelte for tab navigation unmounts and remounts components when tabs are switched. For heavy components (like mesh processing or complex form setups), this DOM manipulation introduces noticeable latency and destroys local UI state (e.g., entered text before saving, file input states).
+**Action:** When creating tabbed interfaces that house stateful or computationally heavy child components, render all tabs and use CSS visibility toggling (`<div style="display: {activeTab === 'tabKey' ? 'block' : 'none'}">`) instead of conditional rendering to prevent state loss and improve responsiveness.
