@@ -40,3 +40,8 @@
 **Vulnerability:** Disk Exhaustion / Denial of Service (DoS)
 **Learning:** Returning an HTTP error inside an exception handler (e.g. `except ValueError: raise HTTPException(...)`) does not automatically clean up physical resources like temporary files that were already saved to disk. When uploading mesh files, if PyVista parsing failed, the endpoint threw a 400 Bad Request error but left the 50MB uploaded mesh file orphaned in the `uploads/` directory indefinitely.
 **Prevention:** Always ensure that temporary files generated during an API request are explicitly cleaned up (e.g. `os.remove(file_path)`) within exception handlers (or a `finally` block) if the subsequent validation or processing fails.
+
+## 2025-02-28 - [Disk Exhaustion / DoS via Uncleaned Derived Visualization Files]
+**Vulnerability:** Disk Exhaustion / Denial of Service (DoS)
+**Learning:** During mesh processing, generating derived visualization files (like `_surface.vtp` from `.vtu` files) creates secondary artifacts on disk. If subsequent validation fails or an unhandled exception occurs after the visualization file is generated, merely cleaning up the original uploaded file leaves the derived visualization file orphaned indefinitely, leading to Disk Exhaustion DoS over time.
+**Prevention:** Implement a unified cleanup function (e.g., `cleanup_mesh_files`) that tracks and securely deletes *both* the original uploaded file and any expected derived visualization files when an exception is thrown in the endpoint.

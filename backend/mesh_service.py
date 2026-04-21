@@ -229,3 +229,31 @@ def get_mesh_file_path(filename: str) -> str:
     # Sanitize filename to prevent path traversal
     safe_filename = os.path.basename(filename.replace('\\', '/'))
     return os.path.join(UPLOAD_DIR, safe_filename)
+
+def cleanup_mesh_files(file_path: str):
+    """
+    🛡️ Sentinel: Safely delete uploaded mesh files and generated visualization surfaces
+    to prevent Disk Exhaustion (DoS) when errors occur during processing.
+    """
+    if not file_path:
+        return
+
+    # Delete the original uploaded file
+    if os.path.exists(file_path):
+        try:
+            os.remove(file_path)
+        except Exception as e:
+            logging.error("Failed to remove uploaded file %s: %s", file_path, str(e))
+
+    # Delete the generated visualization file
+    viz_path = file_path
+    if viz_path.endswith(".vtu"):
+        viz_path = viz_path.replace(".vtu", "_surface.vtp")
+    elif not viz_path.endswith(".vtp"):
+        viz_path = viz_path + "_surface.vtp"
+
+    if viz_path != file_path and os.path.exists(viz_path):
+        try:
+            os.remove(viz_path)
+        except Exception as e:
+            logging.error("Failed to remove visualization file %s: %s", viz_path, str(e))
