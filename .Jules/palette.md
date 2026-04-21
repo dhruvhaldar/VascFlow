@@ -32,3 +32,6 @@
 ## 2024-08-15 - [Contextualizing Empty States and Disabled Buttons]
 **Learning:** Using `placeholder` text within a `<textarea>` for an empty state is often insufficiently accessible and visually rigid. Furthermore, disabling a primary action button (like "Generate") without explaining *why* it is disabled leaves users confused about the system state.
 **Action:** Replace `placeholder` text on empty textareas with explicitly styled, absolute-positioned empty state overlays containing clear instructions. Additionally, when disabling buttons based on state (like caching), update the button text to reflect the state (e.g., "Up to Date") and provide a `title` attribute explaining the condition to sighted users.
+## 2024-11-20 - [Keyboard Accessibility for Tabbed Interfaces]
+**Learning:** Native tablist navigation requires keyboard navigation (Left/Right arrows) to cycle through tabs, but standard HTML buttons only receive `Tab` focus sequentially. This creates a disjointed experience for keyboard-only or screen reader users trying to quickly switch between related configuration panels.
+**Action:** When implementing custom `role="tablist"` elements in Svelte, always bind a `keydown` handler on the tab buttons to explicitly manage `tabindex` and focus state, allowing arrow keys to fluidly switch the active tab and focus.

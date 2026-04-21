@@ -12,6 +12,20 @@
         { key: 'bcs', label: 'Boundary Conditions' },
         { key: 'general', label: 'General' }
     ];
+
+    function handleTabKeydown(e, index) {
+        let newIndex = index;
+        if (e.key === 'ArrowRight') {
+            newIndex = (index + 1) % tabs.length;
+        } else if (e.key === 'ArrowLeft') {
+            newIndex = (index - 1 + tabs.length) % tabs.length;
+        }
+        if (newIndex !== index) {
+            e.preventDefault();
+            activeTab = tabs[newIndex].key;
+            document.getElementById(`tab-${tabs[newIndex].key}`)?.focus();
+        }
+    }
 </script>
 
 <div class="app-container">
@@ -28,14 +42,16 @@
     <div class="main-layout">
         <aside class="sidebar glass-shell">
             <div class="tabs-nav" role="tablist" aria-label="Configuration Tabs">
-                {#each tabs as tab}
+                {#each tabs as tab, i}
                     <button
                         role="tab"
                         id="tab-{tab.key}"
                         aria-controls="panel-{tab.key}"
                         aria-selected={activeTab === tab.key}
+                        tabindex={activeTab === tab.key ? 0 : -1}
                         class:active={activeTab === tab.key}
                         on:click={() => activeTab = tab.key}
+                        on:keydown={(e) => handleTabKeydown(e, i)}
                     >
                         {tab.label}
                     </button>
