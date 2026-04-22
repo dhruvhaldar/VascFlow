@@ -38,3 +38,7 @@
 ## 2025-04-21 - [Optimize Svelte Tab Navigation]
 **Learning:** Using `{#if}` blocks in Svelte for tab navigation unmounts and remounts components when tabs are switched. For heavy components (like mesh processing or complex form setups), this DOM manipulation introduces noticeable latency and destroys local UI state (e.g., entered text before saving, file input states).
 **Action:** When creating tabbed interfaces that house stateful or computationally heavy child components, render all tabs and use CSS visibility toggling (`<div style="display: {activeTab === 'tabKey' ? 'block' : 'none'}">`) instead of conditional rendering to prevent state loss and improve responsiveness.
+
+## 2025-04-22 - [Disable PyVista Disk Compression Behind HTTP Compression]
+**Learning:** By default, PyVista uses zlib compression when saving VTK XML files (like .vtp), which consumes significant CPU time. If the backend already uses HTTP compression middleware (like GZipMiddleware in FastAPI) to compress responses over the network, compressing the file on disk is redundant and wastes CPU. Disabling disk compression avoids "double compression" overhead.
+**Action:** When saving temporary visualization meshes to disk that will be served via a web server with GZip enabled, always pass `compression=None` to `mesh.save()`. This reduces disk save times by ~50% without impacting network payload size.
