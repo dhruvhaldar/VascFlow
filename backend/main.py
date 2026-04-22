@@ -20,8 +20,9 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    # 🛡️ Sentinel: Restrict CORS methods and headers to prevent overly permissive access
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "Accept", "Origin", "X-Requested-With"],
 )
 
 # ⚡ Bolt: Compress large text-based responses (like XML configs and .vtp files).

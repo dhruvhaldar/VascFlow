@@ -45,3 +45,8 @@
 **Vulnerability:** Disk Exhaustion / Denial of Service (DoS)
 **Learning:** During mesh processing, generating derived visualization files (like `_surface.vtp` from `.vtu` files) creates secondary artifacts on disk. If subsequent validation fails or an unhandled exception occurs after the visualization file is generated, merely cleaning up the original uploaded file leaves the derived visualization file orphaned indefinitely, leading to Disk Exhaustion DoS over time.
 **Prevention:** Implement a unified cleanup function (e.g., `cleanup_mesh_files`) that tracks and securely deletes *both* the original uploaded file and any expected derived visualization files when an exception is thrown in the endpoint.
+
+## 2025-02-28 - Restrict CORS Methods and Headers
+**Vulnerability:** Overly Permissive CORS Configuration
+**Learning:** Using wildcards (`allow_methods=["*"]`, `allow_headers=["*"]`) in FastAPI's `CORSMiddleware` violates the principle of least privilege. This can potentially allow attackers to execute unexpected HTTP methods or send malicious headers from unauthorized origins, increasing the attack surface for Cross-Site Scripting (XSS) or Cross-Site Request Forgery (CSRF).
+**Prevention:** Always explicitly define the required HTTP methods (e.g., `["GET", "POST", "OPTIONS"]`) and headers (e.g., `["Content-Type", "Accept", "Origin", "X-Requested-With"]`) based on the application's actual needs to enforce strict access control boundaries.
