@@ -20,3 +20,7 @@
 ## 2024-04-19 - Removed Empty Readonly Textarea from Accessibility Tree
 **Learning:** When using an absolute-positioned "empty state" overlay to cover a readonly `<textarea>`, the underlying textarea remains in the DOM. This causes screen readers to still read the empty textarea and allows keyboard users to tab into a visually obscured, useless element.
 **Action:** When implementing full-coverage empty states over interactive elements, explicitly remove the underlying elements from the focus order (`tabindex="-1"`) and the accessibility tree (`aria-hidden="true"`).
+
+## 2024-05-24 - Accessible File Drop Zones
+**Learning:** Adding drag-and-drop file upload capabilities dramatically improves UX on desktop, but entirely replacing standard inputs with custom div-based drop zones often breaks keyboard and screen-reader accessibility.
+**Action:** When creating drag-and-drop file areas, always implement them as a progressive enhancement around a standard, visually exposed `<input type="file">`. This ensures users who rely on keyboard navigation or screen readers can still easily activate the standard file browser dialog without losing functionality.

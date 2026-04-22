@@ -4,6 +4,24 @@
     let fileInput;
     let loading = false;
     let error = "";
+    let isDragging = false;
+
+    function handleDragOver() {
+        if (!loading) isDragging = true;
+    }
+
+    function handleDragLeave() {
+        isDragging = false;
+    }
+
+    function handleDrop(e) {
+        isDragging = false;
+        if (loading) return;
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            fileInput.files = e.dataTransfer.files;
+            handleFileSelect();
+        }
+    }
 
     async function handleFileSelect() {
         if (!fileInput.files.length) return;
@@ -57,9 +75,17 @@
     }
 </script>
 
-<div class="mesh-upload">
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div
+    class="mesh-upload"
+    class:dragging={isDragging}
+    on:dragover|preventDefault={handleDragOver}
+    on:dragleave={handleDragLeave}
+    on:drop|preventDefault={handleDrop}
+>
     <h3>Mesh Upload</h3>
     <input type="file" bind:this={fileInput} on:change={handleFileSelect} accept=".vtu,.vtp,.vtk" aria-label="Upload Mesh File" disabled={loading} />
+    <p class="drop-hint">or drag and drop a file here</p>
     {#if loading}
         <p role="status" aria-live="polite">Processing mesh...</p>
     {/if}
@@ -82,6 +108,20 @@
         border-radius: 12px;
         padding: 1rem;
         margin-bottom: 1rem;
+        transition: all 0.2s ease;
+    }
+
+    .mesh-upload.dragging {
+        border-color: #6093ff;
+        background: rgba(96, 147, 255, 0.1);
+    }
+
+    .drop-hint {
+        font-size: 0.85rem;
+        color: #b8c5ef;
+        opacity: 0.8;
+        margin: 0.5rem 0 0 0;
+        font-style: italic;
     }
 
     .error {
