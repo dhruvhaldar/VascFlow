@@ -36,6 +36,15 @@ test.describe('svFSI Configurator App', () => {
     await page.getByRole('tab', { name: 'General' }).click();
     await expect(page.locator('.sidebar .tabs-nav button.active')).toHaveText('General');
     await expect(page.locator('.general-config')).toBeVisible();
+
+    // Test Home and End keys for tab navigation
+    await page.keyboard.press('Home');
+    await expect(page.locator('.sidebar .tabs-nav button.active')).toHaveText('Mesh');
+    await expect(page.locator('.config-panel')).toContainText('Upload a .vtu or .vtp file');
+
+    await page.keyboard.press('End');
+    await expect(page.locator('.sidebar .tabs-nav button.active')).toHaveText('General');
+    await expect(page.locator('.general-config')).toBeVisible();
   });
 
   test('generate_input API is called and XML response is rendered', async ({ page }) => {

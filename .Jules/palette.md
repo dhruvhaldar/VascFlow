@@ -35,3 +35,7 @@
 ## 2024-11-20 - [Keyboard Accessibility for Tabbed Interfaces]
 **Learning:** Native tablist navigation requires keyboard navigation (Left/Right arrows) to cycle through tabs, but standard HTML buttons only receive `Tab` focus sequentially. This creates a disjointed experience for keyboard-only or screen reader users trying to quickly switch between related configuration panels.
 **Action:** When implementing custom `role="tablist"` elements in Svelte, always bind a `keydown` handler on the tab buttons to explicitly manage `tabindex` and focus state, allowing arrow keys to fluidly switch the active tab and focus.
+
+## 2024-11-21 - [Extended Keyboard Support for Tab Navigation]
+**Learning:** Adding support for `Home` and `End` keys in tabbed navigation implementations provides essential quick-navigation options, ensuring full alignment with the W3C WAI-ARIA Authoring Practices for tablists and improving accessibility for keyboard users who rely on shortcuts.
+**Action:** Always implement `Home` (jump to first) and `End` (jump to last) key handlers alongside standard directional arrows (`ArrowLeft` / `ArrowRight`) when building custom ARIA `tablist` components to maximize navigation efficiency and standards compliance.
