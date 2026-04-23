@@ -19,6 +19,10 @@
             newIndex = (index + 1) % tabs.length;
         } else if (e.key === 'ArrowLeft') {
             newIndex = (index - 1 + tabs.length) % tabs.length;
+        } else if (e.key === 'Home') {
+            newIndex = 0;
+        } else if (e.key === 'End') {
+            newIndex = tabs.length - 1;
         }
         if (newIndex !== index) {
             e.preventDefault();
