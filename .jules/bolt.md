@@ -42,3 +42,7 @@
 ## 2025-04-22 - [Disable PyVista Disk Compression Behind HTTP Compression]
 **Learning:** By default, PyVista uses zlib compression when saving VTK XML files (like .vtp), which consumes significant CPU time. If the backend already uses HTTP compression middleware (like GZipMiddleware in FastAPI) to compress responses over the network, compressing the file on disk is redundant and wastes CPU. Disabling disk compression avoids "double compression" overhead.
 **Action:** When saving temporary visualization meshes to disk that will be served via a web server with GZip enabled, always pass `compression=None` to `mesh.save()`. This reduces disk save times by ~50% without impacting network payload size.
+
+## 2025-04-23 - [Pre-compute mesh normals on the backend]
+**Learning:** When loading a large visualization mesh (`.vtp` or `.vtu`) that lacks pre-computed point normals into a frontend 3D visualizer using `vtk.js`, the `vtkMapper` will automatically compute them synchronously on the client. This client-side math is computationally expensive and completely freezes the browser's main thread (and thus the UI) for several seconds on large meshes.
+**Action:** When preparing visualization meshes on the backend using PyVista, always check if normals exist (`'Normals' in surface.point_data`). If they are missing, explicitly compute them in C++ (`surface.compute_normals(point_normals=True, cell_normals=False)`) before saving the mesh. This adds virtually no server-side latency but entirely eliminates the client-side UI freeze during initial render.
