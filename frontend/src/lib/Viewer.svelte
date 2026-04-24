@@ -64,23 +64,6 @@
 
         isLoading = true;
 
-        // ⚡ Bolt: Explicitly delete old vtk.js instances before creating new ones.
-        // vtk.js objects maintain WebGL buffers and heap memory. Failing to call .delete()
-        // causes severe WebGL memory leaks when loading multiple meshes.
-        if (currentActor) {
-            renderer.removeActor(currentActor);
-            currentActor.delete();
-            currentActor = null;
-        }
-        if (currentMapper) {
-            currentMapper.delete();
-            currentMapper = null;
-        }
-        if (currentReader) {
-            currentReader.delete();
-            currentReader = null;
-        }
-
         // ⚡ Bolt: Handle both external backend URLs and local Blob URLs.
         // If it's a blob: URL (from MeshUpload bypass), we load it directly without
         // prefixing the backend address.
@@ -88,20 +71,24 @@
             ? filename
             : `http://localhost:8000/files/${filename}`;
 
-        currentReader = vtkXMLPolyDataReader.newInstance();
+        // ⚡ Bolt: Reuse the vtk.js rendering pipeline instead of recreating it.
+        // Destroying and recreating vtkActor, vtkMapper, and vtkReader on every file load
+        // forces WebGL to constantly discard and reallocate heavy GPU buffers. By reusing
+        // the existing pipeline, we significantly reduce memory fragmentation, garbage
+        // collection pauses, and mesh switching latency.
+        if (!currentReader) {
+            currentReader = vtkXMLPolyDataReader.newInstance();
+            currentMapper = vtkMapper.newInstance();
+            currentMapper.setInputConnection(currentReader.getOutputPort());
+            currentActor = vtkActor.newInstance();
+            currentActor.setMapper(currentMapper);
+            renderer.addActor(currentActor);
+        }
 
         try {
             await currentReader.setUrl(url);
             await currentReader.loadData();
 
-            currentMapper = vtkMapper.newInstance();
-            currentMapper.setInputConnection(currentReader.getOutputPort());
-
-            currentActor = vtkActor.newInstance();
-            currentActor.setMapper(currentMapper);
-
-            renderer.removeAllViewProps();
-            renderer.addActor(currentActor);
             renderer.resetCamera();
             renderWindow.render();
         } catch (e) {
