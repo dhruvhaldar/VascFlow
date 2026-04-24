@@ -50,3 +50,8 @@
 **Vulnerability:** Overly Permissive CORS Configuration
 **Learning:** Using wildcards (`allow_methods=["*"]`, `allow_headers=["*"]`) in FastAPI's `CORSMiddleware` violates the principle of least privilege. This can potentially allow attackers to execute unexpected HTTP methods or send malicious headers from unauthorized origins, increasing the attack surface for Cross-Site Scripting (XSS) or Cross-Site Request Forgery (CSRF).
 **Prevention:** Always explicitly define the required HTTP methods (e.g., `["GET", "POST", "OPTIONS"]`) and headers (e.g., `["Content-Type", "Accept", "Origin", "X-Requested-With"]`) based on the application's actual needs to enforce strict access control boundaries.
+
+## 2024-05-24 - Restrict Referrer Policy in Security Headers
+**Vulnerability:** Information Leakage via Referer Header
+**Learning:** By default, browsers may send the full URL of the referring page in the `Referer` header when navigating away or making cross-origin requests. This can inadvertently leak sensitive path parameters, tokens, or query strings to third-party domains.
+**Prevention:** Always include `Referrer-Policy: strict-origin-when-cross-origin` (or similar restrictive policies) in backend HTTP security headers. This ensures that only the origin is sent for cross-origin requests, protecting sensitive URL paths from being leaked to external systems.
