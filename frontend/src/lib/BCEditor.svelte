@@ -90,9 +90,9 @@
                          rather than triggering an O(N) cascade update to re-bind
                          shifted array indices for all subsequent sibling elements. -->
                     {#each $simulationConfig.boundary_conditions as bc (bc.face_name)}
-                        <li>
-                            {bc.face_name}: {bc.bc_type} {bc.variable}={bc.value} ({bc.profile})
-                            <button on:click={() => removeBC(bc.face_name)} aria-label="Remove boundary condition for {bc.face_name}" title="Remove boundary condition for {bc.face_name}">&times;</button>
+                        <li class="bc-item">
+                            <span>{bc.face_name}: {bc.bc_type} {bc.variable}={bc.value} ({bc.profile})</span>
+                            <button class="remove-btn" on:click={() => removeBC(bc.face_name)} aria-label="Remove boundary condition for {bc.face_name}" title="Remove boundary condition for {bc.face_name}">&times;</button>
                         </li>
                     {/each}
                 </ul>
@@ -126,5 +126,40 @@
 
     ul {
         padding-left: 1rem;
+    }
+
+    .bc-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.25rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .bc-item:last-child {
+        border-bottom: none;
+    }
+
+    .remove-btn {
+        background: transparent;
+        border: 1px solid transparent;
+        color: #ffc2c2;
+        cursor: pointer;
+        font-size: 1.2rem;
+        line-height: 1;
+        padding: 0.1rem 0.4rem;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+    }
+
+    .remove-btn:hover {
+        background: rgba(255, 77, 77, 0.15);
+        color: #ff4d4d;
+        border-color: rgba(255, 77, 77, 0.3);
+    }
+
+    .remove-btn:focus-visible {
+        outline: 2px solid #ff4d4d;
+        outline-offset: 2px;
     }
 </style>
