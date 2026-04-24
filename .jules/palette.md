@@ -24,3 +24,7 @@
 ## 2024-05-24 - Accessible File Drop Zones
 **Learning:** Adding drag-and-drop file upload capabilities dramatically improves UX on desktop, but entirely replacing standard inputs with custom div-based drop zones often breaks keyboard and screen-reader accessibility.
 **Action:** When creating drag-and-drop file areas, always implement them as a progressive enhancement around a standard, visually exposed `<input type="file">`. This ensures users who rely on keyboard navigation or screen readers can still easily activate the standard file browser dialog without losing functionality.
+
+## 2024-04-24 - Visual Affordances for Destructive Actions
+**Learning:** When implementing destructive UI actions like remove or delete buttons within lists, using basic unstyled HTML elements (e.g., `<button>&times;</button>`) lacks the visual affordances necessary to communicate the action's nature. This can lead to accidental clicks or a general lack of confidence when interacting with the interface.
+**Action:** Always provide explicit visual feedback for destructive actions by adding semantic classes (like `.remove-btn`) and applying appropriate CSS states (`:hover`, `:focus-visible`) and colors (e.g., shades of red) to enhance the micro-UX and clearly signal the consequence of the action.
