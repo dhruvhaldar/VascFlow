@@ -28,3 +28,7 @@
 ## 2024-04-24 - Visual Affordances for Destructive Actions
 **Learning:** When implementing destructive UI actions like remove or delete buttons within lists, using basic unstyled HTML elements (e.g., `<button>&times;</button>`) lacks the visual affordances necessary to communicate the action's nature. This can lead to accidental clicks or a general lack of confidence when interacting with the interface.
 **Action:** Always provide explicit visual feedback for destructive actions by adding semantic classes (like `.remove-btn`) and applying appropriate CSS states (`:hover`, `:focus-visible`) and colors (e.g., shades of red) to enhance the micro-UX and clearly signal the consequence of the action.
+
+## 2024-05-18 - Visible Labels for Inputs
+**Learning:** Relying solely on `aria-label` or `placeholder` attributes for input fields (especially numbers and dropdowns) creates an ambiguous experience for sighted users. In forms like BCEditor, seeing a bare number input without context is confusing.
+**Action:** Always wrap `<input>` and `<select>` elements in visible `<label>` tags to provide clear, onscreen context for all users, improving both general usability and accessibility.

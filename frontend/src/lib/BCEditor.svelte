@@ -49,34 +49,52 @@
 
     {#if $meshMetadata.faces.length > 0}
         <form class="add-bc" on:submit|preventDefault={addBC}>
-            <select bind:value={selectedFace} aria-label="Select Face" title="Select Face" required>
-                <option value="" disabled selected>Select Face</option>
-                <!-- ⚡ Bolt: Use a keyed each block for face options. -->
-                {#each $meshMetadata.faces as face (face.id)}
-                    <option
-                        value={face.name}
-                        disabled={usedFaceNames.has(face.name)}
-                    >
-                        {face.name} (ID: {face.id}) {usedFaceNames.has(face.name) ? '(Already Added)' : ''}
-                    </option>
-                {/each}
-            </select>
+            <label>
+                Face
+                <select bind:value={selectedFace} aria-label="Select Face" title="Select Face" required>
+                    <option value="" disabled selected>Select Face</option>
+                    <!-- ⚡ Bolt: Use a keyed each block for face options. -->
+                    {#each $meshMetadata.faces as face (face.id)}
+                        <option
+                            value={face.name}
+                            disabled={usedFaceNames.has(face.name)}
+                        >
+                            {face.name} (ID: {face.id}) {usedFaceNames.has(face.name) ? '(Already Added)' : ''}
+                        </option>
+                    {/each}
+                </select>
+            </label>
 
-            <select bind:value={bcType} aria-label="Boundary Condition Type" title="Boundary Condition Type" required>
-                <option value="Dirichlet">Dirichlet</option>
-                <option value="Neumann">Neumann</option>
-                <option value="Resistance">Resistance</option>
-            </select>
+            <label>
+                Type
+                <select bind:value={bcType} aria-label="Boundary Condition Type" title="Boundary Condition Type" required>
+                    <option value="Dirichlet">Dirichlet</option>
+                    <option value="Neumann">Neumann</option>
+                    <option value="Resistance">Resistance</option>
+                </select>
+            </label>
 
-            <input type="text" bind:value={variable} aria-label="Variable Name" title="Variable Name" placeholder="Variable (e.g. Velocity)" required />
-            <input type="number" bind:value={value} aria-label="Value" title="Value" step="0.1" required />
+            <label>
+                Variable
+                <input type="text" bind:value={variable} aria-label="Variable Name" title="Variable Name" placeholder="Variable (e.g. Velocity)" required />
+            </label>
 
-            <select bind:value={profile} aria-label="Profile" title="Profile" required>
-                <option value="Flat">Flat</option>
-                <option value="Parabolic">Parabolic</option>
-            </select>
+            <label>
+                Value
+                <input type="number" bind:value={value} aria-label="Value" title="Value" step="0.1" required />
+            </label>
 
-            <button type="submit" disabled={!selectedFace} title={!selectedFace ? "Select a face first to add a boundary condition" : "Add boundary condition"}>Add BC</button>
+            <label>
+                Profile
+                <select bind:value={profile} aria-label="Profile" title="Profile" required>
+                    <option value="Flat">Flat</option>
+                    <option value="Parabolic">Parabolic</option>
+                </select>
+            </label>
+
+            <div class="submit-action">
+                <button type="submit" disabled={!selectedFace} title={!selectedFace ? "Select a face first to add a boundary condition" : "Add boundary condition"}>Add BC</button>
+            </div>
         </form>
 
         <div aria-live="polite">
@@ -116,6 +134,29 @@
         display: flex;
         gap: 0.5rem;
         flex-wrap: wrap;
+        align-items: flex-end;
+    }
+
+    .add-bc label {
+        display: flex;
+        flex-direction: column;
+        font-size: 0.85rem;
+        color: #b8c5ef;
+        gap: 0.25rem;
+    }
+
+    .add-bc input, .add-bc select {
+        padding: 0.45rem 0.55rem;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 10px;
+        background: rgba(12, 18, 40, 0.45);
+        color: #f3f6ff;
+    }
+
+    .submit-action {
+        display: flex;
+        align-items: flex-end;
+        padding-bottom: 0.1rem;
     }
 
     .empty-state {
