@@ -23,7 +23,7 @@ test.describe('svFSI Configurator App', () => {
 
   test('sidebar navigation works', async ({ page }) => {
     await expect(page.locator('.sidebar .tabs-nav button.active')).toHaveText('Mesh');
-    await expect(page.locator('.config-panel')).toContainText('Upload a .vtu or .vtp file');
+    await expect(page.locator('#panel-mesh')).toContainText('Upload a .vtu or .vtp file');
 
     await page.getByRole('tab', { name: 'Physics' }).click();
     await expect(page.locator('.sidebar .tabs-nav button.active')).toHaveText('Physics');
@@ -40,7 +40,7 @@ test.describe('svFSI Configurator App', () => {
     // Test Home and End keys for tab navigation
     await page.keyboard.press('Home');
     await expect(page.locator('.sidebar .tabs-nav button.active')).toHaveText('Mesh');
-    await expect(page.locator('.config-panel')).toContainText('Upload a .vtu or .vtp file');
+    await expect(page.locator('#panel-mesh')).toContainText('Upload a .vtu or .vtp file');
 
     await page.keyboard.press('End');
     await expect(page.locator('.sidebar .tabs-nav button.active')).toHaveText('General');
