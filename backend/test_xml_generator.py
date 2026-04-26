@@ -33,3 +33,23 @@ def test_xml_generation():
     assert bc.attrib["name"] == "Inflow"
     assert bc.find("Type").text == "Dirichlet"
     assert bc.find("Value").text == "10.0"
+
+
+def test_xml_generation_with_none_profile():
+    config = SimulationConfig(
+        general=GeneralConfig(num_time_steps=100, time_step_size=0.01),
+        mesh=MeshConfig(mesh_path="test.vtu", domain_type="Fluid"),
+        physics=PhysicsConfig(physics_type="Fluid", density=1.0, viscosity=0.04),
+        boundary_conditions=[
+            BoundaryCondition(face_name="Inflow", bc_type="Dirichlet", variable="Velocity", value=10.0, profile=None)
+        ]
+    )
+
+    xml_str = generate_svfsi_xml(config)
+
+    root = ET.fromstring(xml_str)  # nosec B314
+    eqn = root.find("Add_equation")
+    bc = eqn.find("Add_BC")
+
+    assert bc.attrib["name"] == "Inflow"
+    assert "profile" not in bc.attrib

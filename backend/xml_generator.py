@@ -32,7 +32,11 @@ def generate_svfsi_xml(config: SimulationConfig) -> str:
 
     # --- Boundary Conditions ---
     for bc in config.boundary_conditions:
-        bc_elem = ET.SubElement(eqn, "Add_BC", name=bc.face_name, profile=bc.profile)
+        attribs = {"name": bc.face_name}
+        if bc.profile is not None:
+            attribs["profile"] = bc.profile
+
+        bc_elem = ET.SubElement(eqn, "Add_BC", **attribs)
         ET.SubElement(bc_elem, "Type").text = bc.bc_type
         # Add value based on type/variable - simplification for now
         ET.SubElement(bc_elem, "Value").text = str(bc.value)
