@@ -55,3 +55,8 @@
 **Vulnerability:** Information Leakage via Referer Header
 **Learning:** By default, browsers may send the full URL of the referring page in the `Referer` header when navigating away or making cross-origin requests. This can inadvertently leak sensitive path parameters, tokens, or query strings to third-party domains.
 **Prevention:** Always include `Referrer-Policy: strict-origin-when-cross-origin` (or similar restrictive policies) in backend HTTP security headers. This ensures that only the origin is sent for cross-origin requests, protecting sensitive URL paths from being leaked to external systems.
+
+## 2024-04-26 - Prevent Application-Level DoS from ElementTree Serialization
+**Vulnerability:** Application-Layer DoS via `TypeError` on `xml.etree.ElementTree` serialization.
+**Learning:** In Python's `xml.etree.ElementTree`, passing a `None` value to an attribute (e.g., `ET.SubElement(parent, "tag", attr=None)`) is syntactically valid but throws a `TypeError: cannot serialize None` during `ET.tostring()` execution. Since Pydantic allows `Optional` fields to be `None`, directly mapping Pydantic fields to XML attributes as keyword arguments creates a crash vector.
+**Prevention:** Always use dictionary unpacking for XML attributes (`**attribs`) and conditionally add keys only if their value is not `None` before passing to `ET.SubElement()`.
