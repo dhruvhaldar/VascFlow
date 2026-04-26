@@ -66,14 +66,14 @@
                  Replacing {#if} blocks with CSS display toggling prevents expensive DOM
                  unmounting/remounting cycles when switching tabs. It also preserves local component state
                  (e.g., file input selections or half-filled boundary condition forms). -->
-            <div class="config-panel" role="tabpanel" id="panel-{activeTab}" aria-labelledby="tab-{activeTab}" tabindex="0">
-                <div style="display: {activeTab === 'mesh' ? 'block' : 'none'}">
+            <div class="config-panels-container">
+                <div class="config-panel" role="tabpanel" id="panel-mesh" aria-labelledby="tab-mesh" tabindex={activeTab === 'mesh' ? 0 : -1} style="display: {activeTab === 'mesh' ? 'block' : 'none'}">
                     <MeshUpload />
                     <div class="note glass-inline">
                         <p>Upload a .vtu or .vtp file to visualize and assign BCs.</p>
                     </div>
                 </div>
-                <div style="display: {activeTab === 'physics' ? 'block' : 'none'}">
+                <div class="config-panel" role="tabpanel" id="panel-physics" aria-labelledby="tab-physics" tabindex={activeTab === 'physics' ? 0 : -1} style="display: {activeTab === 'physics' ? 'block' : 'none'}">
                     <div class="physics-config">
                         <h3>Physics</h3>
                         <label>
@@ -87,10 +87,10 @@
                         <label>Viscosity <input type="number" bind:value={$simulationConfig.physics.viscosity} step="0.01" min="0" /></label>
                     </div>
                 </div>
-                <div style="display: {activeTab === 'bcs' ? 'block' : 'none'}">
+                <div class="config-panel" role="tabpanel" id="panel-bcs" aria-labelledby="tab-bcs" tabindex={activeTab === 'bcs' ? 0 : -1} style="display: {activeTab === 'bcs' ? 'block' : 'none'}">
                     <BCEditor />
                 </div>
-                <div style="display: {activeTab === 'general' ? 'block' : 'none'}">
+                <div class="config-panel" role="tabpanel" id="panel-general" aria-labelledby="tab-general" tabindex={activeTab === 'general' ? 0 : -1} style="display: {activeTab === 'general' ? 'block' : 'none'}">
                     <div class="general-config">
                         <h3>General Settings</h3>
                         <label>Time Steps <input type="number" bind:value={$simulationConfig.general.num_time_steps} min="1" /></label>
@@ -249,6 +249,26 @@
     .tabs-nav button.active {
         background: linear-gradient(135deg, rgba(96, 147, 255, 0.65), rgba(155, 116, 255, 0.65));
         color: #fff;
+    }
+
+    .config-panels-container {
+        flex: 1;
+        position: relative;
+    }
+
+    .config-panel {
+        animation: fadeSlideIn 0.25s ease-out;
+    }
+
+    @keyframes fadeSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(4px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     .content {

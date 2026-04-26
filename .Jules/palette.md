@@ -39,3 +39,7 @@
 ## 2024-11-21 - [Extended Keyboard Support for Tab Navigation]
 **Learning:** Adding support for `Home` and `End` keys in tabbed navigation implementations provides essential quick-navigation options, ensuring full alignment with the W3C WAI-ARIA Authoring Practices for tablists and improving accessibility for keyboard users who rely on shortcuts.
 **Action:** Always implement `Home` (jump to first) and `End` (jump to last) key handlers alongside standard directional arrows (`ArrowLeft` / `ArrowRight`) when building custom ARIA `tablist` components to maximize navigation efficiency and standards compliance.
+
+## 2024-11-22 - [Proper ARIA Structure for CSS-Toggled Tabs]
+**Learning:** When using CSS display toggling for tab panels (to preserve state and avoid expensive unmounting), wrapping multiple disconnected sections in a single `role="tabpanel"` breaks screen reader expectations. Assistive technologies expect a 1:1 mapping between a `role="tab"` and its corresponding `role="tabpanel"`.
+**Action:** Always wrap each individual tab section in its own `role="tabpanel"`, assign it a unique `id`, use `aria-labelledby` referencing the tab button, and conditionally apply `tabindex="0"` only to the active panel (and `-1` to inactive panels) so they are individually focusable and correctly announced.
