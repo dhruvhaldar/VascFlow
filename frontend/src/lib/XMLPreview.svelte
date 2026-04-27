@@ -86,19 +86,40 @@
                 <p>No XML generated yet.</p>
                 <p class="subtext">Configure your simulation and click 'Generate XML'.</p>
             </div>
+        {:else if !isUpToDate}
+            <div class="empty-state stale-overlay">
+                <p>⚠️ Outdated Preview</p>
+                <p class="subtext">Settings have changed. Click 'Generate XML' to update.</p>
+            </div>
         {/if}
         <textarea
             readonly
+            class:stale={$generatedXML && !isUpToDate}
             value={$generatedXML}
             aria-label="Generated XML Preview"
             aria-live="polite"
-            tabindex={!$generatedXML ? -1 : 0}
-            aria-hidden={!$generatedXML ? "true" : "false"}
+            tabindex={!$generatedXML || !isUpToDate ? -1 : 0}
+            aria-hidden={!$generatedXML || !isUpToDate ? "true" : "false"}
         ></textarea>
     </div>
 </div>
 
 <style>
+    textarea.stale {
+        opacity: 0.4;
+        pointer-events: none;
+    }
+
+    .stale-overlay {
+        z-index: 5;
+        background: rgba(8, 10, 24, 0.75);
+        border-radius: 10px;
+    }
+
+    .stale-overlay p:first-child {
+        color: #ffda85;
+    }
+
     .xml-preview {
         display: flex;
         flex-direction: column;
