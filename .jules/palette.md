@@ -32,3 +32,7 @@
 ## 2024-05-18 - Visible Labels for Inputs
 **Learning:** Relying solely on `aria-label` or `placeholder` attributes for input fields (especially numbers and dropdowns) creates an ambiguous experience for sighted users. In forms like BCEditor, seeing a bare number input without context is confusing.
 **Action:** Always wrap `<input>` and `<select>` elements in visible `<label>` tags to provide clear, onscreen context for all users, improving both general usability and accessibility.
+
+## 2024-05-24 - Handling Stale Derived State
+**Learning:** When displaying derived data (like a generated XML preview) based on user inputs, changing the inputs without regenerating the data leaves the output in a "stale" state. Visually leaving the stale output unaltered is confusing and allows users to copy incorrect data. Furthermore, leaving it in the accessibility tree can mislead screen reader users who might rely on it as the "current" state.
+**Action:** When underlying inputs change, always explicitly mark derived preview states as visually outdated (e.g., via an overlay and reduced opacity). Simultaneously, remove the stale interactive elements (like the readonly textarea) from the tab order (`tabindex="-1"`) and accessibility tree (`aria-hidden="true"`) to prevent accidental interaction or misinterpretation by assistive technologies.
