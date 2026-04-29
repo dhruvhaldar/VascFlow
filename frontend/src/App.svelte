@@ -32,6 +32,8 @@
     }
 </script>
 
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
 <div class="app-container">
     <div class="ambient ambient-1"></div>
     <div class="ambient ambient-2"></div>
@@ -100,7 +102,7 @@
             </div>
         </aside>
 
-        <main class="content">
+        <main id="main-content" class="content" tabindex="-1">
             <div class="top-pane glass-shell">
                 <!-- ⚡ Bolt: Lazy load the heavy 3D Viewer component to code-split vtk.js.
                      This reduces the main initial JS bundle from ~1.1MB to ~48KB,
@@ -179,6 +181,26 @@
         background: #8f68ff;
         bottom: -130px;
         right: -100px;
+    }
+
+    .skip-link {
+        position: absolute;
+        top: -100px;
+        left: 0;
+        padding: 0.5rem 1rem;
+        background: #6093ff;
+        color: #fff;
+        z-index: 9999;
+        border-bottom-right-radius: 8px;
+        font-weight: bold;
+        text-decoration: none;
+        transition: top 0.2s ease-in-out;
+    }
+
+    .skip-link:focus {
+        top: 0;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(96, 147, 255, 0.5);
     }
 
     .glass-shell {
