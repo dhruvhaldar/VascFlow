@@ -36,3 +36,7 @@
 ## 2024-05-24 - Handling Stale Derived State
 **Learning:** When displaying derived data (like a generated XML preview) based on user inputs, changing the inputs without regenerating the data leaves the output in a "stale" state. Visually leaving the stale output unaltered is confusing and allows users to copy incorrect data. Furthermore, leaving it in the accessibility tree can mislead screen reader users who might rely on it as the "current" state.
 **Action:** When underlying inputs change, always explicitly mark derived preview states as visually outdated (e.g., via an overlay and reduced opacity). Simultaneously, remove the stale interactive elements (like the readonly textarea) from the tab order (`tabindex="-1"`) and accessibility tree (`aria-hidden="true"`) to prevent accidental interaction or misinterpretation by assistive technologies.
+
+## 2024-05-24 - Accessibility Skip Links Targeting
+**Learning:** When adding a 'Skip to main content' link for keyboard and screen reader accessibility, simply linking to an ID (e.g., `#main-content`) will visually scroll the page, but may not properly move programmatic focus to semantic elements like `<main>` unless they are natively focusable. If focus doesn't move, the next 'Tab' press will jump back to the top of the document.
+**Action:** Always ensure the target element of a skip link (such as `<main id="main-content">`) includes `tabindex="-1"`. This allows it to programmatically receive focus without becoming part of the natural tab order.
