@@ -50,7 +50,7 @@
     {#if $meshMetadata.faces.length > 0}
         <form class="add-bc" on:submit|preventDefault={addBC}>
             <label>
-                Face
+                <span>Face<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
                 <select bind:value={selectedFace} aria-label="Select Face" title="Select Face" required>
                     <option value="" disabled selected>Select Face</option>
                     <!-- ⚡ Bolt: Use a keyed each block for face options. -->
@@ -66,7 +66,7 @@
             </label>
 
             <label>
-                Type
+                <span>Type<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
                 <select bind:value={bcType} aria-label="Boundary Condition Type" title="Boundary Condition Type" required>
                     <option value="Dirichlet">Dirichlet</option>
                     <option value="Neumann">Neumann</option>
@@ -75,17 +75,17 @@
             </label>
 
             <label>
-                Variable
+                <span>Variable<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
                 <input type="text" bind:value={variable} aria-label="Variable Name" title="Variable Name" placeholder="Variable (e.g. Velocity)" required />
             </label>
 
             <label>
-                Value
+                <span>Value<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
                 <input type="number" bind:value={value} aria-label="Value" title="Value" step="0.1" required />
             </label>
 
             <label>
-                Profile
+                <span>Profile<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
                 <select bind:value={profile} aria-label="Profile" title="Profile" required>
                     <option value="Flat">Flat</option>
                     <option value="Parabolic">Parabolic</option>
@@ -157,6 +157,11 @@
         display: flex;
         align-items: flex-end;
         padding-bottom: 0.1rem;
+    }
+
+    .required-indicator {
+        color: #ffc2c2;
+        margin-left: 0.2rem;
     }
 
     .empty-state {
