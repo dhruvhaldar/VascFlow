@@ -50,6 +50,11 @@ async def add_security_headers(request: Request, call_next):
     if not request.url.path.startswith(("/docs", "/redoc", "/openapi.json")):
         response.headers["Content-Security-Policy"] = "default-src 'self'"
 
+    # 🛡️ Sentinel: Prevent caching of API responses to avoid leaking sensitive simulation data
+    if request.url.path in ("/generate_input", "/process_mesh"):
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+
     return response
 
 # ⚡ Bolt: Use `async def` for non-blocking endpoints.

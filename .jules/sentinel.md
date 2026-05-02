@@ -60,3 +60,8 @@
 **Vulnerability:** Application-Layer DoS via `TypeError` on `xml.etree.ElementTree` serialization.
 **Learning:** In Python's `xml.etree.ElementTree`, passing a `None` value to an attribute (e.g., `ET.SubElement(parent, "tag", attr=None)`) is syntactically valid but throws a `TypeError: cannot serialize None` during `ET.tostring()` execution. Since Pydantic allows `Optional` fields to be `None`, directly mapping Pydantic fields to XML attributes as keyword arguments creates a crash vector.
 **Prevention:** Always use dictionary unpacking for XML attributes (`**attribs`) and conditionally add keys only if their value is not `None` before passing to `ET.SubElement()`.
+
+## 2025-02-28 - Prevent Caching of Sensitive API Responses
+**Vulnerability:** Information Leakage via Browser/Proxy Caching
+**Learning:** If an API endpoint returns sensitive information (like simulation configurations, mesh processing results, or XML data), intermediate proxies or user browsers might cache the response. If caching is not strictly disabled, attackers might retrieve sensitive data from a shared computer or a misconfigured proxy cache.
+**Prevention:** Always add explicit `Cache-Control` headers (e.g. `Cache-Control: no-store, no-cache, must-revalidate, max-age=0` and `Pragma: no-cache`) to API endpoints that handle sensitive or user-specific data to prevent unintended caching.
