@@ -47,3 +47,7 @@
 ## 2024-11-23 - [Visual Required Indicators on Form Fields]
 **Learning:** While `required` attributes are essential for native browser validation and screen reader announcement, relying solely on them without a visual indicator (like an asterisk) creates an ambiguous UX for sighted users who don't know a field is required until they attempt to submit and trigger an error. Also, when inserting inline elements like `<span>` into CSS flexbox column layouts (like `<label>` tags), text nodes need to be explicitly wrapped in their own `<span>` to prevent them from becoming separate flex items and breaking the layout.
 **Action:** Always pair `required` HTML attributes with a visual indicator (e.g., `<span aria-hidden="true" title="Required">*</span>`). Ensure any text nodes sharing a flex container with the new indicator are wrapped together in a `<span>` to preserve existing `flex-direction` constraints.
+
+## 2024-11-24 - [Visual Loading Overlays with aria-hidden]
+**Learning:** When adding prominent visual loading overlays (like spinners or semi-transparent blockers) to a component that already has an existing `aria-live` region managing its loading state (e.g., in a header), assistive technologies will read the overlay text redundantly if it's not hidden. This spams screen readers while providing a good visual UX.
+**Action:** Always apply `aria-hidden="true"` to new visual loading overlays when the loading state is already being announced by a dedicated `aria-live` region elsewhere in the component tree.
