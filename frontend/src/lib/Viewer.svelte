@@ -119,6 +119,12 @@
                 <p class="subtext">Upload a .vtu or .vtp file from the Mesh tab to visualize it here.</p>
             </div>
         {/if}
+        {#if isLoading}
+            <div class="loading-overlay" aria-hidden="true">
+                <div class="spinner"></div>
+                <p>Loading 3D model...</p>
+            </div>
+        {/if}
         <div class="canvas-mount" bind:this={container}></div>
     </div>
 </div>
@@ -175,5 +181,32 @@
         background: radial-gradient(circle at 10% 10%, rgba(59, 94, 176, 0.35), rgba(4, 5, 14, 0.8));
         position: relative;
         overflow: hidden;
+    }
+
+    .loading-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(4, 5, 14, 0.65);
+        backdrop-filter: blur(4px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        color: #b8c5ef;
+    }
+
+    .spinner {
+        width: 30px;
+        height: 30px;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+        border-top-color: #6093ff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 0.75rem;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
     }
 </style>
