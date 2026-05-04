@@ -40,3 +40,6 @@
 ## 2024-05-24 - Accessibility Skip Links Targeting
 **Learning:** When adding a 'Skip to main content' link for keyboard and screen reader accessibility, simply linking to an ID (e.g., `#main-content`) will visually scroll the page, but may not properly move programmatic focus to semantic elements like `<main>` unless they are natively focusable. If focus doesn't move, the next 'Tab' press will jump back to the top of the document.
 **Action:** Always ensure the target element of a skip link (such as `<main id="main-content">`) includes `tabindex="-1"`. This allows it to programmatically receive focus without becoming part of the natural tab order.
+## 2024-05-04 - Focus Management on DOM Removal
+**Learning:** Removing active interactive elements (like the "Remove BC" button or resetting an active form via `addBC`) causes standard browsers to lose keyboard focus, dropping it back to the `<body>`. This forces keyboard users to tab through the entire document to get back to where they were.
+**Action:** Use Svelte's `tick()` alongside component tracking (`bind:this={element}`) to gracefully hand focus back to the primary `<select>` input after the destructive/reset action completes and the DOM has updated.
