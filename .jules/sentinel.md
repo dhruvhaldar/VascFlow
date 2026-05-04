@@ -65,3 +65,8 @@
 **Vulnerability:** Information Leakage via Browser/Proxy Caching
 **Learning:** If an API endpoint returns sensitive information (like simulation configurations, mesh processing results, or XML data), intermediate proxies or user browsers might cache the response. If caching is not strictly disabled, attackers might retrieve sensitive data from a shared computer or a misconfigured proxy cache.
 **Prevention:** Always add explicit `Cache-Control` headers (e.g. `Cache-Control: no-store, no-cache, must-revalidate, max-age=0` and `Pragma: no-cache`) to API endpoints that handle sensitive or user-specific data to prevent unintended caching.
+
+## 2024-05-04 - Secure IP Resolution for Rate Limiting Behind Proxies
+**Vulnerability:** IP Spoofing / Rate Limit Bypass
+**Learning:** When implementing rate limiting middleware, manually parsing `X-Forwarded-For` or `X-Real-IP` headers allows attackers to easily spoof their IP address. This enables them to bypass rate limits or intentionally block legitimate users (targeted DoS) by sending fake IPs.
+**Prevention:** Rely on `request.client.host` and configure the underlying ASGI server (e.g., Uvicorn with `--proxy-headers` or `ProxyHeadersMiddleware`) to securely resolve the real client IP based on trusted proxy configurations, rather than writing custom header-parsing logic.

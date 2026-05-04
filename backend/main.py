@@ -6,11 +6,46 @@ import uvicorn
 import shutil
 import os
 import logging
+import time
 from models import SimulationConfig
 from xml_generator import generate_svfsi_xml
 from mesh_service import save_upload_file, get_mesh_metadata, cleanup_mesh_files
 
 app = FastAPI()
+
+# 🛡️ Sentinel: Simple in-memory rate limiting state to prevent DoS/brute force on sensitive endpoints
+RATE_LIMIT_STORE = {}
+RATE_LIMIT_MAX = 30  # requests per window
+RATE_LIMIT_WINDOW = 60  # window in seconds
+
+@app.middleware("http")
+async def rate_limiter(request: Request, call_next):
+    if request.url.path in ("/generate_input", "/process_mesh"):
+        # 🛡️ Sentinel: Rely on request.client.host which is safely populated by Uvicorn's
+        # ProxyHeadersMiddleware (when behind a trusted proxy) instead of manually parsing
+        # headers which allows spoofing to bypass limits or DoS other users.
+        client_ip = request.client.host if request.client else "127.0.0.1"
+
+        now = time.time()
+
+        # Prevent memory leaks by explicitly cleaning up expired entries when the store grows too large
+        if len(RATE_LIMIT_STORE) > 10000:
+            expired_ips = [ip for ip, data in RATE_LIMIT_STORE.items() if now - data["start_time"] > RATE_LIMIT_WINDOW]
+            for ip in expired_ips:
+                del RATE_LIMIT_STORE[ip]
+
+        client_data = RATE_LIMIT_STORE.get(client_ip, {"count": 0, "start_time": now})
+
+        if now - client_data["start_time"] > RATE_LIMIT_WINDOW:
+            client_data = {"count": 1, "start_time": now}
+        else:
+            if client_data["count"] >= RATE_LIMIT_MAX:
+                return Response(content="Too Many Requests", status_code=429)
+            client_data["count"] += 1
+
+        RATE_LIMIT_STORE[client_ip] = client_data
+
+    return await call_next(request)
 
 # Get allowed origins from environment or default to local Vite dev server
 allowed_origins_env = os.environ.get("VITE_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173")
