@@ -1,6 +1,8 @@
 <script>
+    import { tick } from 'svelte';
     import { simulationConfig, meshMetadata } from '../stores';
 
+    let faceSelectElement;
     let selectedFace = "";
     let bcType = "Dirichlet";
     let variable = "Velocity";
@@ -14,7 +16,7 @@
     // opening the dropdown or adding new boundary conditions.
     $: usedFaceNames = new Set($simulationConfig.boundary_conditions.map(bc => bc.face_name));
 
-    function addBC() {
+    async function addBC() {
         if (!selectedFace) return;
         simulationConfig.update(c => {
             const newBC = {
@@ -29,17 +31,28 @@
             return c;
         });
         selectedFace = "";
+
+        // 🎨 Palette: Manage focus after adding BC.
+        // Wait for DOM to update and then return focus to the Face select input,
+        // so keyboard navigation can naturally continue.
+        await tick();
+        if (faceSelectElement) faceSelectElement.focus();
     }
 
     // ⚡ Bolt: Remove by unique ID instead of array index.
     // By passing faceName instead of the array index, we remove the
     // index dependency from the rendered DOM elements.
-    function removeBC(faceName) {
+    async function removeBC(faceName) {
         if (window.confirm(`Are you sure you want to remove the boundary condition for ${faceName}?`)) {
             simulationConfig.update(c => {
                 c.boundary_conditions = c.boundary_conditions.filter(bc => bc.face_name !== faceName);
                 return c;
             });
+            // 🎨 Palette: Manage focus after removing BC.
+            // Wait for DOM to update and return focus to the Face select input,
+            // to prevent focus dropping to <body> when the remove button disappears.
+            await tick();
+            if (faceSelectElement) faceSelectElement.focus();
         }
     }
 </script>
@@ -51,7 +64,7 @@
         <form class="add-bc" on:submit|preventDefault={addBC}>
             <label>
                 <span>Face<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                <select bind:value={selectedFace} aria-label="Select Face" title="Select Face" required>
+                <select bind:this={faceSelectElement} bind:value={selectedFace} aria-label="Select Face" title="Select Face" required>
                     <option value="" disabled selected>Select Face</option>
                     <!-- ⚡ Bolt: Use a keyed each block for face options. -->
                     {#each $meshMetadata.faces as face (face.id)}
