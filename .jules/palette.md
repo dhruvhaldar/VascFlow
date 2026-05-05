@@ -43,3 +43,7 @@
 ## 2024-05-04 - Focus Management on DOM Removal
 **Learning:** Removing active interactive elements (like the "Remove BC" button or resetting an active form via `addBC`) causes standard browsers to lose keyboard focus, dropping it back to the `<body>`. This forces keyboard users to tab through the entire document to get back to where they were.
 **Action:** Use Svelte's `tick()` alongside component tracking (`bind:this={element}`) to gracefully hand focus back to the primary `<select>` input after the destructive/reset action completes and the DOM has updated.
+
+## 2024-05-19 - Focus Management for Dynamically Disabled Elements
+**Learning:** Disabling an active interactive element (like a button after a successful API call or during state changes) causes the browser to lose keyboard focus, dropping it to the `<body>` element. This completely breaks keyboard navigation for screen reader and keyboard-only users.
+**Action:** When an interaction results in the currently focused element becoming disabled or removed, explicitly implement programmatic focus management (using Svelte's `tick()`) to gracefully hand off focus to the next logical interactive element (e.g., from a 'Generate' button to a newly appeared 'Copy' button), or restore it when the operation completes.
