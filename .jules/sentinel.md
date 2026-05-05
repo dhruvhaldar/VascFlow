@@ -70,3 +70,8 @@
 **Vulnerability:** IP Spoofing / Rate Limit Bypass
 **Learning:** When implementing rate limiting middleware, manually parsing `X-Forwarded-For` or `X-Real-IP` headers allows attackers to easily spoof their IP address. This enables them to bypass rate limits or intentionally block legitimate users (targeted DoS) by sending fake IPs.
 **Prevention:** Rely on `request.client.host` and configure the underlying ASGI server (e.g., Uvicorn with `--proxy-headers` or `ProxyHeadersMiddleware`) to securely resolve the real client IP based on trusted proxy configurations, rather than writing custom header-parsing logic.
+
+## 2026-05-05 - Fix CPU Exhaustion DoS in Custom Rate Limiter
+**Vulnerability:** CPU Exhaustion / Denial of Service (DoS)
+**Learning:** In-memory dictionary cleanup loops that run conditionally on the store size (e.g. `if len(store) > 10000: cleanup()`) can create an O(N) CPU vulnerability. If an attacker floods unique items so that none expire before the size limit is reached, the condition remains true, and the O(N) loop executes on *every single subsequent request*. This quickly starves the CPU.
+**Prevention:** When performing periodic O(N) cleanup on data structures, always implement a failsafe hard limit (e.g. `store.clear()`) if the threshold is still exceeded after cleanup, or throttle the cleanup execution using timestamps instead of size thresholds.

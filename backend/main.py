@@ -34,6 +34,13 @@ async def rate_limiter(request: Request, call_next):
             for ip in expired_ips:
                 del RATE_LIMIT_STORE[ip]
 
+            # 🛡️ Sentinel: Failsafe to prevent CPU exhaustion DoS.
+            # If an attacker floods unique IPs, the store exceeds 10,000 but no IPs expire immediately.
+            # The O(N) cleanup loop above would then run on EVERY subsequent request, starving the CPU.
+            # We enforce a hard limit here by dropping the entire store if it's still too large after cleanup.
+            if len(RATE_LIMIT_STORE) > 10000:
+                RATE_LIMIT_STORE.clear()
+
         client_data = RATE_LIMIT_STORE.get(client_ip, {"count": 0, "start_time": now})
 
         if now - client_data["start_time"] > RATE_LIMIT_WINDOW:
