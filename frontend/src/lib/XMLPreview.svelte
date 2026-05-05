@@ -1,10 +1,13 @@
 <script>
+    import { tick } from 'svelte';
     import { simulationConfig, generatedXML } from '../stores';
 
     let generating = false;
     let copying = false;
     let copied = false;
     let lastConfigStr = null;
+    let generateBtn;
+    let copyBtn;
 
     $: currentConfigStr = JSON.stringify($simulationConfig);
     $: isUpToDate = $generatedXML && $generatedXML !== "Error generating XML" && currentConfigStr === lastConfigStr;
@@ -22,6 +25,8 @@
             console.error('Failed to copy text: ', err);
         } finally {
             copying = false;
+            await tick();
+            if (copyBtn) copyBtn.focus();
         }
     }
 
@@ -50,6 +55,12 @@
             lastConfigStr = null;
         } finally {
             generating = false;
+            await tick();
+            if (isUpToDate && copyBtn) {
+                copyBtn.focus();
+            } else if (generateBtn) {
+                generateBtn.focus();
+            }
         }
     }
 </script>
@@ -60,6 +71,7 @@
         <div class="actions">
             {#if $generatedXML && $generatedXML !== "Error generating XML"}
                 <button
+                    bind:this={copyBtn}
                     on:click={copyXML}
                     disabled={copying}
                     aria-label={copied ? "Copied to clipboard" : "Copy generated XML to clipboard"}
@@ -71,6 +83,7 @@
                 </button>
             {/if}
             <button
+                bind:this={generateBtn}
                 on:click={generate}
                 disabled={generating || isUpToDate}
                 aria-busy={generating}
