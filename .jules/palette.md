@@ -47,3 +47,7 @@
 ## 2024-05-19 - Focus Management for Dynamically Disabled Elements
 **Learning:** Disabling an active interactive element (like a button after a successful API call or during state changes) causes the browser to lose keyboard focus, dropping it to the `<body>` element. This completely breaks keyboard navigation for screen reader and keyboard-only users.
 **Action:** When an interaction results in the currently focused element becoming disabled or removed, explicitly implement programmatic focus management (using Svelte's `tick()`) to gracefully hand off focus to the next logical interactive element (e.g., from a 'Generate' button to a newly appeared 'Copy' button), or restore it when the operation completes.
+
+## $(date +%Y-%m-%d) - [Focus Management after Async Upload]
+**Learning:** In Svelte components where interactive elements like `<input type="file">` are disabled during an asynchronous operation (e.g., file upload), the browser loses keyboard focus, dropping it back to the `<body>`.
+**Action:** When disabling/re-enabling an interactive element around async work, always use `await tick()` in the `finally` block to wait for the DOM to update (re-enabling the input), and then explicitly restore focus using `.focus()` to maintain seamless keyboard navigation.

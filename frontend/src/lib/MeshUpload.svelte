@@ -1,4 +1,5 @@
 <script>
+    import { tick } from 'svelte';
     import { meshMetadata, simulationConfig } from '../stores';
 
     let fileInput;
@@ -71,6 +72,12 @@
             if (fileInput) fileInput.value = "";
         } finally {
             loading = false;
+
+            // 🎨 Palette: Manage focus after async operation
+            // The file input is disabled during upload, which causes it to lose focus.
+            // Wait for it to be re-enabled and explicitly restore focus so keyboard navigation can continue.
+            await tick();
+            if (fileInput) fileInput.focus();
         }
     }
 </script>
