@@ -73,8 +73,9 @@
                 <button
                     bind:this={copyBtn}
                     on:click={copyXML}
-                    disabled={copying}
-                    aria-label={copied ? "Copied to clipboard" : "Copy generated XML to clipboard"}
+                    disabled={copying || !isUpToDate}
+                    aria-label={!isUpToDate ? "Generate XML to copy updated settings" : (copied ? "Copied to clipboard" : "Copy generated XML to clipboard")}
+                    title={!isUpToDate ? "Settings have changed. Generate XML first to copy." : "Copy XML"}
                     aria-live="polite"
                     class="secondary-button"
                     class:success={copied}
