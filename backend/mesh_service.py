@@ -1,12 +1,35 @@
 import pyvista as pv
 import os
 import logging
+import time
 from fastapi import UploadFile, HTTPException
 import shutil
 import numpy as np
 import uuid
 
 UPLOAD_DIR = "uploads"
+
+def _cleanup_old_uploads(max_age_hours=1):
+    """
+    🛡️ Sentinel: Prune old uploaded and generated files to prevent Disk Exhaustion (DoS).
+    Even with file size limits, unrestricted accumulation of files allows attackers
+    to exhaust disk space over time.
+    """
+    now = time.time()
+    max_age_seconds = max_age_hours * 3600
+
+    try:
+        for filename in os.listdir(UPLOAD_DIR):
+            file_path = os.path.join(UPLOAD_DIR, filename)
+            if os.path.isfile(file_path):
+                # Check file age based on last modification time
+                if now - os.path.getmtime(file_path) > max_age_seconds:
+                    try:
+                        os.remove(file_path)
+                    except Exception as e:
+                        logging.error("Failed to remove old file %s: %s", file_path, str(e))
+    except Exception as e:
+        logging.error("Failed during old file cleanup: %s", str(e))
 if not os.path.exists(UPLOAD_DIR):
     os.makedirs(UPLOAD_DIR)
 
@@ -17,6 +40,9 @@ def save_upload_file(upload_file: UploadFile) -> str:
     when called from a sync endpoint, preventing event loop blocking during
     large file IO and CPU-heavy PyVista operations.
     """
+    # Trigger cleanup of old files before saving new ones
+    _cleanup_old_uploads()
+
     # 🛡️ Sentinel: Validate that the filename exists before performing string operations
     # to prevent unhandled AttributeError exceptions that cause 500 Internal Server Errors.
     if not upload_file.filename:
