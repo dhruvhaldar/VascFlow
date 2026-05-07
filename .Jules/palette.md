@@ -51,3 +51,7 @@
 ## 2024-11-24 - [Visual Loading Overlays with aria-hidden]
 **Learning:** When adding prominent visual loading overlays (like spinners or semi-transparent blockers) to a component that already has an existing `aria-live` region managing its loading state (e.g., in a header), assistive technologies will read the overlay text redundantly if it's not hidden. This spams screen readers while providing a good visual UX.
 **Action:** Always apply `aria-hidden="true"` to new visual loading overlays when the loading state is already being announced by a dedicated `aria-live` region elsewhere in the component tree.
+
+## 2024-11-25 - [Preventing Copy of Stale Data]
+**Learning:** When displaying derived data (like a generated XML preview) alongside a primary "Copy" action button, leaving the copy button enabled while the derived data is in an "outdated/stale" state can lead users to accidentally copy and use invalid, stale configurations.
+**Action:** Always conditionally disable secondary action buttons (like "Copy") that depend on synchronized state when that state becomes stale. Furthermore, when disabling these buttons, always provide a dynamic `title` and `aria-label` explaining *why* they are disabled (e.g., "Settings have changed. Generate XML first to copy.") to avoid confusing users.
