@@ -75,3 +75,8 @@
 **Vulnerability:** CPU Exhaustion / Denial of Service (DoS)
 **Learning:** In-memory dictionary cleanup loops that run conditionally on the store size (e.g. `if len(store) > 10000: cleanup()`) can create an O(N) CPU vulnerability. If an attacker floods unique items so that none expire before the size limit is reached, the condition remains true, and the O(N) loop executes on *every single subsequent request*. This quickly starves the CPU.
 **Prevention:** When performing periodic O(N) cleanup on data structures, always implement a failsafe hard limit (e.g. `store.clear()`) if the threshold is still exceeded after cleanup, or throttle the cleanup execution using timestamps instead of size thresholds.
+
+## 2025-02-28 - [Disk Exhaustion / DoS via Unbounded File Accumulation]
+**Vulnerability:** Disk Exhaustion / Denial of Service (DoS)
+**Learning:** Even if individual file sizes are restricted, allowing uploaded or generated files to accumulate indefinitely in a static directory (like `uploads/`) creates a vector for Disk Exhaustion attacks over time.
+**Prevention:** Implement a mechanism to periodically prune old files from upload directories (e.g., deleting files older than 1 hour) to enforce bounded disk usage and mitigate this form of DoS.
