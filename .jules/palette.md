@@ -51,3 +51,7 @@
 ## $(date +%Y-%m-%d) - [Focus Management after Async Upload]
 **Learning:** In Svelte components where interactive elements like `<input type="file">` are disabled during an asynchronous operation (e.g., file upload), the browser loses keyboard focus, dropping it back to the `<body>`.
 **Action:** When disabling/re-enabling an interactive element around async work, always use `await tick()` in the `finally` block to wait for the DOM to update (re-enabling the input), and then explicitly restore focus using `.focus()` to maintain seamless keyboard navigation.
+
+## $(date +%Y-%m-%d) - [Visual Loading Indicators on Async Buttons]
+**Learning:** Changing button text (e.g., from "Generate XML" to "Generating...") during an asynchronous operation is helpful but often not enough, especially on slower connections or longer processing times. Users may fail to notice a simple text change without accompanying motion, leaving them wondering if the system is actually working.
+**Action:** Always pair text changes on async action buttons with explicit, animated visual loading indicators (like an inline spinner). This provides immediate, unmistakable visual feedback that the system is actively processing the request, drastically improving perceived performance and micro-UX.
