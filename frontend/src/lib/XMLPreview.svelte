@@ -89,7 +89,11 @@
                 disabled={generating || isUpToDate}
                 aria-busy={generating}
                 title={isUpToDate ? "XML is up to date with current settings" : "Generate XML"}
+                class="generate-btn"
             >
+                {#if generating}
+                    <span class="inline-spinner" aria-hidden="true"></span>
+                {/if}
                 {generating ? 'Generating...' : (isUpToDate ? 'Up to Date' : 'Generate XML')}
             </button>
         </div>
@@ -218,5 +222,24 @@
     .empty-state .subtext {
         font-size: 0.85rem;
         opacity: 0.8;
+    }
+
+    .generate-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .inline-spinner {
+        width: 14px;
+        height: 14px;
+        border: 2px solid rgba(255, 255, 255, 0.25);
+        border-top-color: #ffffff;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
     }
 </style>
