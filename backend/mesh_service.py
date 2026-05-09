@@ -68,27 +68,23 @@ def save_upload_file(upload_file: UploadFile) -> str:
     unique_filename = f"{uuid.uuid4()}{ext.lower()}"
     file_path = os.path.join(UPLOAD_DIR, unique_filename)
 
-    # 🛡️ Sentinel: Read in chunks and track size to prevent disk exhaustion DoS
-    # when Content-Length is missing or chunked encoding is used.
+    # 🛡️ Sentinel: Read in chunks and track size to prevent disk exhaustion DoS.
+    # We must explicitly track written bytes instead of relying on `upload_file.size`
+    # or `shutil.copyfileobj`, because an attacker can spoof a small `Content-Length`
+    # header but upload a massive file, bypassing the validation check and exhausting
+    # disk space if we blindly copy the stream.
     written = 0
     chunk_size = 1024 * 1024  # 1 MB
     try:
         with open(file_path, "wb") as buffer:
-            # ⚡ Bolt: Optimize file upload by bypassing Python chunking loop.
-            # If the file size is known and validated beforehand, we can use
-            # shutil.copyfileobj which operates at a lower level in C, avoiding
-            # the Python bytecode loop overhead for a ~2-3x speedup.
-            if upload_file.size is not None and upload_file.size <= MAX_FILE_SIZE:
-                shutil.copyfileobj(upload_file.file, buffer)
-            else:
-                while True:
-                    chunk = upload_file.file.read(chunk_size)
-                    if not chunk:
-                        break
-                    written += len(chunk)
-                    if written > MAX_FILE_SIZE:
-                        raise HTTPException(status_code=413, detail="File too large. Maximum size is 50MB.")
-                    buffer.write(chunk)
+            while True:
+                chunk = upload_file.file.read(chunk_size)
+                if not chunk:
+                    break
+                written += len(chunk)
+                if written > MAX_FILE_SIZE:
+                    raise HTTPException(status_code=413, detail="File too large. Maximum size is 50MB.")
+                buffer.write(chunk)
     except Exception:
         # Clean up partial file on error
         if os.path.exists(file_path):

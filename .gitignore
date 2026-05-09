@@ -11,3 +11,4 @@ dist/
 backend/uploads/
 verification/
 *.vtp
+venv
