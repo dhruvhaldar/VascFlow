@@ -55,3 +55,7 @@
 ## $(date +%Y-%m-%d) - [Visual Loading Indicators on Async Buttons]
 **Learning:** Changing button text (e.g., from "Generate XML" to "Generating...") during an asynchronous operation is helpful but often not enough, especially on slower connections or longer processing times. Users may fail to notice a simple text change without accompanying motion, leaving them wondering if the system is actually working.
 **Action:** Always pair text changes on async action buttons with explicit, animated visual loading indicators (like an inline spinner). This provides immediate, unmistakable visual feedback that the system is actively processing the request, drastically improving perceived performance and micro-UX.
+
+## $(date +%Y-%m-%d) - [Download Generated Files]
+**Learning:** In applications where users configure data and generate files (like an XML simulation file), relying solely on "Copy to clipboard" functionality creates friction. Users ultimately need the file saved on disk. While they can copy and paste into a text editor, a direct "Download" button significantly streamlines their workflow and reduces the chance of manual errors.
+**Action:** When a system generates a file based on user input, always provide a direct "Download" button in addition to "Copy to clipboard" functionality. Use a Blob URL with a hidden `<a>` tag to programmatically trigger the download without requiring a server roundtrip.
