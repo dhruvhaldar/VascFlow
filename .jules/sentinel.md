@@ -80,3 +80,8 @@
 **Vulnerability:** Disk Exhaustion / Denial of Service (DoS)
 **Learning:** Even if individual file sizes are restricted, allowing uploaded or generated files to accumulate indefinitely in a static directory (like `uploads/`) creates a vector for Disk Exhaustion attacks over time.
 **Prevention:** Implement a mechanism to periodically prune old files from upload directories (e.g., deleting files older than 1 hour) to enforce bounded disk usage and mitigate this form of DoS.
+
+## 2024-10-26 - [Disk Exhaustion / DoS via `shutil.copyfileobj` Bypass]
+**Vulnerability:** Disk Exhaustion / Denial of Service (DoS)
+**Learning:** Using `upload_file.size` to conditionally bypass chunked reading and use `shutil.copyfileobj(upload_file.file, buffer)` is dangerous. An attacker can spoof the `Content-Length` header to a small value (e.g., 100 bytes) but upload a massive payload (e.g., 50GB). `shutil.copyfileobj` will blindly copy the entire stream, bypassing application-layer size limits and exhausting the server's disk space.
+**Prevention:** Never use `shutil.copyfileobj` or rely on `upload_file.size` to enforce file limits securely. Always read the file stream in chunks (e.g., `chunk = upload_file.file.read(chunk_size)`) and accumulate the bytes actually written. If the accumulated total exceeds the maximum allowed size, immediately raise an error (HTTP 413) and delete the partial file.
