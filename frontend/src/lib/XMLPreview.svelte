@@ -12,6 +12,19 @@
     $: currentConfigStr = JSON.stringify($simulationConfig);
     $: isUpToDate = $generatedXML && $generatedXML !== "Error generating XML" && currentConfigStr === lastConfigStr;
 
+    function downloadXML() {
+        if (!$generatedXML) return;
+        const blob = new Blob([$generatedXML], { type: "application/xml" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "svfsi.xml";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
     async function copyXML() {
         if (!$generatedXML) return;
         copying = true;
@@ -71,6 +84,15 @@
         <div class="actions">
             {#if $generatedXML && $generatedXML !== "Error generating XML"}
                 <button
+                    on:click={downloadXML}
+                    disabled={!isUpToDate}
+                    aria-label={!isUpToDate ? "Generate XML to download updated settings" : "Download generated XML file"}
+                    title={!isUpToDate ? "Settings have changed. Generate XML first to download." : "Download XML"}
+                    class="secondary-button"
+                >
+                    Download
+                </button>
+                <button
                     bind:this={copyBtn}
                     on:click={copyXML}
                     disabled={copying || !isUpToDate}
@@ -80,7 +102,7 @@
                     class="secondary-button"
                     class:success={copied}
                 >
-                    {copied ? 'Copied!' : 'Copy XML'}
+                    {copied ? 'Copied!' : 'Copy'}
                 </button>
             {/if}
             <button
