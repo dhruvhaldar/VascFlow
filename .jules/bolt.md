@@ -21,3 +21,6 @@
 ## 2024-05-09 - [File Traversal Optimization]
 **Learning:** In Python, `os.listdir` followed by `os.path.getmtime` makes a separate `stat()` system call for every file, which is slow for directories with many files.
 **Action:** Use `os.scandir` to iterate through directories, as it caches file attributes (like `is_file` and `st_mtime`) during traversal, eliminating redundant `stat()` calls and providing a significant speedup (e.g., 2.5x).
+## 2024-05-18 - Avoid shutil.copyfileobj for file uploads
+**Learning:** Using `shutil.copyfileobj` with `UploadFile.file` introduces a severe Disk Exhaustion (DoS) vulnerability. Relying on `upload_file.size` is unsafe because an attacker can spoof a small `Content-Length` header while uploading a massive file stream, completely bypassing size limits.
+**Action:** Never use `shutil.copyfileobj` for FastAPI uploads; always use a chunked reading loop with explicit size tracking to safely terminate large uploads.
