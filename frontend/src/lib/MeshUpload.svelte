@@ -91,10 +91,15 @@
     on:drop|preventDefault={handleDrop}
 >
     <h3>Mesh Upload</h3>
-    <input type="file" bind:this={fileInput} on:change={handleFileSelect} accept=".vtu,.vtp,.vtk" aria-label="Upload Mesh File" disabled={loading} />
-    <p class="drop-hint">or drag and drop a file here</p>
+    <input type="file" bind:this={fileInput} on:change={handleFileSelect} accept=".vtu,.vtp,.vtk" aria-label="Upload Mesh File" title={loading ? "Processing upload, please wait..." : "Choose a mesh file to upload"} disabled={loading} />
+    {#if !loading}
+        <p class="drop-hint">or drag and drop a file here</p>
+    {/if}
     {#if loading}
-        <p role="status" aria-live="polite">Processing mesh...</p>
+        <div class="loading-state" role="status" aria-live="polite">
+            <span class="inline-spinner" aria-hidden="true"></span>
+            <p>Processing mesh...</p>
+        </div>
     {/if}
     {#if error}
         <p class="error" role="alert" aria-live="assertive">{error}</p>
@@ -129,6 +134,32 @@
         opacity: 0.8;
         margin: 0.5rem 0 0 0;
         font-style: italic;
+    }
+
+    .loading-state {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        color: #9fb0e6;
+    }
+
+    .loading-state p {
+        margin: 0;
+    }
+
+    .inline-spinner {
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.25);
+        border-top-color: #6093ff;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        display: inline-block;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
     }
 
     .error {

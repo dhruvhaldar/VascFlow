@@ -59,3 +59,11 @@
 ## $(date +%Y-%m-%d) - [Download Generated Files]
 **Learning:** In applications where users configure data and generate files (like an XML simulation file), relying solely on "Copy to clipboard" functionality creates friction. Users ultimately need the file saved on disk. While they can copy and paste into a text editor, a direct "Download" button significantly streamlines their workflow and reduces the chance of manual errors.
 **Action:** When a system generates a file based on user input, always provide a direct "Download" button in addition to "Copy to clipboard" functionality. Use a Blob URL with a hidden `<a>` tag to programmatically trigger the download without requiring a server roundtrip.
+
+## 2024-05-10 - Dynamic Tooltips for Disabled Inputs
+**Learning:** Disabling an input field during an async operation without context can confuse users as to why it is disabled and when it will be available again.
+**Action:** When conditionally disabling inputs (like a file input during processing), dynamically update its `title` attribute to explicitly describe the current status (e.g., "Processing upload, please wait...") to provide immediate, contextual help on hover.
+
+## 2024-05-10 - Reducing Visual Clutter during Processing
+**Learning:** Displaying hints (like "or drag and drop a file here") when the corresponding input is disabled and cannot accept interactions adds unnecessary cognitive load and clutter during an active loading state.
+**Action:** Hide static interaction hints while the component is in a loading or processing state, ensuring the user's focus is drawn only to the progress indicator and status message.
