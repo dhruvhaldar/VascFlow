@@ -24,3 +24,7 @@
 ## 2024-05-18 - Avoid shutil.copyfileobj for file uploads
 **Learning:** Using `shutil.copyfileobj` with `UploadFile.file` introduces a severe Disk Exhaustion (DoS) vulnerability. Relying on `upload_file.size` is unsafe because an attacker can spoof a small `Content-Length` header while uploading a massive file stream, completely bypassing size limits.
 **Action:** Never use `shutil.copyfileobj` for FastAPI uploads; always use a chunked reading loop with explicit size tracking to safely terminate large uploads.
+
+## 2025-05-11 - [Mesh Decimation for Large Visualization Surfaces]
+**Learning:** Extracting and sending raw visualization surfaces (`.vtp`) of very large backend meshes (>100k cells) to the frontend creates severe network bandwidth bottlenecks and causes `vtk.js` WebGL rendering to freeze the browser tab. Because the frontend visualization is primarily for previewing boundary conditions (not exact node-level simulation fidelity), high triangle counts are unnecessary.
+**Action:** Always dynamically decimate large visualization surfaces (e.g. `mesh.decimate(target_reduction)`) on the backend before saving/sending them to cap the total cell count (e.g. at 100,000 cells). This dramatically reduces network payloads (e.g. by 10x) and eliminates frontend rendering lag, drastically improving Time to Interactive.
