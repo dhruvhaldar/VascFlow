@@ -1,43 +1,68 @@
-import asyncio
-from playwright.async_api import async_playwright
+from playwright.sync_api import sync_playwright
+import os
+import glob
 
-async def run():
-    async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
-        page = await browser.new_page()
+def run_cuj(page):
+    # Navigate to the app
+    page.goto("http://localhost:4173")
+    page.wait_for_timeout(1000)
 
-        # Mock the API responses
-        await page.route("http://localhost:8000/process_mesh", lambda route: route.fulfill(
-            headers={"Access-Control-Allow-Origin": "*"},
-            json={
-                "n_cells": 100,
-                "n_points": 50,
-                "faces": [{"name": "inlet", "id": 1}],
-                "bounds": [0, 1, 0, 1, 0, 1],
-                "viz_file": "mock_surface.vtp"
-            }
-        ))
+    # 1. Start on Mesh tab, check title
+    page.screenshot(path="screenshots/01_mesh_tab.png")
+    title_mesh = page.title()
+    print(f"Title on Mesh tab: {title_mesh}")
+    page.wait_for_timeout(500)
 
-        await page.route("http://localhost:8000/files/mock_surface.vtp", lambda route: route.fulfill(
-            headers={"Access-Control-Allow-Origin": "*"},
-            status=200,
-            content_type="application/xml",
-            body='<?xml version="1.0"?>\n<VTKFile type="PolyData" version="0.1" byte_order="LittleEndian"><PolyData><Piece NumberOfPoints="0" NumberOfVerts="0" NumberOfLines="0" NumberOfStrips="0" NumberOfPolys="0"><Points><DataArray type="Float32" NumberOfComponents="3" format="ascii"></DataArray></Points></Piece></PolyData></VTKFile>'
-        ))
+    # 2. Navigate to Physics tab, check title
+    page.get_by_role("tab", name="Physics").click()
+    page.wait_for_timeout(1000)
+    page.screenshot(path="screenshots/02_physics_tab.png")
+    title_physics = page.title()
+    print(f"Title on Physics tab: {title_physics}")
+    page.wait_for_timeout(500)
 
-        await page.goto("http://localhost:5173")
+    # 3. Navigate to Boundary Conditions tab, check title
+    page.get_by_role("tab", name="Boundary Conditions").click()
+    page.wait_for_timeout(1000)
+    page.screenshot(path="screenshots/03_bc_tab.png")
+    title_bc = page.title()
+    print(f"Title on BC tab: {title_bc}")
+    page.wait_for_timeout(500)
 
-        # Trigger mesh upload
-        async with page.expect_file_chooser() as fc_info:
-            await page.locator('input[type="file"]').click()
-        file_chooser = await fc_info.value
-        await file_chooser.set_files(files=[{"name": "mock_mesh.vtu", "mimeType": "application/octet-stream", "buffer": b"dummy"}])
+    # 4. Navigate to General tab, check title
+    page.get_by_role("tab", name="General").click()
+    page.wait_for_timeout(1000)
+    page.screenshot(path="screenshots/04_general_tab.png")
+    title_general = page.title()
+    print(f"Title on General tab: {title_general}")
+    page.wait_for_timeout(1000)
 
-        # Wait for rendering to complete (simulated)
-        await page.wait_for_selector(".viewer-header span:has-text('Previewing mock_mesh.vtu')", timeout=5000)
-
-        await page.screenshot(path="/home/jules/verification/viewer_status.png")
-        await browser.close()
+    # Final assertion to ensure they are actually changing
+    assert "Mesh" in title_mesh
+    assert "Physics" in title_physics
+    assert "Boundary Conditions" in title_bc
+    assert "General" in title_general
 
 if __name__ == "__main__":
-    asyncio.run(run())
+    os.makedirs("screenshots", exist_ok=True)
+    os.makedirs("frontend_videos", exist_ok=True)
+
+    # Clear old videos
+    for f in glob.glob("frontend_videos/*.webm"):
+        os.remove(f)
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        context = browser.new_context(
+            record_video_dir="frontend_videos"
+        )
+        page = context.new_page()
+        try:
+            run_cuj(page)
+        finally:
+            context.close()
+            browser.close()
+
+    videos = glob.glob("frontend_videos/*.webm")
+    if videos:
+        print(f"Video saved to {videos[0]}")

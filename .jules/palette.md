@@ -48,15 +48,15 @@
 **Learning:** Disabling an active interactive element (like a button after a successful API call or during state changes) causes the browser to lose keyboard focus, dropping it to the `<body>` element. This completely breaks keyboard navigation for screen reader and keyboard-only users.
 **Action:** When an interaction results in the currently focused element becoming disabled or removed, explicitly implement programmatic focus management (using Svelte's `tick()`) to gracefully hand off focus to the next logical interactive element (e.g., from a 'Generate' button to a newly appeared 'Copy' button), or restore it when the operation completes.
 
-## $(date +%Y-%m-%d) - [Focus Management after Async Upload]
+## 2026-05-11 - [Focus Management after Async Upload]
 **Learning:** In Svelte components where interactive elements like `<input type="file">` are disabled during an asynchronous operation (e.g., file upload), the browser loses keyboard focus, dropping it back to the `<body>`.
 **Action:** When disabling/re-enabling an interactive element around async work, always use `await tick()` in the `finally` block to wait for the DOM to update (re-enabling the input), and then explicitly restore focus using `.focus()` to maintain seamless keyboard navigation.
 
-## $(date +%Y-%m-%d) - [Visual Loading Indicators on Async Buttons]
+## 2026-05-11 - [Visual Loading Indicators on Async Buttons]
 **Learning:** Changing button text (e.g., from "Generate XML" to "Generating...") during an asynchronous operation is helpful but often not enough, especially on slower connections or longer processing times. Users may fail to notice a simple text change without accompanying motion, leaving them wondering if the system is actually working.
 **Action:** Always pair text changes on async action buttons with explicit, animated visual loading indicators (like an inline spinner). This provides immediate, unmistakable visual feedback that the system is actively processing the request, drastically improving perceived performance and micro-UX.
 
-## $(date +%Y-%m-%d) - [Download Generated Files]
+## 2026-05-11 - [Download Generated Files]
 **Learning:** In applications where users configure data and generate files (like an XML simulation file), relying solely on "Copy to clipboard" functionality creates friction. Users ultimately need the file saved on disk. While they can copy and paste into a text editor, a direct "Download" button significantly streamlines their workflow and reduces the chance of manual errors.
 **Action:** When a system generates a file based on user input, always provide a direct "Download" button in addition to "Copy to clipboard" functionality. Use a Blob URL with a hidden `<a>` tag to programmatically trigger the download without requiring a server roundtrip.
 
@@ -67,3 +67,7 @@
 ## 2024-05-10 - Reducing Visual Clutter during Processing
 **Learning:** Displaying hints (like "or drag and drop a file here") when the corresponding input is disabled and cannot accept interactions adds unnecessary cognitive load and clutter during an active loading state.
 **Action:** Hide static interaction hints while the component is in a loading or processing state, ensuring the user's focus is drawn only to the progress indicator and status message.
+
+## 2026-05-11 - [Dynamic Document Titles in SPA]
+**Learning:** In a Single Page Application (SPA) or tabbed interface, the URL and visible UI might change, but the `<title>` of the document often remains static. This creates a severe accessibility issue for screen reader users and a usability issue for users with many tabs open, as they lose context of their current location within the application.
+**Action:** Always implement dynamic document titles that reflect the current view or active tab state. In Svelte, this is easily achieved using the `<svelte:head><title>...</title></svelte:head>` block bound to the active state variable.
