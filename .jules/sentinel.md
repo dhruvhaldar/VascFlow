@@ -85,3 +85,8 @@
 **Vulnerability:** Disk Exhaustion / Denial of Service (DoS)
 **Learning:** Using `upload_file.size` to conditionally bypass chunked reading and use `shutil.copyfileobj(upload_file.file, buffer)` is dangerous. An attacker can spoof the `Content-Length` header to a small value (e.g., 100 bytes) but upload a massive payload (e.g., 50GB). `shutil.copyfileobj` will blindly copy the entire stream, bypassing application-layer size limits and exhausting the server's disk space.
 **Prevention:** Never use `shutil.copyfileobj` or rely on `upload_file.size` to enforce file limits securely. Always read the file stream in chunks (e.g., `chunk = upload_file.file.read(chunk_size)`) and accumulate the bytes actually written. If the accumulated total exceeds the maximum allowed size, immediately raise an error (HTTP 413) and delete the partial file.
+
+## 2024-05-28 - [Information Disclosure Prevention via Server Header]
+**Vulnerability:** Information Disclosure (Server Implementation Leaks). FastAPI applications running on Uvicorn by default expose the server implementation and version via the `Server: uvicorn` HTTP response header.
+**Learning:** This information can aid an attacker in targeting known vulnerabilities specifically related to the server implementation. Standard FastAPI middleware executes before Uvicorn sends the response, meaning middleware cannot easily remove this header as it's appended later at the protocol level.
+**Prevention:** Always hide or disable this default header to enforce information hiding. When starting the application using `uvicorn.run()`, pass the argument `server_header=False` (e.g., `uvicorn.run(app, host=host, port=port, server_header=False)`) to prevent Uvicorn from appending it.
