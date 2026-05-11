@@ -32,6 +32,11 @@
     }
 </script>
 
+<svelte:head>
+    <title>svFSI Configurator - {tabs.find(t => t.key === activeTab)?.label || 'App'}</title>
+</svelte:head>
+
+
 <div class="app-container">
     <a href="#main-content" class="skip-link">Skip to main content</a>
     <div class="ambient ambient-1"></div>
