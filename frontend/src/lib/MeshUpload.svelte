@@ -1,5 +1,6 @@
 <script>
     import { tick } from 'svelte';
+    import { slide } from 'svelte/transition';
     import { meshMetadata, simulationConfig } from '../stores';
 
     let fileInput;
@@ -93,19 +94,19 @@
     <h3>Mesh Upload</h3>
     <input type="file" bind:this={fileInput} on:change={handleFileSelect} accept=".vtu,.vtp,.vtk" aria-label="Upload Mesh File" title={loading ? "Processing upload, please wait..." : "Choose a mesh file to upload"} disabled={loading} />
     {#if !loading}
-        <p class="drop-hint">or drag and drop a file here</p>
+        <p class="drop-hint" aria-hidden="true">{isDragging ? 'Drop file to upload...' : 'or drag and drop a file here'}</p>
     {/if}
     {#if loading}
-        <div class="loading-state" role="status" aria-live="polite">
+        <div class="loading-state" role="status" aria-live="polite" transition:slide|local>
             <span class="inline-spinner" aria-hidden="true"></span>
             <p>Processing mesh...</p>
         </div>
     {/if}
     {#if error}
-        <p class="error" role="alert" aria-live="assertive">{error}</p>
+        <p class="error" role="alert" aria-live="assertive" transition:slide|local>{error}</p>
     {/if}
     {#if $meshMetadata.n_cells > 0}
-        <div class="mesh-info">
+        <div class="mesh-info" transition:slide|local>
             <p>Loaded: {$simulationConfig.mesh.mesh_path}</p>
             <p>Cells: {$meshMetadata.n_cells}, Points: {$meshMetadata.n_points}</p>
             <p>Detected Faces: {$meshMetadata.faces.length}</p>

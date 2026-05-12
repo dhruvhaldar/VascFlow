@@ -71,3 +71,7 @@
 ## 2026-05-11 - [Dynamic Document Titles in SPA]
 **Learning:** In a Single Page Application (SPA) or tabbed interface, the URL and visible UI might change, but the `<title>` of the document often remains static. This creates a severe accessibility issue for screen reader users and a usability issue for users with many tabs open, as they lose context of their current location within the application.
 **Action:** Always implement dynamic document titles that reflect the current view or active tab state. In Svelte, this is easily achieved using the `<svelte:head><title>...</title></svelte:head>` block bound to the active state variable.
+
+## 2024-05-24 - Layout Shift Mitigation with Transitions
+**Learning:** Adding or removing elements from the DOM (like boundary condition list items or file upload status messages) causes jarring layout shifts that disrupt the user's focus and make the interface feel unpolished.
+**Action:** Always apply CSS or framework-provided transitions (like Svelte's `transition:slide|local`) to elements that conditionally mount or unmount within the normal document flow to ensure smooth, predictable layout recalculations.
