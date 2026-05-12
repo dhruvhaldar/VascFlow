@@ -209,18 +209,6 @@ def get_mesh_metadata(file_path: str):
             if name in surface.cell_data:
                 viz_surface.cell_data[name] = surface.cell_data[name]
 
-        # ⚡ Bolt: Pre-compute normals on the backend if missing.
-        # If the visualization mesh lacks point normals, vtk.js will compute them
-        # synchronously on the frontend, which freezes the browser's main thread
-        # for several seconds on large meshes. Pre-computing them in C++ via PyVista
-        # is significantly faster and eliminates the client-side UI freeze.
-        # Furthermore, setting auto_orient_normals=False and non_manifold_traversal=False
-        # skips expensive topological traversals to globally orient normals, making
-        # computation ~2-3x faster (e.g. 14s vs 33s on 17M cell mesh) with no visual
-        # degradation in vtk.js which only requires local triangle winding.
-        if 'Normals' not in viz_surface.point_data and 'Normals' not in viz_surface.cell_data:
-            viz_surface = viz_surface.compute_normals(cell_normals=False, point_normals=True, auto_orient_normals=False, non_manifold_traversal=False)
-
         # ⚡ Bolt: Decimate large visualization surfaces to optimize network and WebGL rendering.
         # If the mesh has over 100,000 cells, we reduce it to cap the size. This prevents
         # massive network payloads and severe WebGL client-side freezing, providing a
@@ -232,6 +220,21 @@ def get_mesh_metadata(file_path: str):
             if target_reduction > 0.9:
                 target_reduction = 0.9
             viz_surface = viz_surface.decimate(target_reduction)
+
+        # ⚡ Bolt: Pre-compute normals on the backend if missing.
+        # If the visualization mesh lacks point normals, vtk.js will compute them
+        # synchronously on the frontend, which freezes the browser's main thread
+        # for several seconds on large meshes. Pre-computing them in C++ via PyVista
+        # is significantly faster and eliminates the client-side UI freeze.
+        # Furthermore, setting auto_orient_normals=False and non_manifold_traversal=False
+        # skips expensive topological traversals to globally orient normals, making
+        # computation ~2-3x faster (e.g. 14s vs 33s on 17M cell mesh) with no visual
+        # degradation in vtk.js which only requires local triangle winding.
+        # ⚡ Bolt: Note - We compute normals AFTER decimation so that we only spend CPU
+        # time computing normals for the capped 100k cell geometry rather than the
+        # full massive original mesh, yielding >10x speedup for this step.
+        if 'Normals' not in viz_surface.point_data and 'Normals' not in viz_surface.cell_data:
+            viz_surface = viz_surface.compute_normals(cell_normals=False, point_normals=True, auto_orient_normals=False, non_manifold_traversal=False)
 
         # ⚡ Bolt: Disable PyVista's default zlib compression for disk writes.
         # Since the FastAPI backend already uses GZipMiddleware to compress HTTP
