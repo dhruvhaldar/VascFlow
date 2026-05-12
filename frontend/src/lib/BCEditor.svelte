@@ -1,5 +1,6 @@
 <script>
     import { tick } from 'svelte';
+    import { slide } from 'svelte/transition';
     import { simulationConfig, meshMetadata } from '../stores';
 
     let faceSelectElement;
@@ -121,7 +122,7 @@
                          rather than triggering an O(N) cascade update to re-bind
                          shifted array indices for all subsequent sibling elements. -->
                     {#each $simulationConfig.boundary_conditions as bc (bc.face_name)}
-                        <li class="bc-item">
+                        <li class="bc-item" transition:slide|local>
                             <span>{bc.face_name}: {bc.bc_type} {bc.variable}={bc.value} ({bc.profile})</span>
                             <button class="remove-btn" on:click={() => removeBC(bc.face_name)} aria-label="Remove boundary condition for {bc.face_name}" title="Remove boundary condition for {bc.face_name}">&times;</button>
                         </li>
