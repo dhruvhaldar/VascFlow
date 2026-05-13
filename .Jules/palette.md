@@ -55,3 +55,7 @@
 ## 2024-11-25 - [Preventing Copy of Stale Data]
 **Learning:** When displaying derived data (like a generated XML preview) alongside a primary "Copy" action button, leaving the copy button enabled while the derived data is in an "outdated/stale" state can lead users to accidentally copy and use invalid, stale configurations.
 **Action:** Always conditionally disable secondary action buttons (like "Copy") that depend on synchronized state when that state becomes stale. Furthermore, when disabling these buttons, always provide a dynamic `title` and `aria-label` explaining *why* they are disabled (e.g., "Settings have changed. Generate XML first to copy.") to avoid confusing users.
+
+## 2026-05-13 - [Preventing Unintended Navigation on File Drop]
+**Learning:** In SPAs with custom drag-and-drop zones (like file uploaders), if a user accidentally drops a file outside the designated area, the browser's default behavior is to navigate away from the app and open the file. This results in an immediate, complete loss of application state and a very frustrating UX.
+**Action:** Always intercept and prevent default `dragover` and `drop` events at the highest possible level (e.g., using `<svelte:window on:dragover|preventDefault on:drop|preventDefault />` in Svelte) to ensure stray file drops do not break the single-page application experience.
