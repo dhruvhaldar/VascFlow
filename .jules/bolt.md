@@ -31,3 +31,6 @@
 ## 2026-05-12 - [Optimize PyVista Mesh Operation Order]
 **Learning:** PyVista operations like `compute_normals` scale linearly with the number of cells. By performing these operations before reducing the mesh size (e.g. `decimate`), we waste CPU time computing data for elements that will immediately be discarded. On large meshes, this causes significant delays (e.g., computing normals on a 2M cell mesh takes ~1.3s, while computing them on the decimated 200k cell mesh takes ~0.1s, yielding a >10x speedup).
 **Action:** When preparing large meshes for visualization, always perform topological reduction (decimation) *before* computing rendering attributes like point normals to drastically reduce backend processing time.
+## 2025-05-13 - [Optimize PyVista Surface Decimation]
+**Learning:** PyVista's `decimate()` uses the `vtkQuadricDecimation` algorithm, which is highly accurate but slow. When simply capping cell counts for visual previews (e.g., `< 100k cells` for WebGL in vtk.js) where mathematically exact shape is not strictly necessary, `decimate_pro()` (which uses `vtkDecimatePro`) provides a >2x speedup (e.g. from 85s to 39s on a 4.5M cell mesh).
+**Action:** When dynamically decimating very large backend meshes strictly for visualization/preview purposes, always use `decimate_pro()` instead of `decimate()` to minimize backend processing latency.
