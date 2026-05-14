@@ -75,3 +75,7 @@
 ## 2024-05-24 - Layout Shift Mitigation with Transitions
 **Learning:** Adding or removing elements from the DOM (like boundary condition list items or file upload status messages) causes jarring layout shifts that disrupt the user's focus and make the interface feel unpolished.
 **Action:** Always apply CSS or framework-provided transitions (like Svelte's `transition:slide|local`) to elements that conditionally mount or unmount within the normal document flow to ensure smooth, predictable layout recalculations.
+
+## 2026-05-14 - Explicit Visual Indicators for Required Fields
+**Learning:** Relying solely on HTML5 `required` attributes creates an ambiguous experience for sighted users, as they may not know a field is mandatory until they attempt to submit the form or proceed to a next step. This lack of upfront clarity can lead to frustration and disrupted workflows.
+**Action:** Always pair HTML5 `required` attributes with an explicit visual indicator (e.g., an asterisk `*` wrapped in a screen-reader hidden span, `<span aria-hidden="true" title="Required">*</span>`) on the corresponding label. This ensures sighted users immediately understand which fields are mandatory before interacting with the form.

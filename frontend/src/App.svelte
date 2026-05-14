@@ -87,14 +87,20 @@
                     <div class="physics-config">
                         <h3>Physics</h3>
                         <label>
-                            Type
-                            <select bind:value={$simulationConfig.physics.physics_type}>
+                            <span>Type<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
+                            <select bind:value={$simulationConfig.physics.physics_type} required>
                                 <option value="Fluid">Fluid</option>
                                 <option value="Structure">Structure</option>
                             </select>
                         </label>
-                        <label>Density <input type="number" bind:value={$simulationConfig.physics.density} step="0.1" min="0" /></label>
-                        <label>Viscosity <input type="number" bind:value={$simulationConfig.physics.viscosity} step="0.01" min="0" /></label>
+                        <label>
+                            <span>Density<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
+                            <input type="number" bind:value={$simulationConfig.physics.density} step="0.1" min="0" required />
+                        </label>
+                        <label>
+                            <span>Viscosity<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
+                            <input type="number" bind:value={$simulationConfig.physics.viscosity} step="0.01" min="0" required />
+                        </label>
                     </div>
                 </div>
                 <div class="config-panel" role="tabpanel" id="panel-bcs" aria-labelledby="tab-bcs" tabindex={activeTab === 'bcs' ? 0 : -1} style="display: {activeTab === 'bcs' ? 'block' : 'none'}">
@@ -103,8 +109,14 @@
                 <div class="config-panel" role="tabpanel" id="panel-general" aria-labelledby="tab-general" tabindex={activeTab === 'general' ? 0 : -1} style="display: {activeTab === 'general' ? 'block' : 'none'}">
                     <div class="general-config">
                         <h3>General Settings</h3>
-                        <label>Time Steps <input type="number" bind:value={$simulationConfig.general.num_time_steps} min="1" /></label>
-                        <label>Step Size <input type="number" bind:value={$simulationConfig.general.time_step_size} step="0.001" min="0.001" /></label>
+                        <label>
+                            <span>Time Steps<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
+                            <input type="number" bind:value={$simulationConfig.general.num_time_steps} min="1" required />
+                        </label>
+                        <label>
+                            <span>Step Size<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
+                            <input type="number" bind:value={$simulationConfig.general.time_step_size} step="0.001" min="0.001" required />
+                        </label>
                     </div>
                 </div>
             </div>
@@ -323,14 +335,20 @@
     }
 
     label {
-        display: block;
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
         margin-bottom: 0.65rem;
         color: #dbe4ff;
     }
 
+    .required-indicator {
+        color: #ffc2c2;
+        margin-left: 0.2rem;
+    }
+
     input, select {
         width: 100%;
-        margin-top: 0.3rem;
         padding: 0.45rem 0.55rem;
         border: 1px solid rgba(255, 255, 255, 0.25);
         border-radius: 10px;
