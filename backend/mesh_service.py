@@ -118,7 +118,7 @@ def _get_unique_counts(ids):
     max_val = ids.max()
 
     # Fallback to np.unique if the range is too large to prevent huge memory allocations
-    if max_val - min_val > 100_000:
+    if max_val - min_val > 10_000_000:
         return np.unique(ids, return_counts=True)
 
     if min_val >= 0:
