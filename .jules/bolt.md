@@ -34,3 +34,6 @@
 ## 2025-05-13 - [Optimize PyVista Surface Decimation]
 **Learning:** PyVista's `decimate()` uses the `vtkQuadricDecimation` algorithm, which is highly accurate but slow. When simply capping cell counts for visual previews (e.g., `< 100k cells` for WebGL in vtk.js) where mathematically exact shape is not strictly necessary, `decimate_pro()` (which uses `vtkDecimatePro`) provides a >2x speedup (e.g. from 85s to 39s on a 4.5M cell mesh).
 **Action:** When dynamically decimating very large backend meshes strictly for visualization/preview purposes, always use `decimate_pro()` instead of `decimate()` to minimize backend processing latency.
+## 2025-05-14 - [Optimize np.bincount Unique Counting]
+**Learning:** Using `np.bincount` to optimize unique counting of integer arrays (e.g., for mesh region/face IDs) from O(N log N) to O(N) requires OOM/DoS protection. Because `np.bincount` allocates memory based on `max(ids) - min(ids)`, it must be strictly enforced with a maximum allowed range (e.g., 10,000,000) before falling back to `np.unique`. Falling back too early at smaller sizes (like 100,000) creates unnecessary O(N log N) bottlenecks for typical large meshes.
+**Action:** When using `np.bincount` on user-provided arrays, explicitly use a large but safe fallback threshold like 10,000,000 to maximize performance without allowing server OOM crashes.
