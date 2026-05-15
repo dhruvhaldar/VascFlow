@@ -5,6 +5,7 @@
     let generating = false;
     let copying = false;
     let copied = false;
+    let downloaded = false;
     let lastConfigStr = null;
     let generateBtn;
     let copyBtn;
@@ -23,6 +24,11 @@
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+
+        downloaded = true;
+        setTimeout(() => {
+            downloaded = false;
+        }, 2000);
     }
 
     async function copyXML() {
@@ -86,11 +92,13 @@
                 <button
                     on:click={downloadXML}
                     disabled={!isUpToDate}
-                    aria-label={!isUpToDate ? "Generate XML to download updated settings" : "Download generated XML file"}
+                    aria-label={!isUpToDate ? "Generate XML to download updated settings" : (downloaded ? "Downloaded XML file" : "Download generated XML file")}
                     title={!isUpToDate ? "Settings have changed. Generate XML first to download." : "Download XML"}
+                    aria-live="polite"
                     class="secondary-button"
+                    class:success={downloaded}
                 >
-                    Download
+                    {downloaded ? 'Downloaded!' : 'Download'}
                 </button>
                 <button
                     bind:this={copyBtn}
