@@ -79,3 +79,7 @@
 ## 2026-05-14 - Explicit Visual Indicators for Required Fields
 **Learning:** Relying solely on HTML5 `required` attributes creates an ambiguous experience for sighted users, as they may not know a field is mandatory until they attempt to submit the form or proceed to a next step. This lack of upfront clarity can lead to frustration and disrupted workflows.
 **Action:** Always pair HTML5 `required` attributes with an explicit visual indicator (e.g., an asterisk `*` wrapped in a screen-reader hidden span, `<span aria-hidden="true" title="Required">*</span>`) on the corresponding label. This ensures sighted users immediately understand which fields are mandatory before interacting with the form.
+
+## 2026-05-15 - Client-Side Download Visual Feedback
+**Learning:** When users trigger local browser downloads via JavaScript (e.g., creating a Blob URL and programmatically clicking an anchor tag), the action is invisible to the application state, leading to a lack of immediate UI feedback. In a React/Svelte SPA, this can make the button feel unresponsive.
+**Action:** Treat local downloads similarly to 'Copy to Clipboard' actions. Introduce a temporary (e.g., 2 second) state change that updates the button text to 'Downloaded!', applies a success styling class, and uses `aria-live="polite"` to ensure the action is confirmed for both sighted and screen-reader users.
