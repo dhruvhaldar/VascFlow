@@ -83,3 +83,11 @@
 ## 2026-05-15 - Client-Side Download Visual Feedback
 **Learning:** When users trigger local browser downloads via JavaScript (e.g., creating a Blob URL and programmatically clicking an anchor tag), the action is invisible to the application state, leading to a lack of immediate UI feedback. In a React/Svelte SPA, this can make the button feel unresponsive.
 **Action:** Treat local downloads similarly to 'Copy to Clipboard' actions. Introduce a temporary (e.g., 2 second) state change that updates the button text to 'Downloaded!', applies a success styling class, and uses `aria-live="polite"` to ensure the action is confirmed for both sighted and screen-reader users.
+
+## 2026-05-16 - Programmatic Error Association for Inputs
+**Learning:** When displaying inline error messages (like a failed file upload), visually placing the error text near the input is insufficient for screen reader users. Without programmatic association, they may not understand which field caused the error or what the error is when navigating directly to the input.
+**Action:** Always use `aria-invalid="true"` on the input element when an error state exists, and dynamically link the error message to the input using `aria-describedby="[error-id]"`. Ensure the error element has a corresponding `id`.
+
+## 2026-05-16 - Announcing Success States for Async Operations
+**Learning:** When an async operation completes successfully and displays new information (like file upload results), sighted users see the updated UI immediately. However, screen reader users may not be aware the operation succeeded unless they manually explore the DOM.
+**Action:** Apply `role="status" aria-live="polite"` to success states or summary info containers that appear after an action to ensure the completion and resulting details are proactively announced to assistive technologies.

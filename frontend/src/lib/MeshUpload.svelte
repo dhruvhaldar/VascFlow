@@ -92,7 +92,7 @@
     on:drop|preventDefault={handleDrop}
 >
     <h3>Mesh Upload</h3>
-    <input type="file" bind:this={fileInput} on:change={handleFileSelect} accept=".vtu,.vtp,.vtk" aria-label="Upload Mesh File" title={loading ? "Processing upload, please wait..." : "Choose a mesh file to upload"} disabled={loading} />
+    <input type="file" bind:this={fileInput} on:change={handleFileSelect} accept=".vtu,.vtp,.vtk" aria-label="Upload Mesh File" title={loading ? "Processing upload, please wait..." : "Choose a mesh file to upload"} disabled={loading} aria-invalid={error ? "true" : null} aria-describedby={error ? "mesh-upload-error" : null} />
     {#if !loading}
         <p class="drop-hint" aria-hidden="true">{isDragging ? 'Drop file to upload...' : 'or drag and drop a file here'}</p>
     {/if}
@@ -103,10 +103,10 @@
         </div>
     {/if}
     {#if error}
-        <p class="error" role="alert" aria-live="assertive" transition:slide|local>{error}</p>
+        <p id="mesh-upload-error" class="error" role="alert" aria-live="assertive" transition:slide|local>{error}</p>
     {/if}
     {#if $meshMetadata.n_cells > 0}
-        <div class="mesh-info" transition:slide|local>
+        <div class="mesh-info" role="status" aria-live="polite" transition:slide|local>
             <p>Loaded: {$simulationConfig.mesh.mesh_path}</p>
             <p>Cells: {$meshMetadata.n_cells}, Points: {$meshMetadata.n_points}</p>
             <p>Detected Faces: {$meshMetadata.faces.length}</p>
