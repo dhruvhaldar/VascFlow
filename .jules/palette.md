@@ -83,3 +83,7 @@
 ## 2026-05-15 - Client-Side Download Visual Feedback
 **Learning:** When users trigger local browser downloads via JavaScript (e.g., creating a Blob URL and programmatically clicking an anchor tag), the action is invisible to the application state, leading to a lack of immediate UI feedback. In a React/Svelte SPA, this can make the button feel unresponsive.
 **Action:** Treat local downloads similarly to 'Copy to Clipboard' actions. Introduce a temporary (e.g., 2 second) state change that updates the button text to 'Downloaded!', applies a success styling class, and uses `aria-live="polite"` to ensure the action is confirmed for both sighted and screen-reader users.
+
+## 2024-05-18 - Improve Screen Reader Experience for File Upload states
+**Learning:** Screen readers do not automatically read dynamically generated elements that are distant in the DOM from the currently focused element, and simply restoring focus to an `<input type="file">` without `aria-invalid` does not prompt the screen reader to read nearby error text.
+**Action:** Always associate inline error messages with the relevant input using `aria-describedby` and set `aria-invalid="true"`. Also, dynamically generated success states (like "Loaded: filename") must explicitly define `role="status"` and `aria-live="polite"` to proactively announce success without a focus change.
