@@ -99,8 +99,11 @@ def test_process_mesh_missing_filename():
     mock_upload = UploadFile(file=MockFile(), filename=None)
     mock_upload.size = 100
 
+    from fastapi import BackgroundTasks
+    mock_bg = BackgroundTasks()
+
     with pytest.raises(HTTPException) as exc_info:
-        main.process_mesh(mock_upload)
+        main.process_mesh(mock_upload, background_tasks=mock_bg)
 
     assert exc_info.value.status_code == 400
     assert "validation error" in exc_info.value.detail.lower()
@@ -121,8 +124,11 @@ def test_process_mesh_rejects_large_files(monkeypatch):
 
     mock_upload = MockFile()
 
+    from fastapi import BackgroundTasks
+    mock_bg = BackgroundTasks()
+
     with pytest.raises(HTTPException) as exc_info:
-        main.process_mesh(mock_upload)
+        main.process_mesh(mock_upload, background_tasks=mock_bg)
 
     assert exc_info.value.status_code == 413
     assert "File too large" in exc_info.value.detail
@@ -154,8 +160,10 @@ def test_chunked_upload_size_limit():
     mock_upload = FakeUploadFile()
 
     import pytest
+    from fastapi import BackgroundTasks
+    mock_bg = BackgroundTasks()
     with pytest.raises(HTTPException) as exc_info:
-        main.process_mesh(mock_upload)
+        main.process_mesh(mock_upload, background_tasks=mock_bg)
 
     assert exc_info.value.status_code == 413
     assert "File too large" in exc_info.value.detail
