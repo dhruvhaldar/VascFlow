@@ -37,3 +37,6 @@
 ## 2025-05-14 - [Optimize np.bincount Unique Counting]
 **Learning:** Using `np.bincount` to optimize unique counting of integer arrays (e.g., for mesh region/face IDs) from O(N log N) to O(N) requires OOM/DoS protection. Because `np.bincount` allocates memory based on `max(ids) - min(ids)`, it must be strictly enforced with a maximum allowed range (e.g., 10,000,000) before falling back to `np.unique`. Falling back too early at smaller sizes (like 100,000) creates unnecessary O(N log N) bottlenecks for typical large meshes.
 **Action:** When using `np.bincount` on user-provided arrays, explicitly use a large but safe fallback threshold like 10,000,000 to maximize performance without allowing server OOM crashes.
+## 2024-05-18 - [Optimize File IO]
+**Learning:** Offloading non-essential, synchronous file system operations (like iterative cleanups via `os.scandir` in `_cleanup_old_uploads`) to FastAPI's `BackgroundTasks` rather than executing them in the main request-response path significantly optimizes the Time-To-First-Byte (TTFB) on critical API endpoints. It removes blocking execution delays for simple responses.
+**Action:** Use `background_tasks.add_task(function)` to process non-essential IO tasks to prevent API delays.

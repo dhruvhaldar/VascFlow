@@ -46,9 +46,6 @@ def save_upload_file(upload_file: UploadFile) -> str:
     when called from a sync endpoint, preventing event loop blocking during
     large file IO and CPU-heavy PyVista operations.
     """
-    # Trigger cleanup of old files before saving new ones
-    _cleanup_old_uploads()
-
     # 🛡️ Sentinel: Validate that the filename exists before performing string operations
     # to prevent unhandled AttributeError exceptions that cause 500 Internal Server Errors.
     if not upload_file.filename:

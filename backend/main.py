@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, HTTPException, Request, Response
+from fastapi import FastAPI, UploadFile, HTTPException, Request, Response, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from pydantic import BaseModel
@@ -9,7 +9,7 @@ import logging
 import time
 from models import SimulationConfig
 from xml_generator import generate_svfsi_xml
-from mesh_service import save_upload_file, get_mesh_metadata, cleanup_mesh_files
+from mesh_service import save_upload_file, get_mesh_metadata, cleanup_mesh_files, _cleanup_old_uploads
 
 app = FastAPI()
 
@@ -119,7 +119,7 @@ async def generate_input(config: SimulationConfig):
         raise HTTPException(status_code=500, detail="An error occurred while generating the input XML.")
 
 @app.post("/process_mesh")
-def process_mesh(file: UploadFile):
+def process_mesh(file: UploadFile, background_tasks: BackgroundTasks):
     """
     ⚡ Bolt: Sync endpoint to offload CPU-bound work.
     Using 'def' instead of 'async def' tells FastAPI to run this endpoint
@@ -127,6 +127,9 @@ def process_mesh(file: UploadFile):
     PyVista mesh reading and surface extraction from blocking the main
     asyncio event loop.
     """
+    # ⚡ Bolt: Offload file cleanup to a background task
+    background_tasks.add_task(_cleanup_old_uploads)
+
     # 🛡️ Sentinel: Enforce application-layer file size limit (50MB) to prevent DoS attacks.
     MAX_FILE_SIZE = 50 * 1024 * 1024
     if file.size is not None and file.size > MAX_FILE_SIZE:
