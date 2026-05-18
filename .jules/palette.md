@@ -83,3 +83,7 @@
 ## 2026-05-15 - Client-Side Download Visual Feedback
 **Learning:** When users trigger local browser downloads via JavaScript (e.g., creating a Blob URL and programmatically clicking an anchor tag), the action is invisible to the application state, leading to a lack of immediate UI feedback. In a React/Svelte SPA, this can make the button feel unresponsive.
 **Action:** Treat local downloads similarly to 'Copy to Clipboard' actions. Introduce a temporary (e.g., 2 second) state change that updates the button text to 'Downloaded!', applies a success styling class, and uses `aria-live="polite"` to ensure the action is confirmed for both sighted and screen-reader users.
+
+## 2024-11-26 - [Dynamic Error and Success Announcements for Asynchronous Operations]
+**Learning:** When errors or success states are rendered asynchronously in a form or an interactive area, assistive technologies might not proactively announce them, or users might lose context if the error message is simply rendered visually nearby.
+**Action:** Programmatically associate inline error text with input elements using `aria-invalid` and `aria-describedby` to ensure screen readers announce validation errors. Additionally, use `role="status"` and `aria-live="polite"` on dynamically revealed UI elements (such as success states or loaded file data) so screen readers proactively announce the update.
