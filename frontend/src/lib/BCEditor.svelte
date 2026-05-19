@@ -165,12 +165,40 @@
         border-radius: 10px;
         background: rgba(12, 18, 40, 0.45);
         color: #f3f6ff;
+        transition: border-color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .add-bc input:hover:not(:disabled), .add-bc select:hover:not(:disabled) {
+        border-color: rgba(255, 255, 255, 0.4);
+        background: rgba(16, 24, 50, 0.6);
+    }
+
+    .add-bc input:invalid, .add-bc select:invalid {
+        border-color: rgba(255, 77, 77, 0.5);
+        background: rgba(255, 77, 77, 0.05);
     }
 
     .submit-action {
         display: flex;
         align-items: flex-end;
         padding-bottom: 0.1rem;
+    }
+
+    .submit-action button {
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(80, 126, 246, 0.45);
+        color: #f7f9ff;
+        border-radius: 10px;
+        padding: 0.45rem 0.8rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: inherit;
+        font-size: 0.9rem;
+    }
+
+    .submit-action button:hover:not(:disabled) {
+        background: rgba(80, 126, 246, 0.65);
+        border-color: rgba(255, 255, 255, 0.35);
     }
 
     .required-indicator {

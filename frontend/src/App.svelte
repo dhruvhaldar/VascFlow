@@ -354,6 +354,17 @@
         border-radius: 10px;
         background: rgba(12, 18, 40, 0.45);
         color: #f3f6ff;
+        transition: border-color 0.2s ease, background-color 0.2s ease;
+    }
+
+    input:hover:not(:disabled), select:hover:not(:disabled) {
+        border-color: rgba(255, 255, 255, 0.4);
+        background: rgba(16, 24, 50, 0.6);
+    }
+
+    input:invalid, select:invalid {
+        border-color: rgba(255, 77, 77, 0.5);
+        background: rgba(255, 77, 77, 0.05);
     }
 
     /* Fallback styling mirroring Viewer.svelte */
