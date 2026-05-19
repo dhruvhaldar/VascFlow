@@ -136,8 +136,13 @@
             </div>
         {:else if !isUpToDate}
             <div class="empty-state stale-overlay">
-                <p>⚠️ Outdated Preview</p>
-                <p class="subtext">Settings have changed. Click 'Generate XML' to update.</p>
+                {#if generating}
+                    <span class="inline-spinner" style="width: 24px; height: 24px; margin-bottom: 0.5rem;" aria-hidden="true"></span>
+                    <p>Generating updated XML...</p>
+                {:else}
+                    <p>⚠️ Outdated Preview</p>
+                    <p class="subtext">Settings have changed. Click 'Generate XML' to update.</p>
+                {/if}
             </div>
         {/if}
         <textarea
@@ -199,6 +204,11 @@
         padding: 0.45rem 0.8rem;
         cursor: pointer;
         transition: all 0.2s ease;
+    }
+
+    button:hover:not(:disabled) {
+        background: rgba(80, 126, 246, 0.65);
+        border-color: rgba(255, 255, 255, 0.35);
     }
 
     button.secondary-button {
