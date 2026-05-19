@@ -90,3 +90,8 @@
 **Vulnerability:** Information Disclosure (Server Implementation Leaks). FastAPI applications running on Uvicorn by default expose the server implementation and version via the `Server: uvicorn` HTTP response header.
 **Learning:** This information can aid an attacker in targeting known vulnerabilities specifically related to the server implementation. Standard FastAPI middleware executes before Uvicorn sends the response, meaning middleware cannot easily remove this header as it's appended later at the protocol level.
 **Prevention:** Always hide or disable this default header to enforce information hiding. When starting the application using `uvicorn.run()`, pass the argument `server_header=False` (e.g., `uvicorn.run(app, host=host, port=port, server_header=False)`) to prevent Uvicorn from appending it.
+
+## 2026-05-18 - Prevent Caching of Sensitive Static Artifacts
+**Vulnerability:** Information Leakage via Browser/Proxy Caching for Static Files
+**Learning:** While dynamic endpoints (like `/generate_input`) might have caching disabled explicitly, serving user-generated artifacts (like uploaded or derived meshes) using FastAPI's `StaticFiles` skips custom response handlers by default unless a middleware sits in front of it. Without proper Cache-Control headers, intermediate proxies or the browser cache could store sensitive proprietary meshes.
+**Prevention:** Ensure that global HTTP middleware adds explicit `Cache-Control` headers (e.g., `Cache-Control: no-store, no-cache, must-revalidate, max-age=0` and `Pragma: no-cache`) to static file routes (e.g., `/files/`) handling sensitive artifacts, preventing them from being cached unintentionally.
