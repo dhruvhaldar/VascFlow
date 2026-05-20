@@ -95,11 +95,11 @@
                         </label>
                         <label>
                             <span>Density<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                            <input type="number" bind:value={$simulationConfig.physics.density} step="0.1" min="0" required />
+                            <input type="number" bind:value={$simulationConfig.physics.density} step="0.1" min="0" placeholder="e.g. 1.06" required />
                         </label>
                         <label>
                             <span>Viscosity<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                            <input type="number" bind:value={$simulationConfig.physics.viscosity} step="0.01" min="0" required />
+                            <input type="number" bind:value={$simulationConfig.physics.viscosity} step="0.01" min="0" placeholder="e.g. 0.04" required />
                         </label>
                     </div>
                 </div>
@@ -111,11 +111,11 @@
                         <h3>General Settings</h3>
                         <label>
                             <span>Time Steps<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                            <input type="number" bind:value={$simulationConfig.general.num_time_steps} min="1" required />
+                            <input type="number" bind:value={$simulationConfig.general.num_time_steps} min="1" placeholder="e.g. 100" required />
                         </label>
                         <label>
                             <span>Step Size<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                            <input type="number" bind:value={$simulationConfig.general.time_step_size} step="0.001" min="0.001" required />
+                            <input type="number" bind:value={$simulationConfig.general.time_step_size} step="0.001" min="0.001" placeholder="e.g. 0.001" required />
                         </label>
                     </div>
                 </div>
@@ -167,7 +167,10 @@
         outline-offset: 2px;
     }
 
-    :global(button:disabled) {
+    :global(button:disabled),
+    :global(input:disabled),
+    :global(select:disabled),
+    :global(textarea:disabled) {
         opacity: 0.5;
         cursor: not-allowed;
     }
