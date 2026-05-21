@@ -49,6 +49,15 @@
         }
     }
 
+    function handleKeydown(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            e.preventDefault();
+            if (!generating && !isUpToDate) {
+                generate();
+            }
+        }
+    }
+
     async function generate() {
         // ⚡ Bolt: Cache generated XML to prevent redundant API calls.
         // If the simulation configuration hasn't changed since the last generation,
@@ -84,6 +93,8 @@
     }
 </script>
 
+<svelte:window on:keydown={handleKeydown} />
+
 <div class="xml-preview">
     <div class="header">
         <h3>Input File Preview</h3>
@@ -118,7 +129,8 @@
                 on:click={generate}
                 disabled={generating || isUpToDate}
                 aria-busy={generating}
-                title={isUpToDate ? "XML is up to date with current settings" : "Generate XML"}
+                title={isUpToDate ? "XML is up to date with current settings" : "Generate XML (Cmd/Ctrl + Enter)"}
+                aria-keyshortcuts="Control+Enter Meta+Enter"
                 class="generate-btn"
             >
                 {#if generating}
