@@ -82,7 +82,18 @@
             }
         }
     }
+
+    function handleGlobalKeydown(event) {
+        if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+            event.preventDefault();
+            if (!generating && !isUpToDate) {
+                generate();
+            }
+        }
+    }
 </script>
+
+<svelte:window on:keydown={handleGlobalKeydown} />
 
 <div class="xml-preview">
     <div class="header">
@@ -118,7 +129,8 @@
                 on:click={generate}
                 disabled={generating || isUpToDate}
                 aria-busy={generating}
-                title={isUpToDate ? "XML is up to date with current settings" : "Generate XML"}
+                title={isUpToDate ? "XML is up to date with current settings" : "Generate XML (Ctrl/Cmd + Enter)"}
+                aria-keyshortcuts="Control+Enter Meta+Enter"
                 class="generate-btn"
             >
                 {#if generating}
