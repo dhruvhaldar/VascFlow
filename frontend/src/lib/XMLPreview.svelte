@@ -136,7 +136,13 @@
                 {#if generating}
                     <span class="inline-spinner" aria-hidden="true"></span>
                 {/if}
-                {generating ? 'Generating...' : (isUpToDate ? 'Up to Date' : 'Generate XML')}
+                {#if generating}
+                    Generating...
+                {:else if isUpToDate}
+                    Up to Date
+                {:else}
+                    Generate XML <kbd class="shortcut-hint" aria-hidden="true">⌘/Ctrl+↵</kbd>
+                {/if}
             </button>
         </div>
     </div>
@@ -144,7 +150,7 @@
         {#if !$generatedXML}
             <div class="empty-state">
                 <p>No XML generated yet.</p>
-                <p class="subtext">Configure your simulation and click 'Generate XML'.</p>
+                <p class="subtext">Configure your simulation and click 'Generate XML' (or press <kbd class="shortcut-hint">⌘/Ctrl+↵</kbd>).</p>
             </div>
         {:else if !isUpToDate}
             <div class="empty-state stale-overlay">
@@ -153,7 +159,7 @@
                     <p>Generating updated XML...</p>
                 {:else}
                     <p>⚠️ Outdated Preview</p>
-                    <p class="subtext">Settings have changed. Click 'Generate XML' to update.</p>
+                    <p class="subtext">Settings have changed. Click 'Generate XML' (or press <kbd class="shortcut-hint">⌘/Ctrl+↵</kbd>) to update.</p>
                 {/if}
             </div>
         {/if}
@@ -293,5 +299,16 @@
 
     @keyframes spin {
         to { transform: rotate(360deg); }
+    }
+
+    .shortcut-hint {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.75rem;
+        padding: 0.1rem 0.3rem;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #b8c5ef;
+        margin-left: 0.2rem;
     }
 </style>
