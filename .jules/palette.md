@@ -99,3 +99,7 @@
 ## 2024-05-24 - [Global Keyboard Shortcuts for Primary Actions]
 **Learning:** In configuration-heavy interfaces where users frequently iterate on settings and generate outputs (like an XML configurator), constantly reaching for the mouse to click the primary action button interrupts the workflow. Relying solely on standard tab navigation can be tedious when focus is deep within a form.
 **Action:** Implement global keyboard shortcuts (e.g., `Ctrl+Enter` or `Cmd+Enter`) for frequent, primary actions. Enhance discoverability and accessibility by documenting the shortcut in the associated button's `title` attribute and applying the `aria-keyshortcuts` attribute (e.g., `aria-keyshortcuts="Control+Enter Meta+Enter"`).
+
+## 2026-05-14 - [Visual Discoverability of Keyboard Shortcuts]
+**Learning:** Hiding keyboard shortcuts solely within `title` tooltips or ARIA attributes (`aria-keyshortcuts`) severely limits their discoverability for sighted users who don't proactively hover over every button. Power users often miss these efficiency gains.
+**Action:** Always surface primary keyboard shortcuts visually within the UI by embedding styled `<kbd>` tags directly into button labels or empty state instructions. This immediately teaches users the faster workflow without requiring explicit exploration.
