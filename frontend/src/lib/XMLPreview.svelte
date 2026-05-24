@@ -11,7 +11,8 @@
     let copyBtn;
 
     $: currentConfigStr = JSON.stringify($simulationConfig);
-    $: isUpToDate = $generatedXML && $generatedXML !== "Error generating XML" && currentConfigStr === lastConfigStr;
+    $: isError = $generatedXML === "Error generating XML";
+    $: isUpToDate = $generatedXML && !isError && currentConfigStr === lastConfigStr;
 
     function downloadXML() {
         if (!$generatedXML) return;
@@ -99,7 +100,7 @@
     <div class="header">
         <h3>Input File Preview</h3>
         <div class="actions">
-            {#if $generatedXML && $generatedXML !== "Error generating XML"}
+            {#if $generatedXML && !isError}
                 <button
                     on:click={downloadXML}
                     disabled={!isUpToDate}
@@ -152,6 +153,11 @@
                 <p>No XML generated yet.</p>
                 <p class="subtext">Configure your simulation and click 'Generate XML' (or press <kbd class="shortcut-hint">⌘/Ctrl+↵</kbd>).</p>
             </div>
+        {:else if isError}
+            <div class="empty-state error-state" role="alert" aria-live="assertive">
+                <p>❌ Failed to generate XML</p>
+                <p class="subtext">Please check your simulation settings (ensure density/viscosity are valid) and try again.</p>
+            </div>
         {:else if !isUpToDate}
             <div class="empty-state stale-overlay">
                 {#if generating}
@@ -163,15 +169,18 @@
                 {/if}
             </div>
         {/if}
-        <textarea
-            readonly
-            class:stale={$generatedXML && !isUpToDate}
-            value={$generatedXML}
-            aria-label="Generated XML Preview"
-            aria-live="polite"
-            tabindex={!$generatedXML || !isUpToDate ? -1 : 0}
-            aria-hidden={!$generatedXML || !isUpToDate ? "true" : "false"}
-        ></textarea>
+
+        {#if !isError}
+            <textarea
+                readonly
+                class:stale={$generatedXML && !isUpToDate}
+                value={$generatedXML}
+                aria-label="Generated XML Preview"
+                aria-live="polite"
+                tabindex={!$generatedXML || !isUpToDate ? -1 : 0}
+                aria-hidden={!$generatedXML || !isUpToDate ? "true" : "false"}
+            ></textarea>
+        {/if}
     </div>
 </div>
 
@@ -275,6 +284,18 @@
 
     .empty-state p {
         margin: 0.25rem 0;
+    }
+
+    .error-state {
+        z-index: 5;
+        background: rgba(255, 77, 77, 0.1);
+        border: 1px solid rgba(255, 77, 77, 0.3);
+        border-radius: 10px;
+    }
+
+    .error-state p:first-child {
+        color: #ffc2c2;
+        font-weight: 600;
     }
 
     .empty-state .subtext {
