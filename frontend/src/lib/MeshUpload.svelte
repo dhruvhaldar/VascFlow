@@ -29,6 +29,16 @@
         if (!fileInput.files.length) return;
         const file = fileInput.files[0];
 
+        // ⚡ Bolt: Add an early return for files larger than 50MB.
+        // This prevents the browser from allocating memory for the file in a FormData
+        // object and initiating a network request that the backend will inevitably
+        // reject. This saves massive network bandwidth and provides instant UI feedback.
+        if (file.size > 50 * 1024 * 1024) {
+            error = "File too large. Maximum size is 50MB.";
+            if (fileInput) fileInput.value = "";
+            return;
+        }
+
         loading = true;
         error = "";
 
