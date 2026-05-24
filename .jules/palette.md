@@ -103,3 +103,7 @@
 ## 2026-05-14 - [Visual Discoverability of Keyboard Shortcuts]
 **Learning:** Hiding keyboard shortcuts solely within `title` tooltips or ARIA attributes (`aria-keyshortcuts`) severely limits their discoverability for sighted users who don't proactively hover over every button. Power users often miss these efficiency gains.
 **Action:** Always surface primary keyboard shortcuts visually within the UI by embedding styled `<kbd>` tags directly into button labels or empty state instructions. This immediately teaches users the faster workflow without requiring explicit exploration.
+
+## 2024-05-24 - [Explicit Error States for Data Generation]
+**Learning:** When a data generation process (like an API call to generate XML) fails, simply replacing the output variable with a string like "Error generating XML" and leaving it inside a standard read-only textarea provides a poor user experience. It lacks visual prominence, does not immediately signal a system failure, and can confuse users who might mistakenly copy the error text thinking it is valid output.
+**Action:** When a generation or data-fetching process fails, avoid injecting raw error text directly into the expected output fields. Instead, explicitly detect the error state, hide the target field (and any associated 'Copy' or 'Download' actions), and display a visually distinct error overlay (e.g., a div with `role="alert"`) containing both the error indication and actionable recovery instructions.
