@@ -48,3 +48,7 @@
 ## 2026-05-20 - [Frontend File Size Optimization]
 **Learning:** While the backend correctly validates file size limits (e.g. 50MB) and returns a 413 response, relying solely on this for large uploads is extremely inefficient. The browser will still allocate massive amounts of memory to read the file into a `FormData` object and block the network connection trying to stream the payload, leading to delayed feedback and wasted bandwidth.
 **Action:** Always implement an early return check for `file.size` on the frontend before generating `FormData` or calling `fetch`. This avoids freezing the browser tab, saves significant network overhead, and instantly surfaces the validation error to the user without any backend latency.
+
+## 2024-05-25 - Debounce High-Frequency Background Tasks
+**Learning:** Running full directory traversals (`os.scandir`) combined with `stat()` on every execution of a high-frequency endpoint (like file uploads) creates severe I/O bottlenecks and CPU exhaustion under concurrent load. Even though `os.scandir` is fast, `st_mtime` access triggers expensive system calls.
+**Action:** Debounce expensive background cleanup tasks (e.g., using a global timestamp check) so they run periodically (e.g., once every 5 minutes) rather than strictly linearly per-request.
