@@ -8,6 +8,7 @@ import numpy as np
 import uuid
 
 UPLOAD_DIR = "uploads"
+_LAST_CLEANUP_TIME = 0
 
 def _cleanup_old_uploads(max_age_hours=1):
     """
@@ -15,7 +16,18 @@ def _cleanup_old_uploads(max_age_hours=1):
     Even with file size limits, unrestricted accumulation of files allows attackers
     to exhaust disk space over time.
     """
+    global _LAST_CLEANUP_TIME
     now = time.time()
+
+    # ⚡ Bolt: Debounce disk cleanup to prevent I/O storms.
+    # Running a full directory traversal (os.scandir) and stat() check on EVERY
+    # file upload creates severe disk I/O and CPU overhead under concurrent load.
+    # Debouncing this background task to run at most once every 5 minutes
+    # provides a massive throughput boost while still enforcing disk limits.
+    if now - _LAST_CLEANUP_TIME < 300:
+        return
+    _LAST_CLEANUP_TIME = now
+
     max_age_seconds = max_age_hours * 3600
 
     try:
