@@ -107,3 +107,7 @@
 ## 2024-05-24 - [Explicit Error States for Data Generation]
 **Learning:** When a data generation process (like an API call to generate XML) fails, simply replacing the output variable with a string like "Error generating XML" and leaving it inside a standard read-only textarea provides a poor user experience. It lacks visual prominence, does not immediately signal a system failure, and can confuse users who might mistakenly copy the error text thinking it is valid output.
 **Action:** When a generation or data-fetching process fails, avoid injecting raw error text directly into the expected output fields. Instead, explicitly detect the error state, hide the target field (and any associated 'Copy' or 'Download' actions), and display a visually distinct error overlay (e.g., a div with `role="alert"`) containing both the error indication and actionable recovery instructions.
+
+## 2026-05-25 - [Error Feedback for 3D Viewer]
+**Learning:** When integrating 3D visualizers (like vtk.js), avoid silent failures during mesh loading or parsing. Silent failures leave the user with a blank canvas and no indication of what went wrong.
+**Action:** Always wrap the loading logic in a try/catch block and upon error, conditionally render a clear, actionable error overlay (with `role="alert"`) over the viewer canvas to explicitly inform the user.

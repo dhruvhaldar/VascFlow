@@ -12,6 +12,7 @@
     let renderWindow;
     let currentVizFile = "";
     let isLoading = false;
+    let hasError = false;
 
     // ⚡ Bolt: Track vtk.js objects for explicit memory management
     let currentReader = null;
@@ -63,6 +64,7 @@
         if (!renderer) return;
 
         isLoading = true;
+        hasError = false;
 
         // ⚡ Bolt: Handle both external backend URLs and local Blob URLs.
         // If it's a blob: URL (from MeshUpload bypass), we load it directly without
@@ -93,6 +95,7 @@
             renderWindow.render();
         } catch (e) {
             console.error("Failed to load mesh", e);
+            hasError = true;
         } finally {
             isLoading = false;
         }
@@ -105,6 +108,8 @@
         <span role="status" aria-live="polite">
             {#if isLoading}
                 Loading 3D model...
+            {:else if hasError}
+                <span class="error-text">Failed to load 3D model</span>
             {:else if $meshMetadata.viz_file}
                 Previewing {$simulationConfig.mesh.mesh_path || 'Mesh'}
             {:else}
@@ -113,10 +118,16 @@
         </span>
     </div>
     <div class="viewer-container" data-testid="viewer-canvas">
-        {#if !$meshMetadata.viz_file && !isLoading}
+        {#if !$meshMetadata.viz_file && !isLoading && !hasError}
             <div class="empty-state">
                 <p>No mesh uploaded yet.</p>
                 <p class="subtext">Upload a .vtu or .vtp file from the Mesh tab to visualize it here.</p>
+            </div>
+        {/if}
+        {#if hasError}
+            <div class="empty-state error-state" role="alert" aria-live="assertive">
+                <p>❌ Failed to load 3D model</p>
+                <p class="subtext">The file might be corrupted or unsupported. Try re-uploading.</p>
             </div>
         {/if}
         {#if isLoading}
@@ -208,5 +219,15 @@
 
     @keyframes spin {
         to { transform: rotate(360deg); }
+    }
+
+    .error-state {
+        background: rgba(255, 77, 77, 0.1);
+        border-radius: 14px;
+        z-index: 10;
+    }
+
+    .error-text {
+        color: #ffc2c2;
     }
 </style>
