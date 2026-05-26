@@ -66,8 +66,17 @@
                         class:active={activeTab === tab.key}
                         on:click={() => activeTab = tab.key}
                         on:keydown={(e) => handleTabKeydown(e, i)}
+                        aria-label="{tab.label}{tab.key === 'mesh' && $simulationConfig.mesh.mesh_path ? ' (Mesh loaded)' : ''}{tab.key === 'bcs' && $simulationConfig.boundary_conditions.length > 0 ? ` (${$simulationConfig.boundary_conditions.length} boundary conditions added)` : ''}"
                     >
                         {tab.label}
+                        {#if tab.key === 'mesh' && $simulationConfig.mesh.mesh_path}
+                            <span class="tab-badge success-badge" aria-hidden="true" title="Mesh loaded">✓</span>
+                        {/if}
+                        {#if tab.key === 'bcs' && $simulationConfig.boundary_conditions.length > 0}
+                            <span class="tab-badge" class:active-badge={activeTab === 'bcs'} aria-hidden="true">
+                                {$simulationConfig.boundary_conditions.length}
+                            </span>
+                        {/if}
                     </button>
                 {/each}
             </div>
@@ -276,6 +285,11 @@
     }
 
     .tabs-nav button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+
         border: 1px solid rgba(255, 255, 255, 0.2);
         background: rgba(255, 255, 255, 0.08);
         color: #dbe3ff;
@@ -395,4 +409,28 @@
         border-radius: 14px;
         background: radial-gradient(circle at 10% 10%, rgba(59, 94, 176, 0.35), rgba(4, 5, 14, 0.8));
     }
+
+    .tab-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 10px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0 0.4rem;
+        min-width: 1.25rem;
+        height: 1.25rem;
+        box-sizing: border-box;
+    }
+
+    .tab-badge.active-badge {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .tab-badge.success-badge {
+        background: rgba(76, 175, 80, 0.35);
+        color: #fff;
+    }
+
 </style>
