@@ -111,3 +111,7 @@
 ## 2026-05-25 - [Error Feedback for 3D Viewer]
 **Learning:** When integrating 3D visualizers (like vtk.js), avoid silent failures during mesh loading or parsing. Silent failures leave the user with a blank canvas and no indication of what went wrong.
 **Action:** Always wrap the loading logic in a try/catch block and upon error, conditionally render a clear, actionable error overlay (with `role="alert"`) over the viewer canvas to explicitly inform the user.
+
+## 2024-11-26 - [System Status via Tab Badges]
+**Learning:** When users must switch between multiple configuration tabs (like "Mesh" and "Boundary Conditions"), they can easily lose track of system state completed in other tabs. Forcing users to click back simply to check if a file was uploaded or how many items were added increases cognitive load and interaction cost.
+**Action:** Append contextual, dynamic visual badges (e.g., a checkmark for "loaded" or a numeric count) directly into the tab labels. Use `aria-hidden="true"` on the visual badge HTML to prevent screen readers from reading raw numbers, and simultaneously update the tab's `aria-label` with an explicit description (e.g., "Boundary Conditions (2 boundary conditions added)") to ensure equivalent status visibility for assistive technologies.

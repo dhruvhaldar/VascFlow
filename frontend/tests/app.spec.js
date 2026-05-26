@@ -18,32 +18,32 @@ test.describe('svFSI Configurator App', () => {
 
   test('has correct title and header', async ({ page }) => {
     const header = page.locator('header h1');
-    await expect(header).toHaveText('svFSI Configurator');
+    await expect(header).toContainText('svFSI Configurator');
   });
 
   test('sidebar navigation works', async ({ page }) => {
-    await expect(page.locator('.sidebar .tabs-nav button.active')).toHaveText('Mesh');
+    await expect(page.locator('.sidebar .tabs-nav button.active')).toContainText('Mesh');
     await expect(page.locator('#panel-mesh')).toContainText('Upload a .vtu or .vtp file');
 
     await page.getByRole('tab', { name: 'Physics' }).click();
-    await expect(page.locator('.sidebar .tabs-nav button.active')).toHaveText('Physics');
+    await expect(page.locator('.sidebar .tabs-nav button.active')).toContainText('Physics');
     await expect(page.locator('.physics-config')).toBeVisible();
 
     await page.getByRole('tab', { name: 'Boundary Conditions' }).click();
-    await expect(page.locator('.sidebar .tabs-nav button.active')).toHaveText('Boundary Conditions');
+    await expect(page.locator('.sidebar .tabs-nav button.active')).toContainText('Boundary Conditions');
     await expect(page.locator('h3:has-text("Boundary Conditions")')).toBeVisible();
 
     await page.getByRole('tab', { name: 'General' }).click();
-    await expect(page.locator('.sidebar .tabs-nav button.active')).toHaveText('General');
+    await expect(page.locator('.sidebar .tabs-nav button.active')).toContainText('General');
     await expect(page.locator('.general-config')).toBeVisible();
 
     // Test Home and End keys for tab navigation
     await page.keyboard.press('Home');
-    await expect(page.locator('.sidebar .tabs-nav button.active')).toHaveText('Mesh');
+    await expect(page.locator('.sidebar .tabs-nav button.active')).toContainText('Mesh');
     await expect(page.locator('#panel-mesh')).toContainText('Upload a .vtu or .vtp file');
 
     await page.keyboard.press('End');
-    await expect(page.locator('.sidebar .tabs-nav button.active')).toHaveText('General');
+    await expect(page.locator('.sidebar .tabs-nav button.active')).toContainText('General');
     await expect(page.locator('.general-config')).toBeVisible();
   });
 
