@@ -65,7 +65,7 @@
         <form class="add-bc" on:submit|preventDefault={addBC}>
             <label>
                 <span>Face<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                <select bind:this={faceSelectElement} bind:value={selectedFace} required>
+                <select bind:this={faceSelectElement} bind:value={selectedFace} aria-label="Select Face" title="Select Face" required>
                     <option value="" disabled selected>Select Face</option>
                     <!-- ⚡ Bolt: Use a keyed each block for face options. -->
                     {#each $meshMetadata.faces as face (face.id)}
@@ -81,7 +81,7 @@
 
             <label>
                 <span>Type<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                <select bind:value={bcType} required>
+                <select bind:value={bcType} aria-label="Boundary Condition Type" title="Boundary Condition Type" required>
                     <option value="Dirichlet">Dirichlet</option>
                     <option value="Neumann">Neumann</option>
                     <option value="Resistance">Resistance</option>
@@ -90,17 +90,17 @@
 
             <label>
                 <span>Variable<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                <input type="text" bind:value={variable} placeholder="Variable (e.g. Velocity)" required />
+                <input type="text" bind:value={variable} aria-label="Variable Name" title="Variable Name" placeholder="Variable (e.g. Velocity)" required />
             </label>
 
             <label>
                 <span>Value<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                <input type="number" bind:value={value} step="0.1" placeholder="e.g. 10.5" required />
+                <input type="number" bind:value={value} aria-label="Value" title="Value" step="0.1" placeholder="e.g. 10.5" required />
             </label>
 
             <label>
                 <span>Profile<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                <select bind:value={profile} required>
+                <select bind:value={profile} aria-label="Profile" title="Profile" required>
                     <option value="Flat">Flat</option>
                     <option value="Parabolic">Parabolic</option>
                 </select>
