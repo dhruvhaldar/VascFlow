@@ -59,3 +59,7 @@
 ## 2026-05-13 - [Preventing Unintended Navigation on File Drop]
 **Learning:** In SPAs with custom drag-and-drop zones (like file uploaders), if a user accidentally drops a file outside the designated area, the browser's default behavior is to navigate away from the app and open the file. This results in an immediate, complete loss of application state and a very frustrating UX.
 **Action:** Always intercept and prevent default `dragover` and `drop` events at the highest possible level (e.g., using `<svelte:window on:dragover|preventDefault on:drop|preventDefault />` in Svelte) to ensure stray file drops do not break the single-page application experience.
+
+## 2024-11-26 - [Redundant aria-label on Implicitly Labeled Form Fields]
+**Learning:** Adding `aria-label` or `title` attributes directly to `<select>` or `<input>` elements that are already properly wrapped inside a native `<label>` tag (implicit labeling) is an accessibility anti-pattern. Screen readers prioritize `aria-label` over the visible label's text content. This causes critical contextual information inside the `<label>`—such as required field indicators (e.g., "*") or dynamic subtext—to be skipped during announcement, resulting in a degraded experience for assistive technology users.
+**Action:** When a form field is explicitly or implicitly labeled by a `<label>` element, do not add redundant `aria-label` or `title` attributes to the input itself. Let the native association handle the announcement so all visible textual context within the label is properly read to the user.

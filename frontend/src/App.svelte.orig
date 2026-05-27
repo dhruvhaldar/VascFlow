@@ -359,13 +359,6 @@
         color: #dbe4ff;
     }
 
-    .unit-hint {
-        color: #9fb0e6;
-        font-size: 0.85em;
-        font-weight: 400;
-        margin-left: 0.2rem;
-    }
-
     .required-indicator {
         color: #ffc2c2;
         margin-left: 0.2rem;
