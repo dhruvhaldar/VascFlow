@@ -259,7 +259,11 @@ def get_mesh_metadata(file_path: str):
         # time computing normals for the capped 100k cell geometry rather than the
         # full massive original mesh, yielding >10x speedup for this step.
         if 'Normals' not in viz_surface.point_data and 'Normals' not in viz_surface.cell_data:
-            viz_surface = viz_surface.compute_normals(cell_normals=False, point_normals=True, auto_orient_normals=False, non_manifold_traversal=False)
+            # ⚡ Bolt: Perform operations inplace to save memory and CPU
+            # Instead of assigning the result of compute_normals back to viz_surface (which creates a copy by default),
+            # use inplace=True to modify the existing mesh directly. This saves significant memory
+            # allocation overhead and provides a minor CPU speedup.
+            viz_surface.compute_normals(cell_normals=False, point_normals=True, auto_orient_normals=False, non_manifold_traversal=False, inplace=True)
 
         # ⚡ Bolt: Disable PyVista's default zlib compression for disk writes.
         # Since the FastAPI backend already uses GZipMiddleware to compress HTTP
