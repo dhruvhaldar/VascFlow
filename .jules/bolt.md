@@ -52,3 +52,7 @@
 ## 2024-05-25 - Debounce High-Frequency Background Tasks
 **Learning:** Running full directory traversals (`os.scandir`) combined with `stat()` on every execution of a high-frequency endpoint (like file uploads) creates severe I/O bottlenecks and CPU exhaustion under concurrent load. Even though `os.scandir` is fast, `st_mtime` access triggers expensive system calls.
 **Action:** Debounce expensive background cleanup tasks (e.g., using a global timestamp check) so they run periodically (e.g., once every 5 minutes) rather than strictly linearly per-request.
+
+## 2025-05-15 - [Optimize PyVista Memory Usage with Inplace Operations]
+**Learning:** By default, PyVista operations like `compute_normals()` allocate and return a completely new copy of the dataset. On large meshes (e.g., millions of cells), this creates severe memory pressure and triggers garbage collection overhead.
+**Action:** When performing geometric operations on PyVista meshes where preserving the original, pre-operation state is not required (like final preparation of a visualization surface), always pass `inplace=True`. This modifies the existing C++ VTK data structures directly, eliminating the memory allocation overhead and providing a small CPU speedup.
