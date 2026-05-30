@@ -104,11 +104,11 @@
                         </label>
                         <label>
                             <span>Density <span class="unit-hint">(g/cm³)</span><span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                            <input type="number" bind:value={$simulationConfig.physics.density} step="0.1" min="0" placeholder="e.g. 1.06" required />
+                            <input type="number" bind:value={$simulationConfig.physics.density} step="any" min="0" placeholder="e.g. 1.06" required />
                         </label>
                         <label>
                             <span>Viscosity <span class="unit-hint">(Poise)</span><span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                            <input type="number" bind:value={$simulationConfig.physics.viscosity} step="0.01" min="0" placeholder="e.g. 0.04" required />
+                            <input type="number" bind:value={$simulationConfig.physics.viscosity} step="any" min="0" placeholder="e.g. 0.04" required />
                         </label>
                     </div>
                 </div>
@@ -124,7 +124,7 @@
                         </label>
                         <label>
                             <span>Step Size <span class="unit-hint">(s)</span><span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                            <input type="number" bind:value={$simulationConfig.general.time_step_size} step="0.001" min="0.001" placeholder="e.g. 0.001" required />
+                            <input type="number" bind:value={$simulationConfig.general.time_step_size} step="any" min="0.001" placeholder="e.g. 0.001" required />
                         </label>
                     </div>
                 </div>
