@@ -7,7 +7,7 @@
     let selectedFace = "";
     let bcType = "Dirichlet";
     let variable = "Velocity";
-    let value = 0.0;
+    let value = "";
     let profile = "Flat";
 
     // ⚡ Bolt: Cache used face names in a reactive Set for O(1) lookups.
