@@ -63,3 +63,7 @@
 ## 2024-11-26 - [Redundant aria-label on Implicitly Labeled Form Fields]
 **Learning:** Adding `aria-label` or `title` attributes directly to `<select>` or `<input>` elements that are already properly wrapped inside a native `<label>` tag (implicit labeling) is an accessibility anti-pattern. Screen readers prioritize `aria-label` over the visible label's text content. This causes critical contextual information inside the `<label>`—such as required field indicators (e.g., "*") or dynamic subtext—to be skipped during announcement, resulting in a degraded experience for assistive technology users.
 **Action:** When a form field is explicitly or implicitly labeled by a `<label>` element, do not add redundant `aria-label` or `title` attributes to the input itself. Let the native association handle the announcement so all visible textual context within the label is properly read to the user.
+
+## 2024-11-27 - [Visible Placeholders by Avoiding Arbitrary Zero Defaults]
+**Learning:** Pre-filling numeric inputs with arbitrary zero defaults (e.g., `let value = 0.0;`) forces users to manually select and delete the value before typing, and permanently hides helpful `placeholder` text (like `e.g. 10.5`).
+**Action:** When a numeric input has no logical default value (like an arbitrary boundary condition magnitude), initialize its bound variable to `""` or `null` instead of `0` to ensure the placeholder is visible and reduce unnecessary keystrokes. Rely on native HTML5 validation (`required`) to enforce data entry.
