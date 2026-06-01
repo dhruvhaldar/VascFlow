@@ -50,6 +50,8 @@
         }
     }
 
+    let errorDetail = "";
+
     async function generate() {
         // ⚡ Bolt: Cache generated XML to prevent redundant API calls.
         // If the simulation configuration hasn't changed since the last generation,
@@ -60,17 +62,25 @@
         }
 
         generating = true;
+        errorDetail = "";
         try {
             const response = await fetch("http://localhost:8000/generate_input", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: currentConfigStr
             });
+
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.detail || "Failed to generate XML");
+            }
+
             const data = await response.json();
             generatedXML.set(data.xml);
             lastConfigStr = currentConfigStr;
         } catch (e) {
             console.error(e);
+            errorDetail = e.message;
             generatedXML.set("Error generating XML");
             lastConfigStr = null;
         } finally {
@@ -156,7 +166,7 @@
         {:else if isError}
             <div class="empty-state error-state" role="alert" aria-live="assertive">
                 <p>❌ Failed to generate XML</p>
-                <p class="subtext">Please check your simulation settings (ensure density/viscosity are valid) and try again.</p>
+                <p class="subtext">{errorDetail || "Please check your simulation settings (ensure density/viscosity are valid) and try again."}</p>
             </div>
         {:else if !isUpToDate}
             <div class="empty-state stale-overlay">
