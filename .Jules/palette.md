@@ -67,3 +67,7 @@
 ## 2024-11-27 - [Visible Placeholders by Avoiding Arbitrary Zero Defaults]
 **Learning:** Pre-filling numeric inputs with arbitrary zero defaults (e.g., `let value = 0.0;`) forces users to manually select and delete the value before typing, and permanently hides helpful `placeholder` text (like `e.g. 10.5`).
 **Action:** When a numeric input has no logical default value (like an arbitrary boundary condition magnitude), initialize its bound variable to `""` or `null` instead of `0` to ensure the placeholder is visible and reduce unnecessary keystrokes. Rely on native HTML5 validation (`required`) to enforce data entry.
+
+## 2024-11-28 - [Detailed API Error Feedback via Response OK check]
+**Learning:** When using `fetch()` in frontend code to make API calls, a 400 or 500 backend error does not throw an exception in the `try/catch` block.
+**Action:** To prevent silent failures and provide actionable feedback, always explicitly check `!response.ok`, extract the specific error detail from the JSON response, and surface it in the UI instead of a generic fallback message.
