@@ -95,3 +95,8 @@
 **Vulnerability:** Information Leakage via Browser/Proxy Caching for Static Files
 **Learning:** While dynamic endpoints (like `/generate_input`) might have caching disabled explicitly, serving user-generated artifacts (like uploaded or derived meshes) using FastAPI's `StaticFiles` skips custom response handlers by default unless a middleware sits in front of it. Without proper Cache-Control headers, intermediate proxies or the browser cache could store sensitive proprietary meshes.
 **Prevention:** Ensure that global HTTP middleware adds explicit `Cache-Control` headers (e.g., `Cache-Control: no-store, no-cache, must-revalidate, max-age=0` and `Pragma: no-cache`) to static file routes (e.g., `/files/`) handling sensitive artifacts, preventing them from being cached unintentionally.
+
+## 2026-05-18 - Restrict Pydantic Models with Regex Patterns
+**Vulnerability:** Insufficient Input Validation (Path Traversal/Command Injection Defense in Depth)
+**Learning:** While the backend doesn't actively read `mesh_path` inside `models.py` (it just generates XML), an attacker could inject shell metacharacters or path traversal payloads into this string field (e.g. `../../../etc/passwd` or `| rm`). If the downstream solver uses this XML configuration directly in a shell command or file system operation without validation, it becomes an exploit.
+**Prevention:** Add strict regex patterns to file path fields in Pydantic models (e.g., `pattern=r"^[a-zA-Z0-9_/\-\.]+$"`) to strictly enforce that the path only contains expected, safe characters before it is serialized and passed to downstream systems.

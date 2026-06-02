@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Literal
 
 class GeneralConfig(BaseModel):
     num_time_steps: int = Field(100, ge=1, le=10000000, description="Number of time steps")
@@ -8,7 +8,8 @@ class GeneralConfig(BaseModel):
     start_time_step: int = Field(0, ge=0, le=10000000, description="Start time step (for restart)")
 
 class MeshConfig(BaseModel):
-    mesh_path: str = Field(..., max_length=1024, description="Path to the mesh file (.vtu/.vtp)")
+    # 🛡️ Sentinel: Add regex pattern to prevent downstream path traversal or shell injection payloads in the generated XML.
+    mesh_path: str = Field(..., max_length=1024, pattern=r"^[a-zA-Z0-9_/\-\.]+$", description="Path to the mesh file (.vtu/.vtp)")
     domain_type: str = Field("Fluid", max_length=100, description="Domain type: Fluid, Solid, etc.")
 
 class BoundaryCondition(BaseModel):
