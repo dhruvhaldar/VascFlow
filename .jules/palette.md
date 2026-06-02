@@ -119,3 +119,7 @@
 ## 2024-05-30 - Conflicting Validation on Scientific Numeric Inputs
 **Learning:** Using strict `step` attributes (e.g., `step="0.1"`) on `type="number"` inputs for continuous scientific values (like Density, Viscosity, etc.) can cause unexpected HTML5 validation errors (`:invalid`). When the user inputs a suggested or valid scientific value that falls outside the defined step interval, modern frameworks (like Svelte) may silently pass `null` or `undefined` instead of the typed value, causing downstream data processing or generation logic to fail completely without explicit user feedback on why.
 **Action:** When capturing continuous scientific data or high-precision numbers where the specific granularity is unconstrained or unpredictable, always use `step="any"` on `<input type="number">` elements. This bypasses the native step mismatch validation while still preserving numeric type checks and mobile numeric keypad affordances.
+
+## 2024-06-02 - [Auto-select Readonly Textareas]
+**Learning:** When presenting large blocks of generated code or text in a readonly textarea, users almost exclusively intend to copy the entire content. Forcing them to manually drag-select or use `Cmd+A` adds unnecessary friction and risks partial copies.
+**Action:** Add `on:click` and `on:focus` handlers to automatically select all text (`e.target.select()`) in readonly textareas that contain generated outputs. This anticipates the user's primary intent and streamlines the workflow.

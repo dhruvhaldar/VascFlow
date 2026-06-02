@@ -55,7 +55,7 @@ test.describe('svFSI Configurator App', () => {
       });
     });
 
-    await page.getByRole('button', { name: 'Generate XML' }).click();
+    await page.getByRole('button', { name: /Generate XML/ }).click();
     await expect(page.getByLabel('Generated XML Preview')).toHaveValue(/<svFSIFile>/);
   });
 
