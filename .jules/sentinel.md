@@ -100,3 +100,8 @@
 **Vulnerability:** Insufficient Input Validation (Path Traversal/Command Injection Defense in Depth)
 **Learning:** While the backend doesn't actively read `mesh_path` inside `models.py` (it just generates XML), an attacker could inject shell metacharacters or path traversal payloads into this string field (e.g. `../../../etc/passwd` or `| rm`). If the downstream solver uses this XML configuration directly in a shell command or file system operation without validation, it becomes an exploit.
 **Prevention:** Add strict regex patterns to file path fields in Pydantic models (e.g., `pattern=r"^[a-zA-Z0-9_/\-\.]+$"`) to strictly enforce that the path only contains expected, safe characters before it is serialized and passed to downstream systems.
+
+## 2026-05-18 - Restrict All Pydantic String Fields with Regex
+**Vulnerability:** Insufficient Input Validation (Defense in Depth against Command/XML Injection)
+**Learning:** While `mesh_path` had a regex pattern to prevent path traversal, other string fields like `face_name`, `bc_type`, and `variable` were only restricted by length. If a user crafts a malicious JSON payload with shell metacharacters in these fields, they could be serialized into the XML and executed by a vulnerable downstream solver.
+**Prevention:** Apply strict regex patterns (e.g., `^[a-zA-Z0-9_ \-\.]+$`) to ALL user-controlled string fields in Pydantic models to ensure the backend only emits safe, predictable configuration data.
