@@ -10,25 +10,26 @@ class GeneralConfig(BaseModel):
 class MeshConfig(BaseModel):
     # 🛡️ Sentinel: Add regex pattern to prevent downstream path traversal or shell injection payloads in the generated XML.
     mesh_path: str = Field(..., max_length=1024, pattern=r"^[a-zA-Z0-9_/\-\.]+$", description="Path to the mesh file (.vtu/.vtp)")
-    domain_type: str = Field("Fluid", max_length=100, description="Domain type: Fluid, Solid, etc.")
+    domain_type: str = Field("Fluid", max_length=100, pattern=r"^[a-zA-Z0-9_]+$", description="Domain type: Fluid, Solid, etc.")
 
 class BoundaryCondition(BaseModel):
-    face_name: str = Field(..., max_length=255)
-    bc_type: str = Field("Dirichlet", max_length=100, description="Type: Dirichlet, Neumann, Resistance, etc.")
-    variable: str = Field("Velocity", max_length=100, description="Variable: Velocity, Pressure, Displacement")
+    # 🛡️ Sentinel: Enforce strict regex patterns on all string fields to prevent downstream command/XML injection.
+    face_name: str = Field(..., max_length=255, pattern=r"^[a-zA-Z0-9_ \-\.]+$")
+    bc_type: str = Field("Dirichlet", max_length=100, pattern=r"^[a-zA-Z0-9_]+$", description="Type: Dirichlet, Neumann, Resistance, etc.")
+    variable: str = Field("Velocity", max_length=100, pattern=r"^[a-zA-Z0-9_]+$", description="Variable: Velocity, Pressure, Displacement")
     value: float = Field(0.0, ge=-1e10, le=1e10, description="Value for constant BC")
-    profile: Optional[str] = Field("Flat", max_length=100, description="Profile: Flat, Parabolic, User_Defined")
+    profile: Optional[str] = Field("Flat", max_length=100, pattern=r"^[a-zA-Z0-9_]+$", description="Profile: Flat, Parabolic, User_Defined")
     face_id: Optional[int] = Field(None, ge=0, le=10000000) # Filled from mesh metadata
 
 class MaterialProperty(BaseModel):
-    name: str = Field(..., max_length=255)
+    name: str = Field(..., max_length=255, pattern=r"^[a-zA-Z0-9_ \-\.]+$")
     value: float = Field(..., ge=-1e10, le=1e10)
 
 class PhysicsConfig(BaseModel):
-    physics_type: str = Field("Fluid", max_length=100, description="Physics type: Fluid, Structure, FSI")
+    physics_type: str = Field("Fluid", max_length=100, pattern=r"^[a-zA-Z0-9_]+$", description="Physics type: Fluid, Structure, FSI")
     density: float = Field(1.06, gt=0, le=100000)
     viscosity: float = Field(0.04, ge=0, le=100000)
-    material_model: str = Field("Newtonian", max_length=100, description="Material model")
+    material_model: str = Field("Newtonian", max_length=100, pattern=r"^[a-zA-Z0-9_]+$", description="Material model")
     properties: List[MaterialProperty] = Field([], max_length=1000, description="List of material properties")
 
 class SimulationConfig(BaseModel):
