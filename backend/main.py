@@ -19,6 +19,26 @@ RATE_LIMIT_MAX = 30  # requests per window
 RATE_LIMIT_WINDOW = 60  # window in seconds
 
 @app.middleware("http")
+async def limit_request_size(request: Request, call_next):
+    """
+    🛡️ Sentinel: Enforce a strict maximum Content-Length for JSON APIs (2MB)
+    to prevent Memory Exhaustion (DoS). Pydantic only validates limits *after*
+    loading the entire JSON payload into memory, making endpoints vulnerable
+    to massive bodies if not capped at the HTTP layer.
+    """
+    if request.url.path != "/process_mesh":
+        # /process_mesh handles its own large file upload streaming limits safely.
+        content_length = request.headers.get("content-length")
+        if content_length:
+            try:
+                if int(content_length) > 2 * 1024 * 1024:  # 2 MB limit
+                    return Response(content="Payload too large", status_code=413)
+            except ValueError:
+                return Response(content="Invalid content-length", status_code=400)
+
+    return await call_next(request)
+
+@app.middleware("http")
 async def rate_limiter(request: Request, call_next):
     if request.url.path in ("/generate_input", "/process_mesh"):
         # 🛡️ Sentinel: Rely on request.client.host which is safely populated by Uvicorn's
