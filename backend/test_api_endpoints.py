@@ -109,6 +109,17 @@ def test_process_mesh_missing_filename():
     assert "validation error" in exc_info.value.detail.lower()
 
 
+def test_generate_input_rejects_large_payload():
+    large_payload = "A" * (3 * 1024 * 1024)  # 3 MB string
+    response = client.post(
+        "/generate_input",
+        content=large_payload,
+        headers={"Content-Length": str(len(large_payload))}
+    )
+    assert response.status_code == 413
+    assert response.text == "Payload too large"
+
+
 def test_process_mesh_rejects_large_files(monkeypatch):
     import main
     from io import BytesIO

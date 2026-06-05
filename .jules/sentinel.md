@@ -105,3 +105,8 @@
 **Vulnerability:** Insufficient Input Validation (Defense in Depth against Command/XML Injection)
 **Learning:** While `mesh_path` had a regex pattern to prevent path traversal, other string fields like `face_name`, `bc_type`, and `variable` were only restricted by length. If a user crafts a malicious JSON payload with shell metacharacters in these fields, they could be serialized into the XML and executed by a vulnerable downstream solver.
 **Prevention:** Apply strict regex patterns (e.g., `^[a-zA-Z0-9_ \-\.]+$`) to ALL user-controlled string fields in Pydantic models to ensure the backend only emits safe, predictable configuration data.
+
+## 2026-05-18 - Prevent Application-Layer Memory Exhaustion (DoS) via JSON Payloads
+**Vulnerability:** Memory Exhaustion / Denial of Service (DoS)
+**Learning:** Pydantic in FastAPI validates payload limits (e.g., `max_length` constraints) *after* loading the entire JSON payload into a Python dictionary. An attacker can send a massive JSON payload (e.g., a 1GB string or array) that respects the `Content-Type: application/json` but crashes the server due to Memory Exhaustion before Pydantic can even reject it.
+**Prevention:** Enforce a strict HTTP-layer `Content-Length` limit (e.g., 2MB) for standard JSON APIs using a custom FastAPI middleware. This drops maliciously large requests *before* the application attempts to buffer and parse the body, protecting the server's memory.
