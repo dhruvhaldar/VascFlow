@@ -104,18 +104,30 @@
 
 <div class="viewer-wrap">
     <div class="viewer-header">
-        <h3>3D Visualizer</h3>
-        <span role="status" aria-live="polite">
-            {#if isLoading}
-                Loading 3D model...
-            {:else if hasError}
-                <span class="error-text">Failed to load 3D model</span>
-            {:else if $meshMetadata.viz_file}
-                Previewing {$simulationConfig.mesh.mesh_path || 'Mesh'}
-            {:else}
-                Upload a mesh to render it
-            {/if}
-        </span>
+        <div class="title-group">
+            <h3>3D Visualizer</h3>
+            <span role="status" aria-live="polite">
+                {#if isLoading}
+                    Loading 3D model...
+                {:else if hasError}
+                    <span class="error-text">Failed to load 3D model</span>
+                {:else if $meshMetadata.viz_file}
+                    Previewing {$simulationConfig.mesh.mesh_path || 'Mesh'}
+                {:else}
+                    Upload a mesh to render it
+                {/if}
+            </span>
+        </div>
+        {#if $meshMetadata.viz_file && !isLoading && !hasError}
+            <button
+                class="reset-btn"
+                on:click={() => { if (renderer) { renderer.resetCamera(); renderWindow.render(); } }}
+                aria-label="Reset 3D camera view"
+                title="Reset View"
+            >
+                <span aria-hidden="true">⟲</span> Reset
+            </button>
+        {/if}
     </div>
     <div class="viewer-container" data-testid="viewer-canvas">
         {#if !$meshMetadata.viz_file && !isLoading && !hasError}
@@ -174,6 +186,17 @@
         gap: 0.75rem;
     }
 
+    .viewer-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+    }
+
+    .title-group {
+        display: flex;
+        flex-direction: column;
+    }
+
     .viewer-header h3 {
         margin: 0;
     }
@@ -181,6 +204,25 @@
     .viewer-header span {
         color: #9fb0e6;
         font-size: 0.85rem;
+    }
+
+    .reset-btn {
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.08);
+        color: #dbe3ff;
+        border-radius: 8px;
+        padding: 0.25rem 0.6rem;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .reset-btn:hover {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.35);
     }
 
     .viewer-container {
