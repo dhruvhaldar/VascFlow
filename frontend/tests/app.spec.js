@@ -146,7 +146,7 @@ test.describe('svFSI Configurator App', () => {
       buffer: Buffer.from('dummy data')
     });
 
-    await expect(page.locator('.viewer-header span')).toContainText('Previewing dummy_mesh.vtu');
+    await expect(page.locator('.viewer-header span[role="status"]')).toContainText('Previewing dummy_mesh.vtu');
     await expect(page.getByTestId('viewer-canvas')).toBeVisible();
   });
 });

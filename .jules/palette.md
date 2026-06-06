@@ -123,3 +123,6 @@
 ## 2024-06-02 - [Auto-select Readonly Textareas]
 **Learning:** When presenting large blocks of generated code or text in a readonly textarea, users almost exclusively intend to copy the entire content. Forcing them to manually drag-select or use `Cmd+A` adds unnecessary friction and risks partial copies.
 **Action:** Add `on:click` and `on:focus` handlers to automatically select all text (`e.target.select()`) in readonly textareas that contain generated outputs. This anticipates the user's primary intent and streamlines the workflow.
+## 2026-06-06 - [Added Reset Camera Button to 3D Viewer]
+**Learning:** In the 3D Viewer, users can get lost after panning, zooming or rotating. There's no way to get back to the original view if they lose track of the object without reloading the file, creating a frustrating experience.
+**Action:** Implemented a visible 'Reset View' button in the viewer header that calls `renderer.resetCamera()` and re-renders the scene, allowing users to quickly return to a normalized orientation.
