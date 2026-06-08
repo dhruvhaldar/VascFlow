@@ -71,3 +71,7 @@
 ## 2024-11-28 - [Detailed API Error Feedback via Response OK check]
 **Learning:** When using `fetch()` in frontend code to make API calls, a 400 or 500 backend error does not throw an exception in the `try/catch` block.
 **Action:** To prevent silent failures and provide actionable feedback, always explicitly check `!response.ok`, extract the specific error detail from the JSON response, and surface it in the UI instead of a generic fallback message.
+
+## 2024-11-29 - [Focus Management and Asynchronous DOM Updates in Svelte]
+**Learning:** When navigating between components or tabs, computing state changes (like `activeTab = newKey`) and immediately calling `.focus()` on a dynamically-bound element often fails in Svelte because the DOM updates asynchronously. If the element's focusability (e.g., `tabindex="0"`) depends on the new state, a synchronous `.focus()` call executes *before* the DOM reflects the state, breaking the keyboard navigation experience.
+**Action:** Always insert `await tick();` (imported from `svelte`) between updating component state and attempting to shift focus to an element that depends on that state change. This ensures the browser's focus is correctly shifted only after the DOM has been fully rendered.

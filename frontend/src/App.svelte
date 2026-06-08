@@ -1,4 +1,5 @@
 <script>
+    import { tick } from 'svelte';
     import MeshUpload from './lib/MeshUpload.svelte';
     import BCEditor from './lib/BCEditor.svelte';
     import XMLPreview from './lib/XMLPreview.svelte';
@@ -13,7 +14,7 @@
         { key: 'general', label: 'General' }
     ];
 
-    function handleTabKeydown(e, index) {
+    async function handleTabKeydown(e, index) {
         let newIndex = index;
         if (e.key === 'ArrowRight') {
             newIndex = (index + 1) % tabs.length;
@@ -27,6 +28,7 @@
         if (newIndex !== index) {
             e.preventDefault();
             activeTab = tabs[newIndex].key;
+            await tick();
             document.getElementById(`tab-${tabs[newIndex].key}`)?.focus();
         }
     }
