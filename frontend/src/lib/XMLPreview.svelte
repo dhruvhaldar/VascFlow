@@ -72,7 +72,13 @@
 
             if (!response.ok) {
                 const errData = await response.json().catch(() => ({}));
-                throw new Error(errData.detail || "Failed to generate XML");
+                let errMsg = "Failed to generate XML";
+                if (errData.detail) {
+                    errMsg = Array.isArray(errData.detail)
+                        ? errData.detail.map(d => `${d.loc ? d.loc[d.loc.length - 1] + ': ' : ''}${d.msg}`).join(", ")
+                        : errData.detail;
+                }
+                throw new Error(errMsg);
             }
 
             const data = await response.json();
