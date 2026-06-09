@@ -75,3 +75,7 @@
 ## 2024-11-29 - [Focus Management and Asynchronous DOM Updates in Svelte]
 **Learning:** When navigating between components or tabs, computing state changes (like `activeTab = newKey`) and immediately calling `.focus()` on a dynamically-bound element often fails in Svelte because the DOM updates asynchronously. If the element's focusability (e.g., `tabindex="0"`) depends on the new state, a synchronous `.focus()` call executes *before* the DOM reflects the state, breaking the keyboard navigation experience.
 **Action:** Always insert `await tick();` (imported from `svelte`) between updating component state and attempting to shift focus to an element that depends on that state change. This ensures the browser's focus is correctly shifted only after the DOM has been fully rendered.
+
+## 2024-11-30 - [Handling FastAPI Validation Arrays in Error Messages]
+**Learning:** When surfacing API errors from a FastAPI backend using `errData.detail`, validation errors (HTTP 422) return `detail` as an array of objects, not a string. Passing this array directly to `new Error()` or injecting it into the UI casts it to `[object Object]`, hiding the actionable error text from the user and causing confusion.
+**Action:** Always check if `errData.detail` is an array. If so, map over the array to extract the `.msg` (and optionally `.loc`) fields and join them into a readable string before throwing the error to ensure users receive clear, actionable feedback.
