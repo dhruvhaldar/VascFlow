@@ -28,6 +28,9 @@ async def limit_request_size(request: Request, call_next):
     """
     if request.url.path != "/process_mesh":
         # /process_mesh handles its own large file upload streaming limits safely.
+        transfer_encoding = request.headers.get("transfer-encoding", "")
+        if "chunked" in transfer_encoding.lower():
+            return Response(content="Chunked requests not supported", status_code=411)
         content_length = request.headers.get("content-length")
         if content_length:
             try:

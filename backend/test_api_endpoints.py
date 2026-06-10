@@ -178,3 +178,16 @@ def test_chunked_upload_size_limit():
 
     assert exc_info.value.status_code == 413
     assert "File too large" in exc_info.value.detail
+
+def test_chunked_json_upload_bypass_rejected():
+    def generate_large_payload():
+        yield b'{"general": {"num_time_steps": 20, "time_step_size": 0.005, "save_results_frequency": 5, "start_time_step": 0},'
+        yield b'"mesh": {"mesh_path": "mesh.vtu", "domain_type": "Fluid"},'
+        yield b'"physics": {"physics_type": "Fluid", "density": 1.06, "viscosity": 0.04, "material_model": "Newtonian", "properties": []},'
+        yield b'"boundary_conditions": [],'
+        # Large payload
+        yield b'"dummy": "' + b'A' * (3 * 1024 * 1024) + b'"}'
+
+    response = client.post("/generate_input", content=generate_large_payload())
+    assert response.status_code == 411
+    assert response.text == "Chunked requests not supported"
