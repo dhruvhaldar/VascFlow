@@ -1,5 +1,6 @@
 <script>
     import { onMount } from 'svelte';
+    import { fade } from 'svelte/transition';
     import { meshMetadata, simulationConfig } from '../stores';
     import vtkGenericRenderWindow from '@kitware/vtk.js/Rendering/Misc/GenericRenderWindow';
     import vtkXMLPolyDataReader from '@kitware/vtk.js/IO/XML/XMLPolyDataReader';
@@ -131,19 +132,19 @@
     </div>
     <div class="viewer-container" data-testid="viewer-canvas">
         {#if !$meshMetadata.viz_file && !isLoading && !hasError}
-            <div class="empty-state">
+            <div class="empty-state" transition:fade|local={{ duration: 150 }}>
                 <p>No mesh uploaded yet.</p>
                 <p class="subtext">Upload a .vtu or .vtp file from the Mesh tab to visualize it here.</p>
             </div>
         {/if}
         {#if hasError}
-            <div class="empty-state error-state" role="alert" aria-live="assertive">
+            <div class="empty-state error-state" role="alert" aria-live="assertive" transition:fade|local={{ duration: 150 }}>
                 <p>❌ Failed to load 3D model</p>
                 <p class="subtext">The file might be corrupted or unsupported. Try re-uploading.</p>
             </div>
         {/if}
         {#if isLoading}
-            <div class="loading-overlay" aria-hidden="true">
+            <div class="loading-overlay" aria-hidden="true" transition:fade|local={{ duration: 150 }}>
                 <div class="spinner"></div>
                 <p>Loading 3D model...</p>
             </div>
