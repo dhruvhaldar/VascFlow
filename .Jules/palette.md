@@ -79,3 +79,7 @@
 ## 2024-11-30 - [Handling FastAPI Validation Arrays in Error Messages]
 **Learning:** When surfacing API errors from a FastAPI backend using `errData.detail`, validation errors (HTTP 422) return `detail` as an array of objects, not a string. Passing this array directly to `new Error()` or injecting it into the UI casts it to `[object Object]`, hiding the actionable error text from the user and causing confusion.
 **Action:** Always check if `errData.detail` is an array. If so, map over the array to extract the `.msg` (and optionally `.loc`) fields and join them into a readable string before throwing the error to ensure users receive clear, actionable feedback.
+
+## 2024-12-01 - [Preventing Jarring State Changes on Absolute Overlays]
+**Learning:** When displaying loading states, empty states, or error overlays that are absolutely positioned over existing content (like a viewer canvas or textarea), relying solely on `#if` blocks without transitions causes them to instantly pop in and out. This creates a visually jarring UX, especially for brief loading operations, and violates the principle that state changes should feel smooth and continuous.
+**Action:** Always apply a CSS transition or framework-provided animation (like Svelte's `transition:fade|local={{ duration: 150 }}`) to conditionally rendered, absolute-positioned overlay elements. This ensures they crossfade smoothly over the underlying content, significantly improving visual polish and perceived performance.

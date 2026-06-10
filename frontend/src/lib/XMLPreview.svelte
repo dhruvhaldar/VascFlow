@@ -1,5 +1,6 @@
 <script>
     import { tick } from 'svelte';
+    import { fade } from 'svelte/transition';
     import { simulationConfig, generatedXML } from '../stores';
 
     let generating = false;
@@ -165,17 +166,17 @@
     </div>
     <div class="preview-container">
         {#if !$generatedXML}
-            <div class="empty-state">
+            <div class="empty-state" transition:fade|local={{ duration: 150 }}>
                 <p>No XML generated yet.</p>
                 <p class="subtext">Configure your simulation and click 'Generate XML' (or press <kbd class="shortcut-hint">⌘/Ctrl+↵</kbd>).</p>
             </div>
         {:else if isError}
-            <div class="empty-state error-state" role="alert" aria-live="assertive">
+            <div class="empty-state error-state" role="alert" aria-live="assertive" transition:fade|local={{ duration: 150 }}>
                 <p>❌ Failed to generate XML</p>
                 <p class="subtext">{errorDetail || "Please check your simulation settings (ensure density/viscosity are valid) and try again."}</p>
             </div>
         {:else if !isUpToDate}
-            <div class="empty-state stale-overlay">
+            <div class="empty-state stale-overlay" transition:fade|local={{ duration: 150 }}>
                 {#if generating}
                     <span class="inline-spinner" style="width: 24px; height: 24px; margin-bottom: 0.5rem;" aria-hidden="true"></span>
                     <p>Generating updated XML...</p>
