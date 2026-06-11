@@ -45,6 +45,18 @@ test.describe('svFSI Configurator App', () => {
     await page.keyboard.press('End');
     await expect(page.locator('.sidebar .tabs-nav button.active')).toContainText('General');
     await expect(page.locator('.general-config')).toBeVisible();
+
+    // Test Spatial keys (Up and Down)
+    await page.keyboard.press('Home');
+    await page.keyboard.press('ArrowDown');
+    await expect(page.locator('.sidebar .tabs-nav button.active')).toContainText('Boundary Conditions');
+
+    await page.keyboard.press('ArrowUp');
+    await expect(page.locator('.sidebar .tabs-nav button.active')).toContainText('Mesh');
+
+    await page.keyboard.press('ArrowRight');
+    await page.keyboard.press('ArrowDown');
+    await expect(page.locator('.sidebar .tabs-nav button.active')).toContainText('General');
   });
 
   test('generate_input API is called and XML response is rendered', async ({ page }) => {
