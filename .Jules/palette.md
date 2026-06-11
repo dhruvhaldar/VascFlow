@@ -83,3 +83,7 @@
 ## 2024-12-01 - [Preventing Jarring State Changes on Absolute Overlays]
 **Learning:** When displaying loading states, empty states, or error overlays that are absolutely positioned over existing content (like a viewer canvas or textarea), relying solely on `#if` blocks without transitions causes them to instantly pop in and out. This creates a visually jarring UX, especially for brief loading operations, and violates the principle that state changes should feel smooth and continuous.
 **Action:** Always apply a CSS transition or framework-provided animation (like Svelte's `transition:fade|local={{ duration: 150 }}`) to conditionally rendered, absolute-positioned overlay elements. This ensures they crossfade smoothly over the underlying content, significantly improving visual polish and perceived performance.
+
+## 2024-12-02 - [Spatial Keyboard Navigation for Grid Tablists]
+**Learning:** When a `role="tablist"` is laid out visually as a 2D grid (e.g., 2x2) rather than a simple 1D row or column, relying solely on standard linear navigation (`ArrowLeft` / `ArrowRight`) creates a disconnect between the visual layout and keyboard interaction. Users naturally expect `ArrowDown` to move focus to the item physically below the current one.
+**Action:** When creating a multi-row or grid-based tablist, always extend standard tab keyboard navigation to support spatial navigation (`ArrowUp` and `ArrowDown`) by calculating the appropriate visual index offsets based on the grid structure, matching the user's mental model and expectations.
