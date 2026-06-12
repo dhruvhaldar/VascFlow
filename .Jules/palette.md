@@ -87,3 +87,6 @@
 ## 2024-12-02 - [Spatial Keyboard Navigation for Grid Tablists]
 **Learning:** When a `role="tablist"` is laid out visually as a 2D grid (e.g., 2x2) rather than a simple 1D row or column, relying solely on standard linear navigation (`ArrowLeft` / `ArrowRight`) creates a disconnect between the visual layout and keyboard interaction. Users naturally expect `ArrowDown` to move focus to the item physically below the current one.
 **Action:** When creating a multi-row or grid-based tablist, always extend standard tab keyboard navigation to support spatial navigation (`ArrowUp` and `ArrowDown`) by calculating the appropriate visual index offsets based on the grid structure, matching the user's mental model and expectations.
+## 2024-12-03 - [Auto-Select Text on Numeric Input Focus]
+**Learning:** When numeric input fields contain pre-filled data or represent dense configurations (like physical parameters), forcing users to manually highlight or repeatedly press backspace to clear the value before typing new data creates unnecessary friction.
+**Action:** Always implement an auto-select on focus behavior (e.g., `on:focus={(e) => e.target.select()}` in Svelte) for input fields that typically require complete replacement rather than appending, significantly reducing keystrokes and improving data entry efficiency.

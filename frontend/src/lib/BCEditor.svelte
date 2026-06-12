@@ -95,7 +95,7 @@
 
             <label>
                 <span>Value<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                <input type="number" bind:value={value} step="any" placeholder="e.g. 10.5" required />
+                <input type="number" bind:value={value} step="any" placeholder="e.g. 10.5" required on:focus={(e) => e.target.select()} />
             </label>
 
             <label>

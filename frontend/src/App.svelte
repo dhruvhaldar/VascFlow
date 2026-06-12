@@ -110,11 +110,11 @@
                         </label>
                         <label>
                             <span>Density <span class="unit-hint">(g/cm³)</span><span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                            <input type="number" bind:value={$simulationConfig.physics.density} step="any" min="0" placeholder="e.g. 1.06" required />
+                            <input type="number" bind:value={$simulationConfig.physics.density} step="any" min="0" placeholder="e.g. 1.06" required on:focus={(e) => e.target.select()} />
                         </label>
                         <label>
                             <span>Viscosity <span class="unit-hint">(Poise)</span><span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                            <input type="number" bind:value={$simulationConfig.physics.viscosity} step="any" min="0" placeholder="e.g. 0.04" required />
+                            <input type="number" bind:value={$simulationConfig.physics.viscosity} step="any" min="0" placeholder="e.g. 0.04" required on:focus={(e) => e.target.select()} />
                         </label>
                     </div>
                 </div>
@@ -126,11 +126,11 @@
                         <h3>General Settings</h3>
                         <label>
                             <span>Time Steps<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                            <input type="number" bind:value={$simulationConfig.general.num_time_steps} min="1" placeholder="e.g. 100" required />
+                            <input type="number" bind:value={$simulationConfig.general.num_time_steps} min="1" placeholder="e.g. 100" required on:focus={(e) => e.target.select()} />
                         </label>
                         <label>
                             <span>Step Size <span class="unit-hint">(s)</span><span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                            <input type="number" bind:value={$simulationConfig.general.time_step_size} step="any" min="0.001" placeholder="e.g. 0.001" required />
+                            <input type="number" bind:value={$simulationConfig.general.time_step_size} step="any" min="0.001" placeholder="e.g. 0.001" required on:focus={(e) => e.target.select()} />
                         </label>
                     </div>
                 </div>
