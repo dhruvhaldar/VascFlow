@@ -60,3 +60,10 @@
 ## 2024-05-31 - [Optimize PyVista Mesh Bounds Computation]
 **Learning:** Calling `mesh.bounds` on a PyVista/VTK mesh dataset forces an implicit O(N) traversal over all points if the bounding box has not already been cached. When generating metadata for frontend visualizers (like vtk.js), computing these bounds on the backend is completely redundant because the client-side WebGL engine computes its own viewport bounds natively (e.g., via `renderer.resetCamera()`). On massive meshes, this single attribute access creates a measurable, blocking CPU delay (e.g., ~20ms on a 4M point mesh).
 **Action:** When extracting PyVista mesh metadata strictly for frontend rendering that handles its own camera bounding, do not access `mesh.bounds`. Pass an empty array `[]` instead to instantly bypass the O(N) traversal.
+## 2026-05-21 - [Optimize WebGL Canvas Resizing]
+**Learning:** Using `requestAnimationFrame` inside a `ResizeObserver` callback to trigger WebGL canvas resizes (e.g., `genericRenderWindow.resize()` in vtk.js) forces the browser to synchronously re-allocate massive WebGL framebuffers and recalculate layout 60 times per second during a continuous window resize, causing severe browser stutter and UI lockups.
+**Action:** Always debounce heavy WebGL canvas resizes using `setTimeout` (e.g., 100ms) rather than `requestAnimationFrame`. This waits for the user to pause resizing before triggering the expensive WebGL update, providing a smooth UI resize experience.
+
+## 2026-05-21 - [Svelte Reactivity Equality Checks]
+**Learning:** In Svelte, trying to optimize frequent event handlers (like `dragover`) by manually wrapping primitive state assignments in equality checks (e.g., `if (!isDragging) isDragging = true;`) is a redundant micro-optimization. Svelte's compiler automatically injects strict equality checks (e.g., `not_equal`) under the hood and safely bails out of rendering cycles.
+**Action:** Do not manually guard primitive assignments in Svelte with equality checks to "save renders", as it provides zero measurable performance benefit and adds unnecessary clutter.
