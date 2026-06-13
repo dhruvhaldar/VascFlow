@@ -35,12 +35,18 @@
 
         let resizeTimeout;
         const resizeObserver = new ResizeObserver(() => {
-            if (resizeTimeout) cancelAnimationFrame(resizeTimeout);
-            resizeTimeout = requestAnimationFrame(() => {
+            // ⚡ Bolt: Debounce WebGL canvas resizing to prevent severe browser stutter.
+            // Using requestAnimationFrame forces vtk.js to synchronously re-allocate
+            // massive WebGL framebuffers and recalculate layout 60 times per second
+            // during a continuous window resize. By debouncing it to 100ms, we wait
+            // for the user to pause resizing before triggering the heavy WebGL update,
+            // providing a perfectly smooth UI resize experience.
+            if (resizeTimeout) clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
                 if (genericRenderWindow) {
                     genericRenderWindow.resize();
                 }
-            });
+            }, 100);
         });
         resizeObserver.observe(container);
 
