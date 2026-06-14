@@ -145,6 +145,11 @@
         background: rgba(96, 147, 255, 0.1);
     }
 
+    .mesh-upload:focus-within {
+        border-color: #6093ff;
+        background: rgba(96, 147, 255, 0.08);
+    }
+
     .drop-hint {
         font-size: 0.85rem;
         color: #b8c5ef;
