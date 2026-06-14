@@ -90,3 +90,7 @@
 ## 2024-12-03 - [Auto-Select Text on Numeric Input Focus]
 **Learning:** When numeric input fields contain pre-filled data or represent dense configurations (like physical parameters), forcing users to manually highlight or repeatedly press backspace to clear the value before typing new data creates unnecessary friction.
 **Action:** Always implement an auto-select on focus behavior (e.g., `on:focus={(e) => e.target.select()}` in Svelte) for input fields that typically require complete replacement rather than appending, significantly reducing keystrokes and improving data entry efficiency.
+
+## 2024-05-24 - Interactive Drop Zone Focus States
+**Learning:** When styling native `<input type="file">` elements within larger custom drag-and-drop zones, the default browser focus ring only highlights the native input. This leaves the larger interactive container visually static during keyboard navigation, degrading accessibility context.
+**Action:** Always apply `:focus-within` styling to the parent drag-and-drop container to provide clear visual feedback equivalent to mouse `:hover` or `.dragging` states.
