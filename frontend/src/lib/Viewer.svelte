@@ -107,7 +107,30 @@
             isLoading = false;
         }
     }
+
+    function resetCamera() {
+        if (renderer && renderWindow) {
+            renderer.resetCamera();
+            renderWindow.render();
+        }
+    }
+
+    function handleGlobalKeydown(event) {
+        // Ignore keydowns when typing in input or textarea
+        if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+            return;
+        }
+
+        if (event.key === 'r' || event.key === 'R') {
+            if ($meshMetadata.viz_file && !isLoading && !hasError) {
+                event.preventDefault();
+                resetCamera();
+            }
+        }
+    }
 </script>
+
+<svelte:window on:keydown={handleGlobalKeydown} />
 
 <div class="viewer-wrap">
     <div class="viewer-header">
@@ -128,11 +151,12 @@
         {#if $meshMetadata.viz_file && !isLoading && !hasError}
             <button
                 class="reset-btn"
-                on:click={() => { if (renderer) { renderer.resetCamera(); renderWindow.render(); } }}
+                on:click={resetCamera}
                 aria-label="Reset 3D camera view"
                 title="Reset View"
+                aria-keyshortcuts="R"
             >
-                <span aria-hidden="true">⟲</span> Reset
+                <span aria-hidden="true">⟲</span> Reset <kbd class="shortcut-hint" aria-hidden="true">R</kbd>
             </button>
         {/if}
     </div>
@@ -278,5 +302,16 @@
 
     .error-text {
         color: #ffc2c2;
+    }
+
+    .shortcut-hint {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.75rem;
+        padding: 0.1rem 0.3rem;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #b8c5ef;
+        margin-left: 0.2rem;
     }
 </style>
