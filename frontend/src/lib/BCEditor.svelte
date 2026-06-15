@@ -15,7 +15,12 @@
     // O(N*M) rendering bottleneck for meshes with many faces. Using a Set
     // reduces this to O(N+M), significantly improving UI responsiveness when
     // opening the dropdown or adding new boundary conditions.
-    $: usedFaceNames = new Set($simulationConfig.boundary_conditions.map(bc => bc.face_name));
+
+    // ⚡ Bolt: Memoize the Set creation and DOM invalidation.
+    // By splitting the reactive block, Svelte automatically skips updating usedFaceNames
+    // if the boundary_conditions reference hasn't changed.
+    $: bcs = $simulationConfig.boundary_conditions;
+    $: usedFaceNames = new Set(bcs.map(bc => bc.face_name));
 
     async function addBC() {
         if (!selectedFace) return;
