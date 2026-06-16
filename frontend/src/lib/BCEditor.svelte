@@ -17,10 +17,17 @@
     // opening the dropdown or adding new boundary conditions.
 
     // ⚡ Bolt: Memoize the Set creation and DOM invalidation.
-    // By splitting the reactive block, Svelte automatically skips updating usedFaceNames
-    // if the boundary_conditions reference hasn't changed.
-    $: bcs = $simulationConfig.boundary_conditions;
-    $: usedFaceNames = new Set(bcs.map(bc => bc.face_name));
+    // By explicitly tracking the boundary_conditions reference, we prevent Svelte
+    // from re-evaluating this expensive O(N) block when completely unrelated
+    // properties in the simulationConfig store (like Physics density) are updated.
+    let bcs = [];
+    let usedFaceNames = new Set();
+    $: {
+        if (bcs !== $simulationConfig.boundary_conditions) {
+            bcs = $simulationConfig.boundary_conditions;
+            usedFaceNames = new Set(bcs.map(bc => bc.face_name));
+        }
+    }
 
     async function addBC() {
         if (!selectedFace) return;
