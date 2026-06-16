@@ -110,11 +110,17 @@
                         </label>
                         <label>
                             <span>Density <span class="unit-hint">(g/cm³)</span><span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                            <input type="number" bind:value={$simulationConfig.physics.density} step="any" min="0" placeholder="e.g. 1.06" required on:focus={(e) => e.target.select()} />
+                            <input type="number" bind:value={$simulationConfig.physics.density} step="any" min="0" placeholder="e.g. 1.06" required on:focus={(e) => e.target.select()} aria-invalid={$simulationConfig.physics.density == null || $simulationConfig.physics.density < 0} aria-describedby="density-error" />
+                            {#if $simulationConfig.physics.density == null || $simulationConfig.physics.density < 0}
+                                <span id="density-error" class="inline-error" role="alert">Valid positive number required</span>
+                            {/if}
                         </label>
                         <label>
                             <span>Viscosity <span class="unit-hint">(Poise)</span><span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                            <input type="number" bind:value={$simulationConfig.physics.viscosity} step="any" min="0" placeholder="e.g. 0.04" required on:focus={(e) => e.target.select()} />
+                            <input type="number" bind:value={$simulationConfig.physics.viscosity} step="any" min="0" placeholder="e.g. 0.04" required on:focus={(e) => e.target.select()} aria-invalid={$simulationConfig.physics.viscosity == null || $simulationConfig.physics.viscosity < 0} aria-describedby="viscosity-error" />
+                            {#if $simulationConfig.physics.viscosity == null || $simulationConfig.physics.viscosity < 0}
+                                <span id="viscosity-error" class="inline-error" role="alert">Valid positive number required</span>
+                            {/if}
                         </label>
                     </div>
                 </div>
@@ -126,11 +132,17 @@
                         <h3>General Settings</h3>
                         <label>
                             <span>Time Steps<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                            <input type="number" bind:value={$simulationConfig.general.num_time_steps} min="1" placeholder="e.g. 100" required on:focus={(e) => e.target.select()} />
+                            <input type="number" bind:value={$simulationConfig.general.num_time_steps} min="1" placeholder="e.g. 100" required on:focus={(e) => e.target.select()} aria-invalid={$simulationConfig.general.num_time_steps == null || $simulationConfig.general.num_time_steps < 1} aria-describedby="time-steps-error" />
+                            {#if $simulationConfig.general.num_time_steps == null || $simulationConfig.general.num_time_steps < 1}
+                                <span id="time-steps-error" class="inline-error" role="alert">Must be 1 or greater</span>
+                            {/if}
                         </label>
                         <label>
                             <span>Step Size <span class="unit-hint">(s)</span><span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                            <input type="number" bind:value={$simulationConfig.general.time_step_size} step="any" min="0.001" placeholder="e.g. 0.001" required on:focus={(e) => e.target.select()} />
+                            <input type="number" bind:value={$simulationConfig.general.time_step_size} step="any" min="0.001" placeholder="e.g. 0.001" required on:focus={(e) => e.target.select()} aria-invalid={$simulationConfig.general.time_step_size == null || $simulationConfig.general.time_step_size < 0.001} aria-describedby="step-size-error" />
+                            {#if $simulationConfig.general.time_step_size == null || $simulationConfig.general.time_step_size < 0.001}
+                                <span id="step-size-error" class="inline-error" role="alert">Must be at least 0.001</span>
+                            {/if}
                         </label>
                     </div>
                 </div>
@@ -395,6 +407,13 @@
     input:invalid, select:invalid {
         border-color: rgba(255, 77, 77, 0.5);
         background: rgba(255, 77, 77, 0.05);
+    }
+
+    .inline-error {
+        color: #ffc2c2;
+        font-size: 0.82rem;
+        margin-top: 0.25rem;
+        animation: fadeSlideIn 0.2s ease-out;
     }
 
     /* Fallback styling mirroring Viewer.svelte */
