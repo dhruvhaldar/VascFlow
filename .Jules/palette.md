@@ -1,3 +1,6 @@
 ## 2024-06-15 - Global Keyboard Shortcut for Viewer Camera Reset
 **Learning:** For frequent primary actions like resetting a 3D view, users benefit greatly from global keyboard shortcuts. However, it is crucial to properly gate these global shortcuts by checking `event.target.tagName` to avoid accidentally triggering them while the user is typing inside `<input>` or `<textarea>` fields.
 **Action:** When implementing global `<svelte:window on:keydown>` shortcuts, always include a check `if (event.target.tagName === "INPUT" || event.target.tagName === "TEXTAREA") return;` to prevent interference with standard form entry.
+## 2024-06-17 - Prevent Number Input Scroll Hijacking and Remove Spin Buttons
+**Learning:** Native `<input type="number">` fields used for dense numerical configurations (e.g. physics simulations) suffer from two significant UX issues: accidental value mutation via scroll-wheel (often when users are just trying to scroll the page) and visual clutter from native spin arrows, which are rarely useful for precise decimal inputs.
+**Action:** When using number inputs for precise numerical data, always append `on:wheel={(e) => e.currentTarget.blur()}` to prevent scroll hijacking, and apply CSS (`::-webkit-inner-spin-button`, `-moz-appearance: textfield`) to hide the default spin arrows for a cleaner layout.
