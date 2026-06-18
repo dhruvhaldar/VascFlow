@@ -77,7 +77,7 @@
         <form class="add-bc" on:submit|preventDefault={addBC}>
             <label>
                 <span>Face<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                <select bind:this={faceSelectElement} bind:value={selectedFace} required>
+                <select bind:this={faceSelectElement} bind:value={selectedFace} required aria-invalid={!selectedFace}>
                     <option value="" disabled selected>Select Face</option>
                     <!-- ⚡ Bolt: Use a keyed each block for face options. -->
                     {#each $meshMetadata.faces as face (face.id)}
@@ -93,7 +93,7 @@
 
             <label>
                 <span>Type<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                <select bind:value={bcType} required>
+                <select bind:value={bcType} required aria-invalid={!bcType}>
                     <option value="Dirichlet">Dirichlet</option>
                     <option value="Neumann">Neumann</option>
                     <option value="Resistance">Resistance</option>
@@ -102,17 +102,17 @@
 
             <label>
                 <span>Variable<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                <input type="text" bind:value={variable} placeholder="Variable (e.g. Velocity)" required />
+                <input type="text" bind:value={variable} placeholder="Variable (e.g. Velocity)" required aria-invalid={!variable} />
             </label>
 
             <label>
                 <span>Value<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                <input type="number" bind:value={value} step="any" placeholder="e.g. 10.5" required on:focus={(e) => e.target.select()} on:wheel={(e) => e.currentTarget.blur()} />
+                <input type="number" bind:value={value} step="any" placeholder="e.g. 10.5" required on:focus={(e) => e.target.select()} on:wheel={(e) => e.currentTarget.blur()} aria-invalid={value == null || value === ""} />
             </label>
 
             <label>
                 <span>Profile<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                <select bind:value={profile} required>
+                <select bind:value={profile} required aria-invalid={!profile}>
                     <option value="Flat">Flat</option>
                     <option value="Parabolic">Parabolic</option>
                 </select>
