@@ -7,3 +7,6 @@
 ## 2024-05-20 - Explicit Inline Validation for Empty States
 **Learning:** When inputs begin empty and are required, users with assistive tech or who tab through fields without completing them might not realize a field is invalid until form submission. We rely on the native HTML5 constraint validation (`:invalid` pseudo-class), but we also need to inform screen reader users via `aria-invalid` since the browser doesn't automatically expose CSS pseudo-classes as ARIA states.
 **Action:** Always add dynamic `aria-invalid` boolean logic directly matching the "empty/unselected" state for required dropdowns and text/number inputs to ensure the CSS `:invalid` feedback is parity-matched in the accessibility tree.
+## 2024-06-19 - Accessible Inline Form Validation
+**Learning:** Relying solely on HTML5 native validation and CSS `:invalid` pseudo-classes is insufficient for accessibility. While sighted users see a red border, screen reader users might not know the exact reason a form field is invalid unless explicit text is provided.
+**Action:** Always provide explicit, text-based inline error messages (e.g., `<span role="alert">`) and link them to the input field using `aria-describedby` to ensure screen readers announce the exact error reason when the field receives focus.

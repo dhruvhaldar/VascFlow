@@ -77,7 +77,7 @@
         <form class="add-bc" on:submit|preventDefault={addBC}>
             <label>
                 <span>Face<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                <select bind:this={faceSelectElement} bind:value={selectedFace} required aria-invalid={!selectedFace}>
+                <select bind:this={faceSelectElement} bind:value={selectedFace} required aria-invalid={!selectedFace} aria-describedby={!selectedFace ? "face-error" : undefined}>
                     <option value="" disabled selected>Select Face</option>
                     <!-- ⚡ Bolt: Use a keyed each block for face options. -->
                     {#each $meshMetadata.faces as face (face.id)}
@@ -89,6 +89,9 @@
                         </option>
                     {/each}
                 </select>
+                {#if !selectedFace}
+                    <span id="face-error" class="inline-error" role="alert">Face selection required</span>
+                {/if}
             </label>
 
             <label>
@@ -102,12 +105,18 @@
 
             <label>
                 <span>Variable<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                <input type="text" bind:value={variable} placeholder="Variable (e.g. Velocity)" required aria-invalid={!variable} />
+                <input type="text" bind:value={variable} placeholder="Variable (e.g. Velocity)" required aria-invalid={!variable} aria-describedby={!variable ? "variable-error" : undefined} />
+                {#if !variable}
+                    <span id="variable-error" class="inline-error" role="alert">Variable name required</span>
+                {/if}
             </label>
 
             <label>
                 <span>Value<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                <input type="number" bind:value={value} step="any" placeholder="e.g. 10.5" required on:focus={(e) => e.target.select()} on:wheel={(e) => e.currentTarget.blur()} aria-invalid={value == null || value === ""} />
+                <input type="number" bind:value={value} step="any" placeholder="e.g. 10.5" required on:focus={(e) => e.target.select()} on:wheel={(e) => e.currentTarget.blur()} aria-invalid={value == null || value === ""} aria-describedby={value == null || value === "" ? "value-error" : undefined} />
+                {#if value == null || value === ""}
+                    <span id="value-error" class="inline-error" role="alert">Numeric value required</span>
+                {/if}
             </label>
 
             <label>
@@ -216,6 +225,24 @@
     .required-indicator {
         color: #ffc2c2;
         margin-left: 0.2rem;
+    }
+
+    .inline-error {
+        color: #ffc2c2;
+        font-size: 0.82rem;
+        margin-top: 0.25rem;
+        animation: fadeSlideIn 0.2s ease-out;
+    }
+
+    @keyframes fadeSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(4px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     .empty-state {
