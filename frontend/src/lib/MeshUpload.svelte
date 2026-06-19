@@ -48,7 +48,8 @@
         try {
             const response = await fetch("http://localhost:8000/process_mesh", {
                 method: "POST",
-                body: formData
+                body: formData,
+                signal: AbortSignal.timeout(60000)
             });
 
             if (!response.ok) {
@@ -85,7 +86,11 @@
                 return c;
             });
         } catch (e) {
-            error = e.message;
+            if (e.name === 'TimeoutError') {
+                error = "Upload timed out. The server took too long to respond.";
+            } else {
+                error = e.message;
+            }
             if (fileInput) fileInput.value = "";
         } finally {
             loading = false;

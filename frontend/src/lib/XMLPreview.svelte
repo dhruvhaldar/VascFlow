@@ -68,7 +68,8 @@
             const response = await fetch("http://localhost:8000/generate_input", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: currentConfigStr
+                body: currentConfigStr,
+                signal: AbortSignal.timeout(10000)
             });
 
             if (!response.ok) {
@@ -87,7 +88,11 @@
             lastConfigStr = currentConfigStr;
         } catch (e) {
             console.error(e);
-            errorDetail = e.message;
+            if (e.name === 'TimeoutError') {
+                errorDetail = "Generation timed out. The server took too long to respond.";
+            } else {
+                errorDetail = e.message;
+            }
             generatedXML.set("Error generating XML");
             lastConfigStr = null;
         } finally {
