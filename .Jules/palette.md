@@ -10,3 +10,7 @@
 ## 2024-06-19 - Accessible Inline Form Validation
 **Learning:** Relying solely on HTML5 native validation and CSS `:invalid` pseudo-classes is insufficient for accessibility. While sighted users see a red border, screen reader users might not know the exact reason a form field is invalid unless explicit text is provided.
 **Action:** Always provide explicit, text-based inline error messages (e.g., `<span role="alert">`) and link them to the input field using `aria-describedby` to ensure screen readers announce the exact error reason when the field receives focus.
+
+## 2026-06-20 - Expose background tab validation errors at the tab level
+**Learning:** When validation errors happen inside background tabs, users are often unaware because the errors are hidden until the tab is clicked.
+**Action:** Append contextual visual badges and `aria-label` additions to tab buttons to proactively communicate background validation errors to both sighted and screen reader users.
