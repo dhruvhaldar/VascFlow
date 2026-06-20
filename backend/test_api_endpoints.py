@@ -191,3 +191,17 @@ def test_chunked_json_upload_bypass_rejected():
     response = client.post("/generate_input", content=generate_large_payload())
     assert response.status_code == 411
     assert response.text == "Chunked requests not supported"
+
+
+def test_large_mesh_upload_rejected_by_middleware():
+    """
+    Test that a large file upload (>55MB limit) is rejected at the HTTP middleware
+    layer before FastAPI attempts to spool the file to disk.
+    """
+    large_payload = b"A" * (56 * 1024 * 1024)  # 56 MB
+    response = client.post(
+        "/process_mesh",
+        files={"file": ("large.vtu", large_payload, "application/octet-stream")},
+    )
+    assert response.status_code == 413
+    assert response.text == "File too large. Maximum size is 50MB."

@@ -21,23 +21,29 @@ RATE_LIMIT_WINDOW = 60  # window in seconds
 @app.middleware("http")
 async def limit_request_size(request: Request, call_next):
     """
-    🛡️ Sentinel: Enforce a strict maximum Content-Length for JSON APIs (2MB)
-    to prevent Memory Exhaustion (DoS). Pydantic only validates limits *after*
-    loading the entire JSON payload into memory, making endpoints vulnerable
-    to massive bodies if not capped at the HTTP layer.
+    🛡️ Sentinel: Enforce a strict maximum Content-Length for all APIs
+    to prevent Memory and Disk Exhaustion (DoS). Pydantic and UploadFile
+    will eagerly consume/spool massive bodies if not capped at the HTTP layer.
     """
-    if request.url.path != "/process_mesh":
-        # /process_mesh handles its own large file upload streaming limits safely.
-        transfer_encoding = request.headers.get("transfer-encoding", "")
-        if "chunked" in transfer_encoding.lower():
-            return Response(content="Chunked requests not supported", status_code=411)
-        content_length = request.headers.get("content-length")
-        if content_length:
-            try:
-                if int(content_length) > 2 * 1024 * 1024:  # 2 MB limit
+    transfer_encoding = request.headers.get("transfer-encoding", "")
+    if "chunked" in transfer_encoding.lower():
+        # Prevent chunked upload bypasses for content-length limits
+        return Response(content="Chunked requests not supported", status_code=411)
+
+    content_length = request.headers.get("content-length")
+    if content_length:
+        try:
+            length = int(content_length)
+            if request.url.path == "/process_mesh":
+                # Allow larger payloads for mesh uploads, but strictly cap at HTTP layer
+                # to prevent FastAPI from spooling infinitely to disk before the endpoint runs.
+                if length > 55 * 1024 * 1024:  # 55 MB limit
+                    return Response(content="File too large. Maximum size is 50MB.", status_code=413)
+            else:
+                if length > 2 * 1024 * 1024:  # 2 MB limit for JSON
                     return Response(content="Payload too large", status_code=413)
-            except ValueError:
-                return Response(content="Invalid content-length", status_code=400)
+        except ValueError:
+            return Response(content="Invalid content-length", status_code=400)
 
     return await call_next(request)
 
