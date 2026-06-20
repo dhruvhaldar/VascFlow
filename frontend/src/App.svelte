@@ -14,6 +14,9 @@
         { key: 'general', label: 'General' }
     ];
 
+    $: isPhysicsInvalid = $simulationConfig.physics.density == null || $simulationConfig.physics.density < 0 || $simulationConfig.physics.viscosity == null || $simulationConfig.physics.viscosity < 0;
+    $: isGeneralInvalid = $simulationConfig.general.num_time_steps == null || $simulationConfig.general.num_time_steps < 1 || $simulationConfig.general.time_step_size == null || $simulationConfig.general.time_step_size < 0.001;
+
     async function handleTabKeydown(e, index) {
         let newIndex = index;
         if (e.key === 'ArrowRight') {
@@ -72,7 +75,7 @@
                         class:active={activeTab === tab.key}
                         on:click={() => activeTab = tab.key}
                         on:keydown={(e) => handleTabKeydown(e, i)}
-                        aria-label="{tab.label}{tab.key === 'mesh' && $simulationConfig.mesh.mesh_path ? ' (Mesh loaded)' : ''}{tab.key === 'bcs' && $simulationConfig.boundary_conditions.length > 0 ? ` (${$simulationConfig.boundary_conditions.length} boundary conditions added)` : ''}"
+                        aria-label="{tab.label}{tab.key === 'mesh' && $simulationConfig.mesh.mesh_path ? ' (Mesh loaded)' : ''}{tab.key === 'bcs' && $simulationConfig.boundary_conditions.length > 0 ? ` (${$simulationConfig.boundary_conditions.length} boundary conditions added)` : ''}{(tab.key === 'physics' && isPhysicsInvalid) || (tab.key === 'general' && isGeneralInvalid) ? ' (Contains validation errors)' : ''}"
                     >
                         {tab.label}
                         {#if tab.key === 'mesh' && $simulationConfig.mesh.mesh_path}
@@ -82,6 +85,9 @@
                             <span class="tab-badge" class:active-badge={activeTab === 'bcs'} aria-hidden="true" title="{$simulationConfig.boundary_conditions.length} boundary conditions added">
                                 {$simulationConfig.boundary_conditions.length}
                             </span>
+                        {/if}
+                        {#if (tab.key === 'physics' && isPhysicsInvalid) || (tab.key === 'general' && isGeneralInvalid)}
+                            <span class="tab-badge error-badge" aria-hidden="true" title="Validation errors">!</span>
                         {/if}
                     </button>
                 {/each}
@@ -462,6 +468,11 @@
 
     .tab-badge.success-badge {
         background: rgba(76, 175, 80, 0.35);
+        color: #fff;
+    }
+
+    .tab-badge.error-badge {
+        background: rgba(255, 77, 77, 0.35);
         color: #fff;
     }
 
