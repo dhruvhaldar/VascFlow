@@ -49,7 +49,7 @@ async def limit_request_size(request: Request, call_next):
 
 @app.middleware("http")
 async def rate_limiter(request: Request, call_next):
-    if request.url.path in ("/generate_input", "/process_mesh"):
+    if request.url.path in ("/generate_input", "/process_mesh") or request.url.path.startswith("/files/"):
         # 🛡️ Sentinel: Rely on request.client.host which is safely populated by Uvicorn's
         # ProxyHeadersMiddleware (when behind a trusted proxy) instead of manually parsing
         # headers which allows spoofing to bypass limits or DoS other users.
