@@ -307,24 +307,33 @@ def get_mesh_metadata(file_path: str):
         metadata["faces"] = face_list
     else:
         # Fallback: Connectivity
-        try:
-            conn = surface.connectivity(largest=False)
-            if "RegionId" in conn.cell_data:
-                region_ids = conn.cell_data["RegionId"]
-                # ⚡ Bolt: Use O(N) bincount helper instead of O(N log N) np.unique.
-                unique_ids, counts = _get_unique_counts(region_ids)
-                face_list = []
-                for uid, count in zip(unique_ids, counts):
-                    face_list.append({
-                        "id": int(uid),
-                        "name": f"Region {uid}",
-                        "count": int(count)
-                    })
-                metadata["faces"] = face_list
-            else:
-                 metadata["faces"].append({"id": 0, "name": "Default Surface", "count": surface.n_cells})
-        except Exception:
-             metadata["faces"].append({"id": 0, "name": "Default Surface", "count": surface.n_cells})
+        # ⚡ Bolt: Prevent severe CPU blocking on massive meshes.
+        # surface.connectivity() performs an expensive topological traversal.
+        # On meshes with millions of cells, this can block the main thread for
+        # >10 seconds. For massive meshes without explicit boundary IDs, we
+        # bypass the expensive computation and provide a default fallback to keep
+        # the API responsive.
+        if surface.n_cells < 500_000:
+            try:
+                conn = surface.connectivity(largest=False)
+                if "RegionId" in conn.cell_data:
+                    region_ids = conn.cell_data["RegionId"]
+                    # ⚡ Bolt: Use O(N) bincount helper instead of O(N log N) np.unique.
+                    unique_ids, counts = _get_unique_counts(region_ids)
+                    face_list = []
+                    for uid, count in zip(unique_ids, counts):
+                        face_list.append({
+                            "id": int(uid),
+                            "name": f"Region {uid}",
+                            "count": int(count)
+                        })
+                    metadata["faces"] = face_list
+                else:
+                    metadata["faces"].append({"id": 0, "name": "Default Surface", "count": surface.n_cells})
+            except Exception:
+                metadata["faces"].append({"id": 0, "name": "Default Surface", "count": surface.n_cells})
+        else:
+            metadata["faces"].append({"id": 0, "name": "Default Surface", "count": surface.n_cells})
 
     return metadata
 
