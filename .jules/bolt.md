@@ -74,3 +74,7 @@
 ## 2024-05-24 - Svelte Store Reactivity Memoization
 **Learning:** In Svelte, reactive statements (`$:`) depending on deeply nested objects inside a global store (like `$store.property`) will re-trigger whenever *any* property within that store updates. Svelte's `safe_not_equal` considers objects/arrays as always changed upon assignment, leading to unnecessary expensive computations like mapping and Set creation for O(N) operations when unrelated fields are edited.
 **Action:** Memoize derived states by explicitly tracking changes to the specific reference (e.g., `if (localRef !== $store.arrayRef)`) before running expensive mapping operations to prevent rendering bottlenecks.
+
+## 2026-05-22 - [Optimize Connectivity on Massive Meshes]
+**Learning:** Running `surface.connectivity()` on PyVista meshes with millions of cells creates a severe CPU bottleneck, blocking the thread for >10 seconds. When this is used as a fallback mechanism for finding mesh regions, the entire API becomes unresponsive.
+**Action:** Always implement a cell count threshold (e.g., `surface.n_cells < 500_000`) to bypass computationally expensive connectivity calculations on massive meshes, falling back to a default surface instead.
