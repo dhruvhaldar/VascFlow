@@ -169,6 +169,15 @@
             </button>
         </div>
     </div>
+
+    <div aria-live="polite" class="sr-only">
+        {#if generating}
+            Generating XML...
+        {:else if $generatedXML && !isError && isUpToDate}
+            XML generated successfully.
+        {/if}
+    </div>
+
     <div class="preview-container">
         {#if !$generatedXML}
             <div class="empty-state" transition:fade|local={{ duration: 150 }}>
@@ -198,7 +207,6 @@
                 class:stale={$generatedXML && !isUpToDate}
                 value={$generatedXML}
                 aria-label="Generated XML Preview"
-                aria-live="polite"
                 tabindex={!$generatedXML || !isUpToDate ? -1 : 0}
                 aria-hidden={!$generatedXML || !isUpToDate ? "true" : "false"}
                 on:focus={(e) => e.target.select()}

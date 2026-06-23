@@ -14,3 +14,6 @@
 ## 2026-06-20 - Expose background tab validation errors at the tab level
 **Learning:** When validation errors happen inside background tabs, users are often unaware because the errors are hidden until the tab is clicked.
 **Action:** Append contextual visual badges and `aria-label` additions to tab buttons to proactively communicate background validation errors to both sighted and screen reader users.
+## 2024-06-25 - Avoid `aria-live` on Large Generated Textareas
+**Learning:** Applying `aria-live="polite"` directly to a `<textarea>` element that contains large generated code blocks (such as XML configurations) is a massive accessibility antipattern. When the configuration updates, screen readers will attempt to read the *entire* multi-line content, overwhelming the user and degrading the UX.
+**Action:** Never use `aria-live="polite"` directly on a `<textarea>` displaying generated code. Instead, remove the attribute and use a visually hidden live region (e.g., `<div class="sr-only" aria-live="polite">`) to announce succinct state transitions like 'Generating...' or 'Generation complete'.
