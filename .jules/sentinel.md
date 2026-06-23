@@ -15,3 +15,9 @@
 **Vulnerability:** The `StaticFiles` endpoint (`/files`) was excluded from the global application rate limiter. While serving static files is generally fast, unprotected endpoints can still be abused to cause Denial of Service (DoS) or exhaust server bandwidth via repeated bulk requests for large files (like 3D meshes).
 **Learning:** Rate limiters should apply not just to dynamic API routes but also to routes serving potentially large static assets to prevent bandwidth exhaustion or basic DoS attempts.
 **Prevention:** Ensure static asset mounts (like `/files/`) are explicitly included in the paths covered by global rate-limiting middleware.
+
+## 2025-02-14 - Refining Chunked Encoding Bypass Prevention
+
+**Vulnerability:** A global middleware was previously implemented to reject all `Transfer-Encoding: chunked` requests to prevent bypassing the `Content-Length` limits (DoS mitigation). However, this blanket rejection broke legitimate file upload streaming endpoints (like `/process_mesh`).
+**Learning:** Security rules must be carefully scoped. Global rules that block standard HTTP behavior (like chunked encoding for file uploads) will break core application functionality.
+**Prevention:** When enforcing strict limits (like `Content-Length` requirements), explicitly exempt endpoints that natively and legitimately require alternative behaviors, provided those exempted endpoints implement their own robust application-layer streaming protections (e.g., tracking bytes read to prevent disk exhaustion).

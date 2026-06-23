@@ -28,7 +28,11 @@ async def limit_request_size(request: Request, call_next):
     transfer_encoding = request.headers.get("transfer-encoding", "")
     if "chunked" in transfer_encoding.lower():
         # Prevent chunked upload bypasses for content-length limits
-        return Response(content="Chunked requests not supported", status_code=411)
+        # 🛡️ Sentinel: Exempt /process_mesh from this check because file upload endpoints
+        # legitimately stream data in chunks. The application-layer logic in `save_upload_file`
+        # explicitly tracks bytes read to prevent disk exhaustion DoS.
+        if request.url.path != "/process_mesh":
+            return Response(content="Chunked requests not supported", status_code=411)
 
     content_length = request.headers.get("content-length")
     if content_length:
