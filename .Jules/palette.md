@@ -17,3 +17,10 @@
 ## 2024-06-25 - Avoid `aria-live` on Large Generated Textareas
 **Learning:** Applying `aria-live="polite"` directly to a `<textarea>` element that contains large generated code blocks (such as XML configurations) is a massive accessibility antipattern. When the configuration updates, screen readers will attempt to read the *entire* multi-line content, overwhelming the user and degrading the UX.
 **Action:** Never use `aria-live="polite"` directly on a `<textarea>` displaying generated code. Instead, remove the attribute and use a visually hidden live region (e.g., `<div class="sr-only" aria-live="polite">`) to announce succinct state transitions like 'Generating...' or 'Generation complete'.
+## 2024-06-25 - Fix global keyboard shortcut interfering with select dropdowns
+**Learning:** Global single-character keyboard shortcuts (like 'R' to reset a camera) can conflict with native browser behavior, such as type-to-select navigation within `<select>` dropdowns. When checking `event.target.tagName` to ignore form inputs, developers often forget to include `SELECT`.
+**Action:** When gating global keyboard shortcuts, explicitly ignore `event.target.tagName === 'SELECT'` alongside `INPUT` and `TEXTAREA` to preserve native keyboard accessibility for dropdown menus.
+
+## 2024-06-25 - Fix skip-link focus outline
+**Learning:** Removing the focus outline from a skip link (`outline: none;`) makes it completely invisible to keyboard users who rely on focus rings to navigate the page, violating accessibility guidelines.
+**Action:** Ensure skip links either inherit the global `:focus-visible` styles or provide a high-contrast focus ring (e.g., `outline: 2px solid #fff`) when they receive keyboard focus.
