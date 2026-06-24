@@ -116,8 +116,8 @@
     }
 
     function handleGlobalKeydown(event) {
-        // Ignore keydowns when typing in input or textarea
-        if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+        // Ignore keydowns when typing in input, textarea, or navigating a select dropdown
+        if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' || event.target.tagName === 'SELECT') {
             return;
         }
 
