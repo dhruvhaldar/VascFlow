@@ -182,7 +182,7 @@
         {#if !$generatedXML}
             <div class="empty-state" transition:fade|local={{ duration: 150 }}>
                 <p>No XML generated yet.</p>
-                <p class="subtext">Configure your simulation and click 'Generate XML' (or press <kbd class="shortcut-hint">⌘/Ctrl+↵</kbd>).</p>
+                <p class="subtext">Configure your simulation and click 'Generate XML' (or press <kbd class="shortcut-hint" aria-hidden="true">⌘/Ctrl+↵</kbd><span class="sr-only">Command or Control plus Enter</span>).</p>
             </div>
         {:else if isError}
             <div class="empty-state error-state" role="alert" aria-live="assertive" transition:fade|local={{ duration: 150 }}>
@@ -196,7 +196,7 @@
                     <p>Generating updated XML...</p>
                 {:else}
                     <p>⚠️ Outdated Preview</p>
-                    <p class="subtext">Settings have changed. Click 'Generate XML' (or press <kbd class="shortcut-hint">⌘/Ctrl+↵</kbd>) to update.</p>
+                    <p class="subtext">Settings have changed. Click 'Generate XML' (or press <kbd class="shortcut-hint" aria-hidden="true">⌘/Ctrl+↵</kbd><span class="sr-only">Command or Control plus Enter</span>) to update.</p>
                 {/if}
             </div>
         {/if}

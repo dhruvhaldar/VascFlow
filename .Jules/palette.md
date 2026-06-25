@@ -24,3 +24,6 @@
 ## 2024-06-25 - Fix skip-link focus outline
 **Learning:** Removing the focus outline from a skip link (`outline: none;`) makes it completely invisible to keyboard users who rely on focus rings to navigate the page, violating accessibility guidelines.
 **Action:** Ensure skip links either inherit the global `:focus-visible` styles or provide a high-contrast focus ring (e.g., `outline: 2px solid #fff`) when they receive keyboard focus.
+## 2024-06-25 - Hide Symbolic Keyboard Shortcuts from Screen Readers
+**Learning:** When using `<kbd>` tags to display keyboard shortcuts that include symbolic characters (like ⌘ or ↵), screen readers may read them literally (e.g., "Command slash Control plus Enter arrow"), which is extremely confusing.
+**Action:** Always add `aria-hidden="true"` to `<kbd>` tags that contain symbols or non-alphanumeric characters, and place a visually hidden `span` (`<span class="sr-only">`) immediately after it with a clear, readable text alternative (e.g., "Command or Control plus Enter").
