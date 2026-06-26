@@ -164,7 +164,7 @@
                 {:else if isUpToDate}
                     Up to Date
                 {:else}
-                    Generate XML <kbd class="shortcut-hint" aria-hidden="true">⌘/Ctrl+↵</kbd>
+                    Generate XML <kbd class="shortcut-hint" aria-hidden="true">⌘/Ctrl+↵</kbd><span class="sr-only">Command or Control plus Enter</span>
                 {/if}
             </button>
         </div>
