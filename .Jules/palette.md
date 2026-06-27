@@ -27,3 +27,6 @@
 ## 2024-06-25 - Hide Symbolic Keyboard Shortcuts from Screen Readers
 **Learning:** When using `<kbd>` tags to display keyboard shortcuts that include symbolic characters (like ⌘ or ↵), screen readers may read them literally (e.g., "Command slash Control plus Enter arrow"), which is extremely confusing.
 **Action:** Always add `aria-hidden="true"` to `<kbd>` tags that contain symbols or non-alphanumeric characters, and place a visually hidden `span` (`<span class="sr-only">`) immediately after it with a clear, readable text alternative (e.g., "Command or Control plus Enter").
+## 2024-06-27 - Name drag and drop regions for accessibility
+**Learning:** Elements used as interactive drag-and-drop zones (e.g., file upload areas) often function as major interaction points but lack semantic meaning if not properly labeled. Screen reader users navigating by landmarks will bypass them without context.
+**Action:** Always assign a semantic role (like `role="region"`) and an accessible name (using `aria-labelledby` pointing to an inner heading) to custom drag-and-drop container elements to ensure they are discoverable via assistive technologies.
