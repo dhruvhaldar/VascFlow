@@ -107,12 +107,14 @@
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
     class="mesh-upload"
+    role="region"
+    aria-labelledby="mesh-upload-heading"
     class:dragging={isDragging}
     on:dragover|preventDefault={handleDragOver}
     on:dragleave={handleDragLeave}
     on:drop|preventDefault={handleDrop}
 >
-    <h3>Mesh Upload</h3>
+    <h3 id="mesh-upload-heading">Mesh Upload</h3>
     <input type="file" bind:this={fileInput} on:change={handleFileSelect} accept=".vtu,.vtp,.vtk" aria-label="Upload Mesh File" title={loading ? "Processing upload, please wait..." : "Choose a mesh file to upload"} disabled={loading} aria-invalid={!!error} aria-describedby={error ? "mesh-upload-error" : undefined} />
     {#if !loading}
         <p class="drop-hint" aria-hidden="true">{isDragging ? 'Drop file to upload...' : 'or drag and drop a file here'}</p>
