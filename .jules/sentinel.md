@@ -21,3 +21,9 @@
 **Vulnerability:** A global middleware was previously implemented to reject all `Transfer-Encoding: chunked` requests to prevent bypassing the `Content-Length` limits (DoS mitigation). However, this blanket rejection broke legitimate file upload streaming endpoints (like `/process_mesh`).
 **Learning:** Security rules must be carefully scoped. Global rules that block standard HTTP behavior (like chunked encoding for file uploads) will break core application functionality.
 **Prevention:** When enforcing strict limits (like `Content-Length` requirements), explicitly exempt endpoints that natively and legitimately require alternative behaviors, provided those exempted endpoints implement their own robust application-layer streaming protections (e.g., tracking bytes read to prevent disk exhaustion).
+
+## 2026-06-29 - Enforce Content Security Policy (CSP) on Frontend
+
+**Vulnerability:** The frontend application was missing a Content Security Policy (CSP). Without a CSP, the application is highly vulnerable to Cross-Site Scripting (XSS) and other data injection attacks if user-supplied content or third-party dependencies are compromised, as the browser will execute any inline script or load external malicious resources without restriction.
+**Learning:** Implementing a strict CSP is a critical defense-in-depth measure. When dealing with complex client-side visualizers like vtk.js or WebGL contexts, specific directives like blob: must be explicitly included in connect-src and worker-src to prevent breaking legitimate local file rendering while still securing external connections.
+**Prevention:** Always deploy frontend applications with a robust Content Security Policy, either via HTTP headers (preferred for dynamic configuration) or a meta tag in index.html, carefully tailoring the default-src, script-src, and connect-src directives to the specific needs of the application.
