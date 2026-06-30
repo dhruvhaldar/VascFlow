@@ -1,29 +1,9 @@
-## 2025-02-14 - Add Client-Side Timeouts to Prevent Resource Starvation
+## 2023-10-27 - [Security Enhancement: Remove hardcoded backend API URLs]
+**Vulnerability:** The frontend application hardcoded the backend API URL as `http://localhost:8000` in multiple components (`MeshUpload.svelte`, `XMLPreview.svelte`, `Viewer.svelte`).
+**Learning:** Hardcoding local API URLs can lead to Information Disclosure (exposing internal configuration structures) and breaks functionality when the frontend is deployed to production or testing environments where the API resides at a different domain.
+**Prevention:** Use environment variables (like `import.meta.env.VITE_API_URL` in Vite projects) to dynamically inject backend routes depending on the environment context.
 
-**Vulnerability:** External API calls (`fetch()`) in the Svelte frontend lacked explicit timeouts. By default, `fetch()` operations do not timeout. If the backend FastAPI server hung or if network connectivity dropped, the UI would remain indefinitely stuck in a "Processing..." or "Generating..." state, leading to client-side resource exhaustion and poor resilience against DoS conditions.
-**Learning:** Modern `fetch()` calls require manual timeout implementation to ensure application resilience. Relying solely on server-side timeouts (or expecting immediate TCP resets) leaves the client vulnerable to infinite hanging states.
-**Prevention:** Always implement explicit timeouts on frontend `fetch()` requests using the modern `AbortSignal.timeout(ms)` API, and explicitly catch and handle `TimeoutError` to fail securely and provide actionable feedback to the user.
-
-## 2025-02-14 - Enforce HTTP-Layer File Size Limits for FastAPI UploadFile
-
-**Vulnerability:** A Denial of Service (DoS) vulnerability via Disk Exhaustion was found in the FastAPI backend. The `/process_mesh` endpoint enforced a 50MB file size limit internally. However, because it accepts `UploadFile`, FastAPI's underlying parsing mechanism spools the entire incoming multipart payload to disk *before* the endpoint code is even executed. By bypassing the HTTP middleware limits (which explicitly excluded `/process_mesh`), an attacker could upload massive files that would exhaust the server's disk space before the endpoint's internal limit could reject them.
-**Learning:** Pydantic and `UploadFile` eagerly consume or spool massive request bodies before executing endpoint logic. Relying on application-layer logic inside an endpoint to limit file sizes is insufficient against DoS attacks.
-**Prevention:** Always cap file sizes at the HTTP middleware layer, before the request reaches the routing or parsing layers. Prevent bypasses by also denying `Transfer-Encoding: chunked` requests where `Content-Length` isn't provided.
-
-## 2026-06-22 - Rate Limit Static File Endpoints
-
-**Vulnerability:** The `StaticFiles` endpoint (`/files`) was excluded from the global application rate limiter. While serving static files is generally fast, unprotected endpoints can still be abused to cause Denial of Service (DoS) or exhaust server bandwidth via repeated bulk requests for large files (like 3D meshes).
-**Learning:** Rate limiters should apply not just to dynamic API routes but also to routes serving potentially large static assets to prevent bandwidth exhaustion or basic DoS attempts.
-**Prevention:** Ensure static asset mounts (like `/files/`) are explicitly included in the paths covered by global rate-limiting middleware.
-
-## 2025-02-14 - Refining Chunked Encoding Bypass Prevention
-
-**Vulnerability:** A global middleware was previously implemented to reject all `Transfer-Encoding: chunked` requests to prevent bypassing the `Content-Length` limits (DoS mitigation). However, this blanket rejection broke legitimate file upload streaming endpoints (like `/process_mesh`).
-**Learning:** Security rules must be carefully scoped. Global rules that block standard HTTP behavior (like chunked encoding for file uploads) will break core application functionality.
-**Prevention:** When enforcing strict limits (like `Content-Length` requirements), explicitly exempt endpoints that natively and legitimately require alternative behaviors, provided those exempted endpoints implement their own robust application-layer streaming protections (e.g., tracking bytes read to prevent disk exhaustion).
-
-## 2026-06-29 - Enforce Content Security Policy (CSP) on Frontend
-
-**Vulnerability:** The frontend application was missing a Content Security Policy (CSP). Without a CSP, the application is highly vulnerable to Cross-Site Scripting (XSS) and other data injection attacks if user-supplied content or third-party dependencies are compromised, as the browser will execute any inline script or load external malicious resources without restriction.
-**Learning:** Implementing a strict CSP is a critical defense-in-depth measure. When dealing with complex client-side visualizers like vtk.js or WebGL contexts, specific directives like blob: must be explicitly included in connect-src and worker-src to prevent breaking legitimate local file rendering while still securing external connections.
-**Prevention:** Always deploy frontend applications with a robust Content Security Policy, either via HTTP headers (preferred for dynamic configuration) or a meta tag in index.html, carefully tailoring the default-src, script-src, and connect-src directives to the specific needs of the application.
+## 2023-10-27 - [Security Enhancement: Harden Content-Security-Policy (CSP)]
+**Vulnerability:** The CSP in `index.html` included the `'unsafe-eval'` keyword in the `script-src` directive.
+**Learning:** Using `'unsafe-eval'` weakens the CSP and increases the attack surface for Cross-Site Scripting (XSS) by allowing execution of malicious strings as code via functions like `eval()` and `new Function()`. It should be omitted unless strictly required by a specific development workflow or legacy dependency.
+**Prevention:** Strictly maintain CSP directives without `'unsafe-eval'` and only add it if completely unavoidable and well-justified.
