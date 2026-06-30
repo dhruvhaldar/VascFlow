@@ -76,9 +76,10 @@
         // ⚡ Bolt: Handle both external backend URLs and local Blob URLs.
         // If it's a blob: URL (from MeshUpload bypass), we load it directly without
         // prefixing the backend address.
+        const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
         const url = filename.startsWith('blob:')
             ? filename
-            : `http://localhost:8000/files/${filename}`;
+            : `${API_URL}/files/${filename}`;
 
         // ⚡ Bolt: Reuse the vtk.js rendering pipeline instead of recreating it.
         // Destroying and recreating vtkActor, vtkMapper, and vtkReader on every file load

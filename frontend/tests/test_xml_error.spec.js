@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('xml generation error handling', async ({ page }) => {
-  await page.route('http://localhost:8000/generate_input', async route => {
+  await page.route('**/generate_input', async route => {
     await route.fulfill({
       status: 400,
       headers: { 'Access-Control-Allow-Origin': '*' },

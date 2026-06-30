@@ -46,7 +46,8 @@
         formData.append("file", file);
 
         try {
-            const response = await fetch("http://localhost:8000/process_mesh", {
+            const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+            const response = await fetch(`${API_URL}/process_mesh`, {
                 method: "POST",
                 body: formData,
                 signal: AbortSignal.timeout(60000)
