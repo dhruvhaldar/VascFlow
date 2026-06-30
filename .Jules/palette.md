@@ -30,3 +30,11 @@
 ## 2024-06-27 - Name drag and drop regions for accessibility
 **Learning:** Elements used as interactive drag-and-drop zones (e.g., file upload areas) often function as major interaction points but lack semantic meaning if not properly labeled. Screen reader users navigating by landmarks will bypass them without context.
 **Action:** Always assign a semantic role (like `role="region"`) and an accessible name (using `aria-labelledby` pointing to an inner heading) to custom drag-and-drop container elements to ensure they are discoverable via assistive technologies.
+
+## 2024-07-01 - Style File Input Parent on Focus Within
+**Learning:** When a native `<input type="file">` is placed inside a larger, custom drag-and-drop region, it can receive keyboard focus. If the parent container doesn't provide visual feedback for this focus state (similar to its hover or dragging state), keyboard users will have no clear indication that they are currently interacting with the upload zone.
+**Action:** Always apply `:focus-within` styling to custom drag-and-drop containers that wrap native interactive elements (like file inputs) to ensure keyboard navigation parity with mouse interactions.
+
+## 2024-07-02 - Expand Click Target for Drag-and-Drop Zones
+**Learning:** When using a native `<input type="file">` inside a larger custom drag-and-drop region, users intuitively expect the entire region to be clickable. If only the native input responds to clicks, it creates frustrating "dead zones" where a user clicks but nothing happens, breaking the illusion of a unified component.
+**Action:** Always make the entire drag-and-drop container clickable by binding an `on:click` handler that programmatically triggers the hidden file input (`input.click()`), and apply `cursor: pointer` along with hover states to the container to visually communicate its interactivity.
