@@ -35,6 +35,17 @@
         if (!fileInput.files.length) return;
         const file = fileInput.files[0];
 
+        // 🎨 Palette: Validate file extensions client-side.
+        // Drag-and-drop bypasses the HTML accept attribute. Validating early prevents
+        // a slow, confusing backend validation error and provides instant feedback.
+        const validExtensions = ['.vtu', '.vtp', '.vtk'];
+        const fileNameLower = file.name.toLowerCase();
+        if (!validExtensions.some(ext => fileNameLower.endsWith(ext))) {
+            error = `Invalid type. Use ${validExtensions.join(', ')}`;
+            if (fileInput) fileInput.value = "";
+            return;
+        }
+
         // ⚡ Bolt: Add an early return for files larger than 50MB.
         // This prevents the browser from allocating memory for the file in a FormData
         // object and initiating a network request that the backend will inevitably
@@ -126,7 +137,7 @@
     on:click={handleClick}
 >
     <h3 id="mesh-upload-heading">Mesh Upload</h3>
-    <input type="file" bind:this={fileInput} on:change={handleFileSelect} accept=".vtu,.vtp,.vtk" aria-label="Upload Mesh File" title={loading ? "Processing upload, please wait..." : "Choose a mesh file to upload"} disabled={loading} aria-invalid={!!error} aria-describedby={error ? "mesh-upload-error" : undefined} />
+    <input type="file" class="sr-only" bind:this={fileInput} on:change={handleFileSelect} accept=".vtu,.vtp,.vtk" aria-label="Upload Mesh File" title={loading ? "Processing upload, please wait..." : "Choose a mesh file to upload"} disabled={loading} aria-invalid={!!error} aria-describedby={error ? "mesh-upload-error" : undefined} />
     {#if !loading}
         <p class="drop-hint" aria-hidden="true">{isDragging ? 'Drop file to upload...' : 'Click to select or drag and drop a file here'}</p>
     {/if}
