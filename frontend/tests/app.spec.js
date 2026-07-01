@@ -77,7 +77,7 @@ test.describe('svFSI Configurator App', () => {
     });
 
     const fileChooserPromise = page.waitForEvent('filechooser');
-    await page.locator('input[type="file"]').click();
+    await page.locator('.mesh-upload').click();
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles({
       name: 'dummy_mesh.vtu',
@@ -150,7 +150,7 @@ test.describe('svFSI Configurator App', () => {
     });
 
     const fileChooserPromise = page.waitForEvent('filechooser');
-    await page.locator('input[type="file"]').click();
+    await page.locator('.mesh-upload').click();
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles({
       name: 'dummy_mesh.vtu',

@@ -38,3 +38,7 @@
 ## 2024-07-02 - Expand Click Target for Drag-and-Drop Zones
 **Learning:** When using a native `<input type="file">` inside a larger custom drag-and-drop region, users intuitively expect the entire region to be clickable. If only the native input responds to clicks, it creates frustrating "dead zones" where a user clicks but nothing happens, breaking the illusion of a unified component.
 **Action:** Always make the entire drag-and-drop container clickable by binding an `on:click` handler that programmatically triggers the hidden file input (`input.click()`), and apply `cursor: pointer` along with hover states to the container to visually communicate its interactivity.
+
+## 2024-07-03 - Provide Instant Frontend Feedback for Invalid File Extensions in Drag-and-Drop Zones
+**Learning:** While the native HTML `<input type="file" accept="...">` attribute prevents users from selecting invalid files via the OS file picker dialog, it does not prevent users from dragging and dropping invalid files directly onto the drop zone. If client-side validation is missing, these invalid files are uploaded to the backend, causing a delayed, confusing API error.
+**Action:** Always implement explicit, programmatic client-side file extension validation (e.g., checking `file.name.endsWith()`) within the `onDrop` handler of drag-and-drop zones. Surface a clear, instant error message explaining exactly which file types are supported, and return early to prevent unnecessary network requests.
