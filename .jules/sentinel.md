@@ -11,3 +11,8 @@
 **Vulnerability:** The application was missing the `Permissions-Policy` security header. While the CSP was strong, defense in depth involves restricting access to browser APIs entirely, minimizing the impact of potential vulnerabilities like XSS.
 **Learning:** Security headers should not only protect against content injection (CSP) and MIME sniffing (X-Content-Type-Options) but also restrict access to device features that the app doesn't need.
 **Prevention:** Add a `Permissions-Policy` header to all backend HTTP responses to explicitly disable sensitive browser APIs like `geolocation`, `microphone`, and `camera`.
+
+## 2025-03-01 - Avoid Hardcoding Local API URLs in Frontend Code
+**Vulnerability:** The application was hardcoding `http://localhost:8000` as the fallback `API_URL` and directly into the Content Security Policy `connect-src` header. This could inadvertently expose internal network routes to attackers or result in Cross-Site Scripting (XSS) risks due to permissive local origin exposure, and causes application malfunctions when deployed outside of local development.
+**Learning:** Development environments often bake-in convenience URLs. However, relying on these in production codebases leads to insecure configuration deployments and brittle routing logic.
+**Prevention:** Always rely on dynamically injected environment configurations (like `import.meta.env.VITE_API_URL` without insecure fallbacks) and configure build-time proxies (e.g., Vite proxy) to seamlessly handle local development API routing instead of polluting production source files.
