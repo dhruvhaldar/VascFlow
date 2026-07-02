@@ -244,6 +244,11 @@
         filter: blur(70px);
         opacity: 0.35;
         pointer-events: none;
+        /* ⚡ Bolt: Promote elements with expensive blur filters to a hardware-accelerated
+           layer. This prevents full repaints on the main thread and reduces UI stuttering
+           during adjacent DOM updates or animations. */
+        transform: translateZ(0);
+        will-change: filter;
     }
 
     .ambient-1 {
@@ -269,6 +274,11 @@
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
         box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+        /* ⚡ Bolt: Promote elements with expensive blur filters to a hardware-accelerated
+           layer. This prevents full repaints on the main thread and reduces UI stuttering
+           during adjacent DOM updates or animations. */
+        transform: translateZ(0);
+        will-change: transform, backdrop-filter;
     }
 
     header {

@@ -78,3 +78,6 @@
 ## 2026-05-22 - [Optimize Connectivity on Massive Meshes]
 **Learning:** Running `surface.connectivity()` on PyVista meshes with millions of cells creates a severe CPU bottleneck, blocking the thread for >10 seconds. When this is used as a fallback mechanism for finding mesh regions, the entire API becomes unresponsive.
 **Action:** Always implement a cell count threshold (e.g., `surface.n_cells < 500_000`) to bypass computationally expensive connectivity calculations on massive meshes, falling back to a default surface instead.
+## 2024-05-30 - Hardware-accelerating CSS filters
+**Learning:** Indiscriminate use of `will-change: filter` on static elements without active animations is a premature optimization that can actually harm performance by consuming excessive VRAM and creating unnecessary composite layers.
+**Action:** When optimizing CSS rendering for static elements with expensive filters (like `blur`), rely on `transform: translateZ(0)` to promote them to a hardware-accelerated layer to prevent main thread repaints, and reserve `will-change` only for properties that actively animate or change state.
