@@ -65,7 +65,7 @@
         generating = true;
         errorDetail = "";
         try {
-            const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+            const API_URL = import.meta.env.VITE_API_URL || "";
             const response = await fetch(`${API_URL}/generate_input`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
