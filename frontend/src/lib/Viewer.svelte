@@ -279,6 +279,11 @@
         justify-content: center;
         z-index: 10;
         color: #b8c5ef;
+        /* ⚡ Bolt: Promote elements with expensive blur filters to a hardware-accelerated
+           layer. This prevents full repaints on the main thread and reduces UI stuttering
+           during adjacent DOM updates or animations. */
+        transform: translateZ(0);
+        will-change: transform, backdrop-filter;
     }
 
     .spinner {
