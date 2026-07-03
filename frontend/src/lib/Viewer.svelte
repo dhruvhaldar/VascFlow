@@ -281,9 +281,9 @@
         color: #b8c5ef;
         /* ⚡ Bolt: Promote elements with expensive blur filters to a hardware-accelerated
            layer. This prevents full repaints on the main thread and reduces UI stuttering
-           during adjacent DOM updates or animations. */
+           during adjacent DOM updates or animations. Avoid using will-change indiscriminately
+           on static elements as it consumes excessive VRAM; transform: translateZ(0) is sufficient. */
         transform: translateZ(0);
-        will-change: transform, backdrop-filter;
     }
 
     .spinner {
