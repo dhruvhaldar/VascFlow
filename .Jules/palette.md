@@ -42,3 +42,7 @@
 ## 2024-07-03 - Provide Instant Frontend Feedback for Invalid File Extensions in Drag-and-Drop Zones
 **Learning:** While the native HTML `<input type="file" accept="...">` attribute prevents users from selecting invalid files via the OS file picker dialog, it does not prevent users from dragging and dropping invalid files directly onto the drop zone. If client-side validation is missing, these invalid files are uploaded to the backend, causing a delayed, confusing API error.
 **Action:** Always implement explicit, programmatic client-side file extension validation (e.g., checking `file.name.endsWith()`) within the `onDrop` handler of drag-and-drop zones. Surface a clear, instant error message explaining exactly which file types are supported, and return early to prevent unnecessary network requests.
+
+## 2024-07-04 - Clamp vertical spatial navigation for tabs grid
+**Learning:** When extending standard linear keyboard navigation to support spatial navigation (`ArrowUp` and `ArrowDown`) for 2D grids (like a multi-row tablist), wrapping vertical movement around using modulo arithmetic breaks the user's spatial mental model by jumping focus to unexpected ends of the grid.
+**Action:** Always clamp vertical movement (using `Math.min` and `Math.max`) to the grid boundaries rather than using modulo wrapping.
