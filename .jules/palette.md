@@ -126,3 +126,7 @@
 ## 2026-06-06 - [Added Reset Camera Button to 3D Viewer]
 **Learning:** In the 3D Viewer, users can get lost after panning, zooming or rotating. There's no way to get back to the original view if they lose track of the object without reloading the file, creating a frustrating experience.
 **Action:** Implemented a visible 'Reset View' button in the viewer header that calls `renderer.resetCamera()` and re-renders the scene, allowing users to quickly return to a normalized orientation.
+
+## 2024-07-05 - [Propagating Tab Validation States to Global Actions]
+**Learning:** When a multi-tab configuration interface uses inline HTML5 validation, users can easily introduce invalid data (e.g., negative physical properties) in a hidden tab and attempt to proceed by clicking a global 'Generate' or 'Submit' action in another pane. If the global action does not respect the local tab validation, it allows the bad request to hit the backend, leading to a confusing 422 error response and forcing the user to hunt down the mistake.
+**Action:** Always propagate local form validation states up to the parent container and pass them down to global action components. Use this state to explicitly disable the primary action button, update its `title` with actionable guidance ("Fix validation errors in tabs..."), and provide a contextual empty state instructing the user to resolve the errors before proceeding.
