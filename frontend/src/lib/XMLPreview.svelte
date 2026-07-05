@@ -3,6 +3,8 @@
     import { fade } from 'svelte/transition';
     import { simulationConfig, generatedXML } from '../stores';
 
+    export let hasValidationErrors = false;
+
     let generating = false;
     let copying = false;
     let copied = false;
@@ -110,7 +112,7 @@
     function handleGlobalKeydown(event) {
         if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
             event.preventDefault();
-            if (!generating && !isUpToDate) {
+            if (!generating && !isUpToDate && !hasValidationErrors) {
                 generate();
             }
         }
@@ -151,9 +153,9 @@
             <button
                 bind:this={generateBtn}
                 on:click={generate}
-                disabled={generating || isUpToDate}
+                disabled={generating || isUpToDate || hasValidationErrors}
                 aria-busy={generating}
-                title={isUpToDate ? "XML is up to date with current settings" : "Generate XML (Ctrl/Cmd + Enter)"}
+                title={hasValidationErrors ? "Fix validation errors in tabs before generating" : (isUpToDate ? "XML is up to date with current settings" : "Generate XML (Ctrl/Cmd + Enter)")}
                 aria-keyshortcuts="Control+Enter Meta+Enter"
                 class="generate-btn"
             >
@@ -182,8 +184,13 @@
     <div class="preview-container">
         {#if !$generatedXML}
             <div class="empty-state" transition:fade|local={{ duration: 150 }}>
-                <p>No XML generated yet.</p>
-                <p class="subtext">Configure your simulation and click 'Generate XML' (or press <kbd class="shortcut-hint" aria-hidden="true">⌘/Ctrl+↵</kbd><span class="sr-only">Command or Control plus Enter</span>).</p>
+                {#if hasValidationErrors}
+                    <p role="alert">⚠️ Validation Errors</p>
+                    <p class="subtext">Please fix the validation errors in the configuration tabs before generating XML.</p>
+                {:else}
+                    <p>No XML generated yet.</p>
+                    <p class="subtext">Configure your simulation and click 'Generate XML' (or press <kbd class="shortcut-hint" aria-hidden="true">⌘/Ctrl+↵</kbd><span class="sr-only">Command or Control plus Enter</span>).</p>
+                {/if}
             </div>
         {:else if isError}
             <div class="empty-state error-state" role="alert" aria-live="assertive" transition:fade|local={{ duration: 150 }}>
@@ -195,6 +202,9 @@
                 {#if generating}
                     <span class="inline-spinner" style="width: 24px; height: 24px; margin-bottom: 0.5rem;" aria-hidden="true"></span>
                     <p>Generating updated XML...</p>
+                {:else if hasValidationErrors}
+                    <p role="alert">⚠️ Validation Errors</p>
+                    <p class="subtext">Please fix the validation errors in the configuration tabs to re-enable generation.</p>
                 {:else}
                     <p>⚠️ Outdated Preview</p>
                     <p class="subtext">Settings have changed. Click 'Generate XML' (or press <kbd class="shortcut-hint" aria-hidden="true">⌘/Ctrl+↵</kbd><span class="sr-only">Command or Control plus Enter</span>) to update.</p>
