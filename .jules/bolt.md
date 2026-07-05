@@ -81,3 +81,6 @@
 ## 2024-05-30 - Hardware-accelerating CSS filters
 **Learning:** Indiscriminate use of `will-change: filter` on static elements without active animations is a premature optimization that can actually harm performance by consuming excessive VRAM and creating unnecessary composite layers.
 **Action:** When optimizing CSS rendering for static elements with expensive filters (like `blur`), rely on `transform: translateZ(0)` to promote them to a hardware-accelerated layer to prevent main thread repaints, and reserve `will-change` only for properties that actively animate or change state.
+## 2026-05-23 - [Optimize Request URL Parsing in FastAPI Middleware]
+**Learning:** In FastAPI/Starlette middleware, repeatedly accessing `request.url.path` is an anti-pattern. Accessing `request.url` lazily instantiates an expensive `URL` object which requires parsing all headers and the underlying `request.scope` dictionary. In high-frequency middlewares (like rate limiting, size limits, and security headers), doing this multiple times per request creates a measurable CPU overhead. Accessing the raw string via `request.scope.get("path", "")` is roughly 10x faster.
+**Action:** Always use `request.scope.get("path", "")` instead of `request.url.path` in Starlette/FastAPI middleware to instantly access the request path without expensive URL string parsing.
