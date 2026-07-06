@@ -134,7 +134,10 @@ async def add_security_headers(request: Request, call_next):
     # Exclude Swagger/ReDoc docs from strict CSP as they require external CDNs
     # and inline scripts to render properly.
     if not req_path.startswith(("/docs", "/redoc", "/openapi.json")):
-        response.headers["Content-Security-Policy"] = "default-src 'self'"
+        response.headers["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'; sandbox"
+
+    response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
+    response.headers["Cross-Origin-Resource-Policy"] = "cross-origin"
 
     # 🛡️ Sentinel: Prevent caching of API responses to avoid leaking sensitive simulation data
     if req_path in ("/generate_input", "/process_mesh") or req_path.startswith("/files/"):
