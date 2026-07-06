@@ -24,9 +24,9 @@
         } else if (e.key === 'ArrowLeft') {
             newIndex = (index - 1 + tabs.length) % tabs.length;
         } else if (e.key === 'ArrowDown') {
-            newIndex = Math.min(index + 2, tabs.length - 1);
+            newIndex = index + 2 < tabs.length ? index + 2 : index;
         } else if (e.key === 'ArrowUp') {
-            newIndex = Math.max(index - 2, 0);
+            newIndex = index - 2 >= 0 ? index - 2 : index;
         } else if (e.key === 'Home') {
             newIndex = 0;
         } else if (e.key === 'End') {
