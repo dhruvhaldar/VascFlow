@@ -16,3 +16,7 @@
 **Vulnerability:** The application was hardcoding `http://localhost:8000` as the fallback `API_URL` and directly into the Content Security Policy `connect-src` header. This could inadvertently expose internal network routes to attackers or result in Cross-Site Scripting (XSS) risks due to permissive local origin exposure, and causes application malfunctions when deployed outside of local development.
 **Learning:** Development environments often bake-in convenience URLs. However, relying on these in production codebases leads to insecure configuration deployments and brittle routing logic.
 **Prevention:** Always rely on dynamically injected environment configurations (like `import.meta.env.VITE_API_URL` without insecure fallbacks) and configure build-time proxies (e.g., Vite proxy) to seamlessly handle local development API routing instead of polluting production source files.
+## 2024-05-24 - Enhance Security Headers for API
+**Vulnerability:** Weak security headers
+**Learning:** For backend APIs that solely serve data (e.g., JSON/XML) and do not render HTML, enforcing a strict Content-Security-Policy such as `default-src 'none'; frame-ancestors 'none'; sandbox` entirely blocks resource loading and script execution if the endpoint is directly accessed in a browser.
+**Prevention:** Bolster backend API defense-in-depth against cross-origin information leaks by consistently adding `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Resource-Policy: cross-origin` headers.
