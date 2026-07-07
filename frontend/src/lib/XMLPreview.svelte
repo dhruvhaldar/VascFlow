@@ -221,7 +221,6 @@
                 tabindex={!$generatedXML || !isUpToDate ? -1 : 0}
                 aria-hidden={!$generatedXML || !isUpToDate ? "true" : "false"}
                 on:focus={(e) => e.target.select()}
-                on:click={(e) => e.target.select()}
             ></textarea>
         {/if}
     </div>
