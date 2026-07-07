@@ -46,3 +46,7 @@
 ## 2024-07-04 - Clamp vertical spatial navigation for tabs grid
 **Learning:** When extending standard linear keyboard navigation to support spatial navigation (`ArrowUp` and `ArrowDown`) for 2D grids (like a multi-row tablist), wrapping vertical movement around using modulo arithmetic breaks the user's spatial mental model by jumping focus to unexpected ends of the grid.
 **Action:** Always clamp vertical movement (using `Math.min` and `Math.max`) to the grid boundaries rather than using modulo wrapping.
+
+## 2024-07-05 - Avoid aggressive auto-select on click
+**Learning:** While `on:focus={(e) => e.target.select()}` is a helpful UX pattern to auto-select all text when an input is first focused (especially for "copy to clipboard" flows), combining it with `on:click={(e) => e.target.select()}` creates an aggressive loop. Once focused, subsequent clicks by the user to position the cursor or drag to select a partial snippet are hijacked, and the entire text is forcibly re-selected. This breaks native OS text selection expectations.
+**Action:** Always bind auto-select behavior strictly to `on:focus`, never to `on:click`, to allow native text selection and cursor placement once the element has already gained focus.
