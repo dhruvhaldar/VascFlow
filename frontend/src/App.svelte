@@ -201,6 +201,7 @@
     }
 
     :global(button:disabled),
+    :global(button[aria-disabled="true"]),
     :global(input:disabled),
     :global(select:disabled),
     :global(textarea:disabled) {

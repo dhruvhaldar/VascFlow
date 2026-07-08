@@ -128,7 +128,7 @@
             </label>
 
             <div class="submit-action">
-                <button type="submit" disabled={!selectedFace} title={!selectedFace ? "Select a face first to add a boundary condition" : "Add boundary condition"}>Add BC</button>
+                <button type="submit" aria-disabled={!selectedFace} title={!selectedFace ? "Select a face first to add a boundary condition" : "Add boundary condition"}>Add BC</button>
             </div>
         </form>
 
@@ -217,7 +217,7 @@
         font-size: 0.9rem;
     }
 
-    .submit-action button:hover:not(:disabled) {
+    .submit-action button:hover:not(:disabled):not([aria-disabled="true"]) {
         background: rgba(80, 126, 246, 0.65);
         border-color: rgba(255, 255, 255, 0.35);
     }
