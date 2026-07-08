@@ -127,8 +127,8 @@
         <div class="actions">
             {#if $generatedXML && !isError}
                 <button
-                    on:click={downloadXML}
-                    disabled={!isUpToDate}
+                    on:click={(e) => { if (!isUpToDate) { e.preventDefault(); return; } downloadXML(); }}
+                    aria-disabled={!isUpToDate}
                     aria-label={!isUpToDate ? "Generate XML to download updated settings" : (downloaded ? "Downloaded XML file" : "Download generated XML file")}
                     title={!isUpToDate ? "Settings have changed. Generate XML first to download." : "Download XML"}
                     aria-live="polite"
@@ -139,8 +139,8 @@
                 </button>
                 <button
                     bind:this={copyBtn}
-                    on:click={copyXML}
-                    disabled={copying || !isUpToDate}
+                    on:click={(e) => { if (copying || !isUpToDate) { e.preventDefault(); return; } copyXML(); }}
+                    aria-disabled={copying || !isUpToDate}
                     aria-label={!isUpToDate ? "Generate XML to copy updated settings" : (copied ? "Copied to clipboard" : "Copy generated XML to clipboard")}
                     title={!isUpToDate ? "Settings have changed. Generate XML first to copy." : "Copy XML"}
                     aria-live="polite"
@@ -152,8 +152,8 @@
             {/if}
             <button
                 bind:this={generateBtn}
-                on:click={generate}
-                disabled={generating || isUpToDate || hasValidationErrors}
+                on:click={(e) => { if (generating || isUpToDate || hasValidationErrors) { e.preventDefault(); return; } generate(); }}
+                aria-disabled={generating || isUpToDate || hasValidationErrors}
                 aria-busy={generating}
                 title={hasValidationErrors ? "Fix validation errors in tabs before generating" : (isUpToDate ? "XML is up to date with current settings" : "Generate XML (Ctrl/Cmd + Enter)")}
                 aria-keyshortcuts="Control+Enter Meta+Enter"
@@ -275,7 +275,7 @@
         transition: all 0.2s ease;
     }
 
-    button:hover:not(:disabled) {
+    button:hover:not(:disabled):not([aria-disabled="true"]) {
         background: rgba(80, 126, 246, 0.65);
         border-color: rgba(255, 255, 255, 0.35);
     }
@@ -284,7 +284,7 @@
         background: rgba(255, 255, 255, 0.1);
     }
 
-    button.secondary-button:hover:not(:disabled) {
+    button.secondary-button:hover:not(:disabled):not([aria-disabled="true"]) {
         background: rgba(255, 255, 255, 0.2);
     }
 
