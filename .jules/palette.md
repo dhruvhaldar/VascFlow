@@ -134,3 +134,7 @@
 ## 2024-07-06 - Spatial Navigation Clamping for 2D Grids
 **Learning:** When implementing spatial keyboard navigation (e.g., using `ArrowUp` and `ArrowDown`) for elements laid out in a 2D grid (like a multi-row tablist), using modulo arithmetic or simple `Math.min`/`Math.max` bounds checking can cause unexpected and jarring focus wrapping. For instance, pressing `ArrowDown` on the bottom-most item in a column might wrap focus to an adjacent column, breaking the user's spatial mental model and violating expectations of linear directional movement.
 **Action:** When a user navigates vertically in a 2D grid and reaches the boundary (top or bottom), clamp the movement strictly instead of wrapping or sliding sideways. If the target index is out of bounds, the focus should remain on the current item.
+
+## 2024-07-09 - [Proactive Communication of Upload Limits]
+**Learning:** When file uploads have strict constraints (like a 50MB size limit) enforced via early returns in the client-side selection logic, users are only informed of these limits *after* they attempt an invalid action and receive an error message. This reactive approach increases frustration, especially if the user spent time locating the file.
+**Action:** Always proactively communicate known constraints (e.g., maximum file sizes, supported formats) directly within the empty state or helper text of the upload zone before the user initiates the action.
