@@ -20,3 +20,8 @@
 **Vulnerability:** Weak security headers
 **Learning:** For backend APIs that solely serve data (e.g., JSON/XML) and do not render HTML, enforcing a strict Content-Security-Policy such as `default-src 'none'; frame-ancestors 'none'; sandbox` entirely blocks resource loading and script execution if the endpoint is directly accessed in a browser.
 **Prevention:** Bolster backend API defense-in-depth against cross-origin information leaks by consistently adding `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Resource-Policy: cross-origin` headers.
+
+## 2025-03-01 - [Security Enhancement: Audit Logging for Sensitive Operations]
+**Vulnerability:** The application was missing audit logging for critical and resource-intensive endpoints like file uploads (`/process_mesh`) and simulation configuration generation (`/generate_input`).
+**Learning:** Without proper audit trails logging the client IP, payload size, and filename, investigating abuse, tracing Denial of Service (DoS) attempts, and maintaining accountability during security incidents becomes virtually impossible. Relying solely on error logs obscures successful but malicious interactions.
+**Prevention:** Always implement structured audit logging for operations that modify state, consume significant computational resources, or process external files to ensure robust monitoring and incident response capabilities.

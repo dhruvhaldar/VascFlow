@@ -157,7 +157,10 @@ async def read_root():
     return {"message": "svFSI Backend is running"}
 
 @app.post("/generate_input")
-async def generate_input(config: SimulationConfig):
+async def generate_input(config: SimulationConfig, request: Request):
+    # 🛡️ Sentinel: Add audit logging for sensitive operations to track API usage and potential abuse.
+    client_ip = request.client.host if request.client else "unknown"
+    logging.info("AUDIT: XML generation requested by IP: %s", client_ip)
     try:
         xml_content = generate_svfsi_xml(config)
         return {"xml": xml_content}
@@ -166,7 +169,7 @@ async def generate_input(config: SimulationConfig):
         raise HTTPException(status_code=500, detail="An error occurred while generating the input XML.")
 
 @app.post("/process_mesh")
-def process_mesh(file: UploadFile, background_tasks: BackgroundTasks):
+def process_mesh(file: UploadFile, background_tasks: BackgroundTasks, request: Request):
     """
     ⚡ Bolt: Sync endpoint to offload CPU-bound work.
     Using 'def' instead of 'async def' tells FastAPI to run this endpoint
@@ -174,6 +177,11 @@ def process_mesh(file: UploadFile, background_tasks: BackgroundTasks):
     PyVista mesh reading and surface extraction from blocking the main
     asyncio event loop.
     """
+    # 🛡️ Sentinel: Add audit logging for sensitive file upload operations.
+    client_ip = request.client.host if request.client else "unknown"
+    size_log = file.size if file.size is not None else "unknown"
+    logging.info("AUDIT: Mesh upload requested by IP: %s, Filename: %s, Size: %s", client_ip, file.filename, size_log)
+
     # ⚡ Bolt: Offload file cleanup to a background task
     background_tasks.add_task(_cleanup_old_uploads)
 
