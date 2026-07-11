@@ -157,8 +157,14 @@ async def read_root():
     return {"message": "svFSI Backend is running"}
 
 @app.post("/generate_input")
-async def generate_input(config: SimulationConfig):
+async def generate_input(config: SimulationConfig, request: Request = None):
     try:
+        # 🛡️ Sentinel: Implement structured audit logging for sensitive generation tasks
+        client_ip = request.client.host if request and request.client else "unknown"
+        num_bcs = len(config.boundary_conditions) if config.boundary_conditions else 0
+        logging.info("Audit Log - Action: Generate XML | IP: %s | Elements: %d | Time steps: %d",
+                     client_ip, num_bcs, config.general.num_time_steps)
+
         xml_content = generate_svfsi_xml(config)
         return {"xml": xml_content}
     except Exception as e:
@@ -166,7 +172,7 @@ async def generate_input(config: SimulationConfig):
         raise HTTPException(status_code=500, detail="An error occurred while generating the input XML.")
 
 @app.post("/process_mesh")
-def process_mesh(file: UploadFile, background_tasks: BackgroundTasks):
+def process_mesh(file: UploadFile, background_tasks: BackgroundTasks, request: Request = None):
     """
     ⚡ Bolt: Sync endpoint to offload CPU-bound work.
     Using 'def' instead of 'async def' tells FastAPI to run this endpoint
@@ -176,6 +182,11 @@ def process_mesh(file: UploadFile, background_tasks: BackgroundTasks):
     """
     # ⚡ Bolt: Offload file cleanup to a background task
     background_tasks.add_task(_cleanup_old_uploads)
+
+    # 🛡️ Sentinel: Implement structured audit logging for sensitive file uploads
+    client_ip = request.client.host if request and request.client else "unknown"
+    logging.info("Audit Log - Action: Mesh Upload | IP: %s | Filename: %s | Size: %s bytes",
+                 client_ip, file.filename, file.size)
 
     # 🛡️ Sentinel: Enforce application-layer file size limit (50MB) to prevent DoS attacks.
     MAX_FILE_SIZE = 50 * 1024 * 1024
