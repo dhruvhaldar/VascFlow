@@ -124,15 +124,25 @@ test.describe('svFSI Configurator App', () => {
 
     const removeButton = bcList.first().locator('button');
 
-    page.once('dialog', dialog => dialog.dismiss());
+    const dismissDialog = async (dialog) => {
+      await dialog.dismiss();
+    };
+
+    const acceptDialog = async (dialog) => {
+      await dialog.accept();
+    };
+
+    page.on('dialog', dismissDialog);
     await removeButton.click();
     await expect(bcList).toHaveCount(2);
+    page.off('dialog', dismissDialog);
 
-    page.once('dialog', dialog => dialog.accept());
+    page.on('dialog', acceptDialog);
     await removeButton.click();
 
     await expect(bcList).toHaveCount(1);
     await expect(bcList.first()).toContainText('outlet: Neumann Velocity=0 (Flat)');
+    page.off('dialog', acceptDialog);
   });
 
   test('visualizer requests processed mesh file from static files endpoint', async ({ page }) => {

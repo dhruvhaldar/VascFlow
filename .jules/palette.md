@@ -138,3 +138,7 @@
 ## 2024-07-09 - [Proactive Communication of Upload Limits]
 **Learning:** When file uploads have strict constraints (like a 50MB size limit) enforced via early returns in the client-side selection logic, users are only informed of these limits *after* they attempt an invalid action and receive an error message. This reactive approach increases frustration, especially if the user spent time locating the file.
 **Action:** Always proactively communicate known constraints (e.g., maximum file sizes, supported formats) directly within the empty state or helper text of the upload zone before the user initiates the action.
+
+## $(date +%Y-%m-%d) - Prevent Aggressive Inline Validation on Initial Load
+**Learning:** In Svelte forms where bound variables initialize as empty or `null` (like in `BCEditor.svelte`), inline error messages or `aria-invalid` attributes can immediately trigger a "sea of red" before the user even interacts with the form. This is highly distracting and confusing, especially in tabs that auto-focus or when a user clicks "Add" to a complex nested structure.
+**Action:** Always implement a `touched` state tracking mechanism (e.g., setting `touchedField = true` on `blur` or when attempting to submit the form) and only display error messages if `fieldIsInvalid && touchedField`. Ensure submit buttons communicate their readiness clearly (e.g., using `aria-disabled` and tooltips) rather than completely dropping interaction, so you can still catch premature clicks to display the validation context.

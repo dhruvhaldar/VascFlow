@@ -10,6 +10,10 @@
     let value = "";
     let profile = "Flat";
 
+    let touchedFace = false;
+    let touchedVariable = false;
+    let touchedValue = false;
+
     // ⚡ Bolt: Cache used face names in a reactive Set for O(1) lookups.
     // Calling array.some() twice per option inside an #each loop creates an
     // O(N*M) rendering bottleneck for meshes with many faces. Using a Set
@@ -48,6 +52,7 @@
         // 🎨 Palette: Manage focus after adding BC.
         // Wait for DOM to update and then return focus to the Face select input,
         // so keyboard navigation can naturally continue.
+        touchedFace = false; // Prevent immediate error after submission
         await tick();
         if (faceSelectElement) faceSelectElement.focus();
     }
@@ -77,7 +82,7 @@
         <form class="add-bc" on:submit|preventDefault={addBC}>
             <label>
                 <span>Face<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                <select bind:this={faceSelectElement} bind:value={selectedFace} required aria-invalid={!selectedFace} aria-describedby={!selectedFace ? "face-error" : undefined}>
+                <select bind:this={faceSelectElement} bind:value={selectedFace} required on:blur={() => touchedFace = true} aria-invalid={touchedFace && !selectedFace} aria-describedby={touchedFace && !selectedFace ? "face-error" : undefined}>
                     <option value="" disabled selected>Select Face</option>
                     <!-- ⚡ Bolt: Use a keyed each block for face options. -->
                     {#each $meshMetadata.faces as face (face.id)}
@@ -89,7 +94,7 @@
                         </option>
                     {/each}
                 </select>
-                {#if !selectedFace}
+                {#if touchedFace && !selectedFace}
                     <span id="face-error" class="inline-error" role="alert">Face selection required</span>
                 {/if}
             </label>
@@ -105,16 +110,16 @@
 
             <label>
                 <span>Variable<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                <input type="text" bind:value={variable} placeholder="Variable (e.g. Velocity)" required aria-invalid={!variable} aria-describedby={!variable ? "variable-error" : undefined} />
-                {#if !variable}
+                <input type="text" bind:value={variable} placeholder="Variable (e.g. Velocity)" required on:blur={() => touchedVariable = true} aria-invalid={touchedVariable && !variable} aria-describedby={touchedVariable && !variable ? "variable-error" : undefined} />
+                {#if touchedVariable && !variable}
                     <span id="variable-error" class="inline-error" role="alert">Variable name required</span>
                 {/if}
             </label>
 
             <label>
                 <span>Value<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                <input type="number" bind:value={value} step="any" placeholder="e.g. 10.5" required on:focus={(e) => e.target.select()} on:wheel={(e) => e.currentTarget.blur()} aria-invalid={value == null || value === ""} aria-describedby={value == null || value === "" ? "value-error" : undefined} />
-                {#if value == null || value === ""}
+                <input type="number" bind:value={value} step="any" placeholder="e.g. 10.5" required on:focus={(e) => e.target.select()} on:wheel={(e) => e.currentTarget.blur()} on:blur={() => touchedValue = true} aria-invalid={touchedValue && (value == null || value === "")} aria-describedby={touchedValue && (value == null || value === "") ? "value-error" : undefined} />
+                {#if touchedValue && (value == null || value === "")}
                     <span id="value-error" class="inline-error" role="alert">Numeric value required</span>
                 {/if}
             </label>
@@ -128,7 +133,7 @@
             </label>
 
             <div class="submit-action">
-                <button type="submit" aria-disabled={!selectedFace} title={!selectedFace ? "Select a face first to add a boundary condition" : "Add boundary condition"}>Add BC</button>
+                <button type="submit" aria-disabled={!selectedFace || !variable || value == null || value === ""} title={(!selectedFace || !variable || value == null || value === "") ? "Fill out all required fields to add a boundary condition" : "Add boundary condition"} on:click={(e) => { if (!selectedFace || !variable || value == null || value === "") { e.preventDefault(); touchedFace = true; touchedVariable = true; touchedValue = true; } }}>Add BC</button>
             </div>
         </form>
 
