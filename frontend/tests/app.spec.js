@@ -124,15 +124,24 @@ test.describe('svFSI Configurator App', () => {
 
     const removeButton = bcList.first().locator('button');
 
-    page.once('dialog', dialog => dialog.dismiss());
+    page.on('dialog', async dialog => {
+        if (dialog.message().includes('inlet')) {
+            await dialog.dismiss();
+        } else if (dialog.message().includes('outlet')) {
+            await dialog.accept();
+        } else {
+            await dialog.accept();
+        }
+    });
+
     await removeButton.click();
     await expect(bcList).toHaveCount(2);
 
-    page.once('dialog', dialog => dialog.accept());
-    await removeButton.click();
+    const removeButtonOutlet = bcList.nth(1).locator('button');
+    await removeButtonOutlet.click();
 
     await expect(bcList).toHaveCount(1);
-    await expect(bcList.first()).toContainText('outlet: Neumann Velocity=0 (Flat)');
+    await expect(bcList.first()).toContainText('inlet: Dirichlet Velocity=10.5 (Parabolic)');
   });
 
   test('visualizer requests processed mesh file from static files endpoint', async ({ page }) => {

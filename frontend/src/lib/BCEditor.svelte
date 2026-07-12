@@ -10,6 +10,10 @@
     let value = "";
     let profile = "Flat";
 
+    let faceTouched = false;
+    let variableTouched = false;
+    let valueTouched = false;
+
     // ⚡ Bolt: Cache used face names in a reactive Set for O(1) lookups.
     // Calling array.some() twice per option inside an #each loop creates an
     // O(N*M) rendering bottleneck for meshes with many faces. Using a Set
@@ -44,6 +48,9 @@
             return c;
         });
         selectedFace = "";
+        faceTouched = false;
+        variableTouched = false;
+        valueTouched = false;
 
         // 🎨 Palette: Manage focus after adding BC.
         // Wait for DOM to update and then return focus to the Face select input,
@@ -77,7 +84,7 @@
         <form class="add-bc" on:submit|preventDefault={addBC}>
             <label>
                 <span>Face<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                <select bind:this={faceSelectElement} bind:value={selectedFace} required aria-invalid={!selectedFace} aria-describedby={!selectedFace ? "face-error" : undefined}>
+                <select bind:this={faceSelectElement} bind:value={selectedFace} required aria-invalid={!selectedFace && faceTouched} aria-describedby={(!selectedFace && faceTouched) ? "face-error" : undefined} on:blur={() => faceTouched = true}>
                     <option value="" disabled selected>Select Face</option>
                     <!-- ⚡ Bolt: Use a keyed each block for face options. -->
                     {#each $meshMetadata.faces as face (face.id)}
@@ -89,7 +96,7 @@
                         </option>
                     {/each}
                 </select>
-                {#if !selectedFace}
+                {#if !selectedFace && faceTouched}
                     <span id="face-error" class="inline-error" role="alert">Face selection required</span>
                 {/if}
             </label>
@@ -105,16 +112,16 @@
 
             <label>
                 <span>Variable<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                <input type="text" bind:value={variable} placeholder="Variable (e.g. Velocity)" required aria-invalid={!variable} aria-describedby={!variable ? "variable-error" : undefined} />
-                {#if !variable}
+                <input type="text" bind:value={variable} placeholder="Variable (e.g. Velocity)" required aria-invalid={!variable && variableTouched} aria-describedby={(!variable && variableTouched) ? "variable-error" : undefined} on:blur={() => variableTouched = true} />
+                {#if !variable && variableTouched}
                     <span id="variable-error" class="inline-error" role="alert">Variable name required</span>
                 {/if}
             </label>
 
             <label>
                 <span>Value<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                <input type="number" bind:value={value} step="any" placeholder="e.g. 10.5" required on:focus={(e) => e.target.select()} on:wheel={(e) => e.currentTarget.blur()} aria-invalid={value == null || value === ""} aria-describedby={value == null || value === "" ? "value-error" : undefined} />
-                {#if value == null || value === ""}
+                <input type="number" bind:value={value} step="any" placeholder="e.g. 10.5" required on:focus={(e) => e.target.select()} on:wheel={(e) => e.currentTarget.blur()} aria-invalid={(value == null || value === "") && valueTouched} aria-describedby={((value == null || value === "") && valueTouched) ? "value-error" : undefined} on:blur={() => valueTouched = true} />
+                {#if (value == null || value === "") && valueTouched}
                     <span id="value-error" class="inline-error" role="alert">Numeric value required</span>
                 {/if}
             </label>

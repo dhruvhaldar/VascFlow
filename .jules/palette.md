@@ -138,3 +138,7 @@
 ## 2024-07-09 - [Proactive Communication of Upload Limits]
 **Learning:** When file uploads have strict constraints (like a 50MB size limit) enforced via early returns in the client-side selection logic, users are only informed of these limits *after* they attempt an invalid action and receive an error message. This reactive approach increases frustration, especially if the user spent time locating the file.
 **Action:** Always proactively communicate known constraints (e.g., maximum file sizes, supported formats) directly within the empty state or helper text of the upload zone before the user initiates the action.
+
+## 2024-07-06 - Deferred Inline Form Validation
+**Learning:** Displaying inline validation errors immediately upon component load for empty but required fields creates an intimidating and aggressive user experience. Users are scolded for not completing fields they haven't even had a chance to interact with yet.
+**Action:** Always implement a "touched" state tracking system (e.g., using `on:blur` handlers) to defer displaying inline error messages and setting `aria-invalid="true"` until the user has actually interacted with the specific field.
