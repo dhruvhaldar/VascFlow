@@ -20,3 +20,8 @@
 **Vulnerability:** Weak security headers
 **Learning:** For backend APIs that solely serve data (e.g., JSON/XML) and do not render HTML, enforcing a strict Content-Security-Policy such as `default-src 'none'; frame-ancestors 'none'; sandbox` entirely blocks resource loading and script execution if the endpoint is directly accessed in a browser.
 **Prevention:** Bolster backend API defense-in-depth against cross-origin information leaks by consistently adding `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Resource-Policy: cross-origin` headers.
+
+## 2025-03-01 - Add Audit Logging to Sensitive Endpoints
+**Vulnerability:** Lack of audit logging on sensitive endpoints (file uploads, complex generations) prevents tracking API usage, investigating abuse, or tracing Denial of Service (DoS) attempts.
+**Learning:** Adding structured logging (like `logging.info`) that logs request attributes such as `request.client.host`, file names, and payload sizes is critical for defense-in-depth against resource abuse. When injecting the `Request` object into existing FastAPI signatures, setting a default of `None` preserves testability so synchronous mock tests won't break.
+**Prevention:** Consistently inject the `Request` object (defaulting to `None`) into performance- or resource-intensive endpoints and implement structured logging for critical request attributes.
