@@ -17,6 +17,13 @@
     $: isPhysicsInvalid = $simulationConfig.physics.density == null || $simulationConfig.physics.density < 0 || $simulationConfig.physics.viscosity == null || $simulationConfig.physics.viscosity < 0;
     $: isGeneralInvalid = $simulationConfig.general.num_time_steps == null || $simulationConfig.general.num_time_steps < 1 || $simulationConfig.general.time_step_size == null || $simulationConfig.general.time_step_size < 0.001;
 
+    let touchedFields = {
+        density: false,
+        viscosity: false,
+        num_time_steps: false,
+        time_step_size: false
+    };
+
     async function handleTabKeydown(e, index) {
         let newIndex = index;
         if (e.key === 'ArrowRight') {
@@ -116,15 +123,15 @@
                         </label>
                         <label>
                             <span>Density <span class="unit-hint">(g/cm³)</span><span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                            <input type="number" bind:value={$simulationConfig.physics.density} step="any" min="0" placeholder="e.g. 1.06" required on:focus={(e) => e.target.select()} on:wheel={(e) => e.currentTarget.blur()} aria-invalid={$simulationConfig.physics.density == null || $simulationConfig.physics.density < 0} aria-describedby="density-error" />
-                            {#if $simulationConfig.physics.density == null || $simulationConfig.physics.density < 0}
+                            <input type="number" bind:value={$simulationConfig.physics.density} step="any" min="0" placeholder="e.g. 1.06" required on:focus={(e) => e.target.select()} on:wheel={(e) => e.currentTarget.blur()} on:blur={() => touchedFields.density = true} aria-invalid={touchedFields.density && ($simulationConfig.physics.density == null || $simulationConfig.physics.density < 0)} aria-describedby="density-error" />
+                            {#if touchedFields.density && ($simulationConfig.physics.density == null || $simulationConfig.physics.density < 0)}
                                 <span id="density-error" class="inline-error" role="alert">Valid positive number required</span>
                             {/if}
                         </label>
                         <label>
                             <span>Viscosity <span class="unit-hint">(Poise)</span><span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                            <input type="number" bind:value={$simulationConfig.physics.viscosity} step="any" min="0" placeholder="e.g. 0.04" required on:focus={(e) => e.target.select()} on:wheel={(e) => e.currentTarget.blur()} aria-invalid={$simulationConfig.physics.viscosity == null || $simulationConfig.physics.viscosity < 0} aria-describedby="viscosity-error" />
-                            {#if $simulationConfig.physics.viscosity == null || $simulationConfig.physics.viscosity < 0}
+                            <input type="number" bind:value={$simulationConfig.physics.viscosity} step="any" min="0" placeholder="e.g. 0.04" required on:focus={(e) => e.target.select()} on:wheel={(e) => e.currentTarget.blur()} on:blur={() => touchedFields.viscosity = true} aria-invalid={touchedFields.viscosity && ($simulationConfig.physics.viscosity == null || $simulationConfig.physics.viscosity < 0)} aria-describedby="viscosity-error" />
+                            {#if touchedFields.viscosity && ($simulationConfig.physics.viscosity == null || $simulationConfig.physics.viscosity < 0)}
                                 <span id="viscosity-error" class="inline-error" role="alert">Valid positive number required</span>
                             {/if}
                         </label>
@@ -138,15 +145,15 @@
                         <h3>General Settings</h3>
                         <label>
                             <span>Time Steps<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                            <input type="number" bind:value={$simulationConfig.general.num_time_steps} min="1" placeholder="e.g. 100" required on:focus={(e) => e.target.select()} on:wheel={(e) => e.currentTarget.blur()} aria-invalid={$simulationConfig.general.num_time_steps == null || $simulationConfig.general.num_time_steps < 1} aria-describedby="time-steps-error" />
-                            {#if $simulationConfig.general.num_time_steps == null || $simulationConfig.general.num_time_steps < 1}
+                            <input type="number" bind:value={$simulationConfig.general.num_time_steps} min="1" placeholder="e.g. 100" required on:focus={(e) => e.target.select()} on:wheel={(e) => e.currentTarget.blur()} on:blur={() => touchedFields.num_time_steps = true} aria-invalid={touchedFields.num_time_steps && ($simulationConfig.general.num_time_steps == null || $simulationConfig.general.num_time_steps < 1)} aria-describedby="time-steps-error" />
+                            {#if touchedFields.num_time_steps && ($simulationConfig.general.num_time_steps == null || $simulationConfig.general.num_time_steps < 1)}
                                 <span id="time-steps-error" class="inline-error" role="alert">Must be 1 or greater</span>
                             {/if}
                         </label>
                         <label>
                             <span>Step Size <span class="unit-hint">(s)</span><span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                            <input type="number" bind:value={$simulationConfig.general.time_step_size} step="any" min="0.001" placeholder="e.g. 0.001" required on:focus={(e) => e.target.select()} on:wheel={(e) => e.currentTarget.blur()} aria-invalid={$simulationConfig.general.time_step_size == null || $simulationConfig.general.time_step_size < 0.001} aria-describedby="step-size-error" />
-                            {#if $simulationConfig.general.time_step_size == null || $simulationConfig.general.time_step_size < 0.001}
+                            <input type="number" bind:value={$simulationConfig.general.time_step_size} step="any" min="0.001" placeholder="e.g. 0.001" required on:focus={(e) => e.target.select()} on:wheel={(e) => e.currentTarget.blur()} on:blur={() => touchedFields.time_step_size = true} aria-invalid={touchedFields.time_step_size && ($simulationConfig.general.time_step_size == null || $simulationConfig.general.time_step_size < 0.001)} aria-describedby="step-size-error" />
+                            {#if touchedFields.time_step_size && ($simulationConfig.general.time_step_size == null || $simulationConfig.general.time_step_size < 0.001)}
                                 <span id="step-size-error" class="inline-error" role="alert">Must be at least 0.001</span>
                             {/if}
                         </label>
