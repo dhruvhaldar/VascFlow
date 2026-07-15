@@ -25,3 +25,7 @@
 **Vulnerability:** Lack of audit logging on sensitive endpoints (file uploads, complex generations) prevents tracking API usage, investigating abuse, or tracing Denial of Service (DoS) attempts.
 **Learning:** Adding structured logging (like `logging.info`) that logs request attributes such as `request.client.host`, file names, and payload sizes is critical for defense-in-depth against resource abuse. When injecting the `Request` object into existing FastAPI signatures, setting a default of `None` preserves testability so synchronous mock tests won't break.
 **Prevention:** Consistently inject the `Request` object (defaulting to `None`) into performance- or resource-intensive endpoints and implement structured logging for critical request attributes.
+## 2024-05-27 - [Security Enhancement: Avoid Hardcoded Local Domains in CSP]
+**Vulnerability:** The Content Security Policy in `frontend/index.html` contained `ws://localhost:5173` hardcoded in its `connect-src` directive.
+**Learning:** Hardcoding local development URLs into production CSP headers leaks internal development details and excessively opens up cross-origin permissions if attackers can control or spoof DNS requests related to localhost.
+**Prevention:** Remove hardcoded development URLs from production CSP headers. Environment specific setup should be handled appropriately at the infrastructure layer or via runtime environment injection.
