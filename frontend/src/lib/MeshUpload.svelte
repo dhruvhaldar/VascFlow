@@ -83,18 +83,21 @@
 
             const data = await response.json();
 
+            // ⚡ Bolt: Revoke the old Blob URL to prevent memory leaks.
+            // Unconditionally revoking the old Blob URL ensures that if a user uploads a .vtp
+            // (creating a massive Blob in memory) and subsequently uploads a .vtu, the old Blob
+            // is properly freed. Trapping this cleanup inside the .vtp check below causes severe
+            // memory leaks across sequential different-type uploads.
+            if ($meshMetadata.viz_file && $meshMetadata.viz_file.startsWith('blob:')) {
+                URL.revokeObjectURL($meshMetadata.viz_file);
+            }
+
             // ⚡ Bolt: Eliminate redundant network download for .vtp files.
             // If the user uploads a surface mesh (.vtp), the backend returns it as-is.
             // By passing a local Blob URL instead of the filename, we prevent the Viewer
             // from re-downloading the exact same file from the server, saving huge amounts
             // of network bandwidth and instantly rendering the mesh.
             if (file.name.toLowerCase().endsWith('.vtp')) {
-                // ⚡ Bolt: Revoke the old Blob URL to prevent memory leaks.
-                // Creating a new blob URL for every upload without revoking the old one
-                // leaves large mesh files in memory indefinitely.
-                if ($meshMetadata.viz_file && $meshMetadata.viz_file.startsWith('blob:')) {
-                    URL.revokeObjectURL($meshMetadata.viz_file);
-                }
                 data.viz_file = URL.createObjectURL(file);
             }
 
