@@ -145,3 +145,7 @@
 ## 2025-03-02 - Form Validation Touched State
 **Learning:** Immediate inline form validation (showing errors before user interaction) creates a hostile and confusing UX, especially when fields start empty or are cleared.
 **Action:** Always implement a `touched` or `dirty` state tracker (e.g., via `on:blur`) to defer inline validation feedback until after the user has interacted with the specific input field.
+
+## 2024-07-16 - [aria-disabled Buttons and Form Submission]
+**Learning:** Using `aria-disabled="true"` on a submit button is great for accessibility (keeping it focusable to read the title/tooltip explaining *why* it is disabled), but it does not natively prevent click events. If the button is in a `<form>`, clicking it will trigger the `on:submit` handler, which may mistakenly evaluate custom validation logic (like marking fields as `touched`) and aggressively surface inline errors for empty fields.
+**Action:** When a visually disabled button relies on a `title` or `aria-label` to explain why it is disabled (e.g., "Select an item first"), and uses `aria-disabled="true"`, always manually prevent the action in the JavaScript click handler (e.g., `on:click={(e) => { if (disabled) e.preventDefault(); }}`).

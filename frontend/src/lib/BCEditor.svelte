@@ -132,7 +132,7 @@
             </label>
 
             <div class="submit-action">
-                <button type="submit" aria-disabled={!selectedFace} title={!selectedFace ? "Select a face first to add a boundary condition" : "Add boundary condition"}>Add BC</button>
+                <button type="submit" aria-disabled={!selectedFace} title={!selectedFace ? "Select a face first to add a boundary condition" : "Add boundary condition"} on:click={(e) => { if (!selectedFace) e.preventDefault(); }}>Add BC</button>
             </div>
         </form>
 
