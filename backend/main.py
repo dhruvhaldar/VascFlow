@@ -180,7 +180,9 @@ def process_mesh(file: UploadFile, background_tasks: BackgroundTasks, request: R
     """
     # 🛡️ Sentinel: Audit log for file upload DoS/Abuse tracking
     client_ip = request.client.host if request and request.client else "unknown"
-    logging.info("Audit: process_mesh called by IP: %s, filename: %s, size: %s", client_ip, file.filename, file.size)
+    # Sanitize filename to prevent Log Injection
+    safe_log_filename = str(file.filename).replace("\n", "_").replace("\r", "_")[:255]
+    logging.info("Audit: process_mesh called by IP: %s, filename: %s, size: %s", client_ip, safe_log_filename, file.size)
 
     # ⚡ Bolt: Offload file cleanup to a background task
     background_tasks.add_task(_cleanup_old_uploads)
