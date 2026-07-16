@@ -142,7 +142,7 @@
     <h3 id="mesh-upload-heading">Mesh Upload</h3>
     <input type="file" class="sr-only" bind:this={fileInput} on:change={handleFileSelect} accept=".vtu,.vtp,.vtk" aria-label="Upload Mesh File (max 50MB)" title={loading ? "Processing upload, please wait..." : "Choose a mesh file to upload (max 50MB)"} disabled={loading} aria-invalid={!!error} aria-describedby={error ? "mesh-upload-error" : undefined} />
     {#if !loading}
-        <p class="drop-hint" aria-hidden="true">{isDragging ? 'Drop file to upload...' : 'Click to select or drag and drop a file here (max 50MB)'}</p>
+        <p class="drop-hint" aria-hidden="true">{isDragging ? 'Drop file to upload...' : 'Click to select or drag and drop a file here (.vtu, .vtp, .vtk | max 50MB)'}</p>
     {/if}
     {#if loading}
         <div class="loading-state" role="status" aria-live="polite" transition:slide|local>

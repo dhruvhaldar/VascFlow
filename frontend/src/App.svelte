@@ -108,7 +108,7 @@
                 <div class="config-panel" role="tabpanel" id="panel-mesh" aria-labelledby="tab-mesh" tabindex={activeTab === 'mesh' ? 0 : -1} style="display: {activeTab === 'mesh' ? 'block' : 'none'}">
                     <MeshUpload />
                     <div class="note glass-inline">
-                        <p>Upload a .vtu or .vtp file to visualize and assign BCs.</p>
+                        <p>Upload a .vtu, .vtp, or .vtk file to visualize and assign BCs.</p>
                     </div>
                 </div>
                 <div class="config-panel" role="tabpanel" id="panel-physics" aria-labelledby="tab-physics" tabindex={activeTab === 'physics' ? 0 : -1} style="display: {activeTab === 'physics' ? 'block' : 'none'}">
