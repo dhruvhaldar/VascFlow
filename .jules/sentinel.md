@@ -29,3 +29,7 @@
 **Vulnerability:** The Content Security Policy in `frontend/index.html` contained `ws://localhost:5173` hardcoded in its `connect-src` directive.
 **Learning:** Hardcoding local development URLs into production CSP headers leaks internal development details and excessively opens up cross-origin permissions if attackers can control or spoof DNS requests related to localhost.
 **Prevention:** Remove hardcoded development URLs from production CSP headers. Environment specific setup should be handled appropriately at the infrastructure layer or via runtime environment injection.
+## 2025-03-01 - Sanitize Filenames in Audit Logs
+**Vulnerability:** The application logged user-uploaded filenames (`file.filename`) directly to `logging.info` without any sanitization in the `process_mesh` endpoint. This allowed attackers to perform Log Injection (CWE-117) by inserting newline (`\n`) and carriage return (`\r`) characters into the filename to forge fake log entries or trigger log exhaustion DoS.
+**Learning:** Any user-controlled input that gets printed into application logs, particularly those tracking audit trails or security events, must be rigorously sanitized.
+**Prevention:** Always strip or replace newline characters and enforce a strict length limit (e.g., 255 characters) on user-provided inputs such as filenames before passing them to logging frameworks.
