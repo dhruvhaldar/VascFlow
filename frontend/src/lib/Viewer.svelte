@@ -165,7 +165,7 @@
         {#if !$meshMetadata.viz_file && !isLoading && !hasError}
             <div class="empty-state" transition:fade|local={{ duration: 150 }}>
                 <p>No mesh uploaded yet.</p>
-                <p class="subtext">Upload a .vtu or .vtp file from the Mesh tab to visualize it here.</p>
+                <p class="subtext">Upload a .vtu, .vtp, or .vtk file from the Mesh tab to visualize it here.</p>
             </div>
         {/if}
         {#if hasError}

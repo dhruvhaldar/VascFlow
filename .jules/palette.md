@@ -139,7 +139,7 @@
 **Learning:** When file uploads have strict constraints (like a 50MB size limit) enforced via early returns in the client-side selection logic, users are only informed of these limits *after* they attempt an invalid action and receive an error message. This reactive approach increases frustration, especially if the user spent time locating the file.
 **Action:** Always proactively communicate known constraints (e.g., maximum file sizes, supported formats) directly within the empty state or helper text of the upload zone before the user initiates the action.
 
-## $(date +%Y-%m-%d) - Prevent Aggressive Inline Validation on Component Load
+## 2024-07-25 - Prevent Aggressive Inline Validation on Component Load
 **Learning:** In Svelte forms with HTML5 `required` attributes, mapping `aria-invalid` and visual error blocks directly to the empty/null state of the bound variable causes aggressive inline validation to show immediately when the form loads, providing a poor UX. Relying solely on HTML5 native validation is also insufficient. Additionally, native HTML validation intercepts the submit event *before* `on:submit` fires if a form is invalid, meaning custom validation logic in the submit handler won't execute unless the `<form>` has the `novalidate` attribute.
 **Action:** Always implement a `touched` or `dirty` state variable (e.g. `let touched = false;`). Add the `novalidate` attribute to the `<form>` element to bypass native browser intercepts, allowing the Svelte `on:submit` handler to run, where you set `touched = true` before manually checking validity. Conditionally render `.inline-error` blocks and `aria-invalid` bindings by checking both the `touched` state AND the field's validity (e.g. `aria-invalid={touched && !value}`).
 ## 2025-03-02 - Form Validation Touched State
@@ -149,3 +149,7 @@
 ## 2024-07-16 - [aria-disabled Buttons and Form Submission]
 **Learning:** Using `aria-disabled="true"` on a submit button is great for accessibility (keeping it focusable to read the title/tooltip explaining *why* it is disabled), but it does not natively prevent click events. If the button is in a `<form>`, clicking it will trigger the `on:submit` handler, which may mistakenly evaluate custom validation logic (like marking fields as `touched`) and aggressively surface inline errors for empty fields.
 **Action:** When a visually disabled button relies on a `title` or `aria-label` to explain why it is disabled (e.g., "Select an item first"), and uses `aria-disabled="true"`, always manually prevent the action in the JavaScript click handler (e.g., `on:click={(e) => { if (disabled) e.preventDefault(); }}`).
+
+## 2024-07-25 - Proactive Communication of File Format Constraints
+**Learning:** When upload components use specific file extension constraints (`accept=".vtu,.vtp,.vtk"`), users are unaware of these limitations unless they attempt to select a file via the OS picker or, worse, drag and drop an unsupported file and trigger a reactive error. This reactive approach increases frustration and interaction cost.
+**Action:** Always proactively communicate supported file formats explicitly in the empty state or helper text of upload zones (e.g., "Upload a .vtu, .vtp, or .vtk file") before the user initiates the action.
