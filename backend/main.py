@@ -30,8 +30,22 @@ async def limit_request_size(request: Request, call_next):
     # headers. Accessing the scope dictionary directly is ~10x faster and prevents
     # unnecessary CPU overhead in high-frequency middlewares.
     req_path = request.scope.get("path", "")
-    transfer_encoding = request.headers.get("transfer-encoding", "")
-    if "chunked" in transfer_encoding.lower():
+
+    # ⚡ Bolt: Parse headers directly from ASGI scope.
+    # Accessing `request.headers` forces Starlette to lazily instantiate a Headers
+    # object, which iterates over and decodes ALL headers from bytes to strings.
+    # For high-frequency middleware that only needs 1-2 headers, directly scanning
+    # the byte tuples in `request.scope["headers"]` bypasses this O(N) allocation
+    # and decoding overhead, boosting request throughput.
+    transfer_encoding = b""
+    content_length = None
+    for name, value in request.scope.get("headers", []):
+        if name == b"transfer-encoding":
+            transfer_encoding = value
+        elif name == b"content-length":
+            content_length = value
+
+    if b"chunked" in transfer_encoding.lower():
         # Prevent chunked upload bypasses for content-length limits
         # 🛡️ Sentinel: Exempt /process_mesh from this check because file upload endpoints
         # legitimately stream data in chunks. The application-layer logic in `save_upload_file`
@@ -39,7 +53,6 @@ async def limit_request_size(request: Request, call_next):
         if req_path != "/process_mesh":
             return Response(content="Chunked requests not supported", status_code=411)
 
-    content_length = request.headers.get("content-length")
     if content_length:
         try:
             length = int(content_length)
