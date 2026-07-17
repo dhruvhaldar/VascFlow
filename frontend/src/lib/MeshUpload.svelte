@@ -177,6 +177,10 @@
         background: rgba(96, 147, 255, 0.1);
     }
 
+    .mesh-upload.dragging * {
+        pointer-events: none;
+    }
+
     .mesh-upload:focus-within {
         border-color: #6093ff;
         background: rgba(96, 147, 255, 0.08);
