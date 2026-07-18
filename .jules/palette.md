@@ -153,3 +153,7 @@
 ## 2024-07-25 - Proactive Communication of File Format Constraints
 **Learning:** When upload components use specific file extension constraints (`accept=".vtu,.vtp,.vtk"`), users are unaware of these limitations unless they attempt to select a file via the OS picker or, worse, drag and drop an unsupported file and trigger a reactive error. This reactive approach increases frustration and interaction cost.
 **Action:** Always proactively communicate supported file formats explicitly in the empty state or helper text of upload zones (e.g., "Upload a .vtu, .vtp, or .vtk file") before the user initiates the action.
+
+## 2024-08-01 - [Broken ARIA References on Conditional Error Messages]
+**Learning:** Hardcoding `aria-describedby="error-id"` on inputs when the error message element (`<span id="error-id">`) is conditionally rendered causes a broken ARIA reference (IDREF) whenever the error is absent, failing accessibility audits.
+**Action:** Always apply `aria-describedby` conditionally (e.g., `aria-describedby={isError ? 'error-id' : undefined}`) so the attribute is omitted entirely when the target element is not in the DOM.
