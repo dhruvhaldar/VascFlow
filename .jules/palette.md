@@ -157,3 +157,6 @@
 ## 2024-08-01 - [Broken ARIA References on Conditional Error Messages]
 **Learning:** Hardcoding `aria-describedby="error-id"` on inputs when the error message element (`<span id="error-id">`) is conditionally rendered causes a broken ARIA reference (IDREF) whenever the error is absent, failing accessibility audits.
 **Action:** Always apply `aria-describedby` conditionally (e.g., `aria-describedby={isError ? 'error-id' : undefined}`) so the attribute is omitted entirely when the target element is not in the DOM.
+## 2024-07-28 - Keyboard Accessible Custom Drag and Drop Zones
+**Learning:** When building custom interactive elements (like a `<div>` acting as a file upload drop zone) that rely on an `on:click` handler to trigger a hidden input, sighted mouse users can easily use it, but keyboard-only users and screen reader users cannot focus it or activate it. This creates a critical accessibility barrier.
+**Action:** Always ensure custom interactive elements have keyboard accessibility by adding `tabindex="0"` to make them focusable, and binding an `on:keydown` handler that listens for 'Enter' and ' ' (Space) keys to programmatically trigger the underlying action (e.g., `on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(e); } }}`).

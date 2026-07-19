@@ -128,8 +128,9 @@
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <div
-    class="mesh-upload"
+    class="mesh-upload" tabindex="0"
     role="region"
     aria-labelledby="mesh-upload-heading"
     class:dragging={isDragging}
@@ -138,6 +139,7 @@
     on:dragleave={handleDragLeave}
     on:drop|preventDefault={handleDrop}
     on:click={handleClick}
+    on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(e); } }}
 >
     <h3 id="mesh-upload-heading">Mesh Upload</h3>
     <input type="file" class="sr-only" bind:this={fileInput} on:change={handleFileSelect} accept=".vtu,.vtp,.vtk" aria-label="Upload Mesh File (max 50MB)" title={loading ? "Processing upload, please wait..." : "Choose a mesh file to upload (max 50MB)"} disabled={loading} aria-invalid={!!error} aria-describedby={error ? "mesh-upload-error" : undefined} />
