@@ -100,10 +100,17 @@ async def rate_limiter(request: Request, call_next):
             client_data = {"count": 1, "start_time": now}
         else:
             if client_data["count"] >= RATE_LIMIT_MAX:
-                return Response(content="Too Many Requests", status_code=429)
+                reset_time = max(1, int(client_data["start_time"] + RATE_LIMIT_WINDOW - now))
+                return Response(content="Too Many Requests", status_code=429, headers={"Retry-After": str(reset_time)})
             client_data["count"] += 1
 
         RATE_LIMIT_STORE[client_ip] = client_data
+
+        response = await call_next(request)
+        response.headers["X-RateLimit-Limit"] = str(RATE_LIMIT_MAX)
+        response.headers["X-RateLimit-Remaining"] = str(max(0, RATE_LIMIT_MAX - client_data["count"]))
+        response.headers["X-RateLimit-Reset"] = str(int(client_data["start_time"] + RATE_LIMIT_WINDOW - now))
+        return response
 
     return await call_next(request)
 
