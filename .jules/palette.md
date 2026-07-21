@@ -163,3 +163,6 @@
 ## 2024-08-05 - [Fixing Double Tab Stops on Custom File Uploaders]
 **Learning:** When a native `<input type="file">` is visually hidden (e.g., with `sr-only`) and wrapped in a custom interactive dropzone `div` (with `tabindex="0"`), keyboard users experience a confusing "double tab stop" or a "ghost focus" where the focus ring disappears entirely because focus lands on the hidden input.
 **Action:** Always add `tabindex="-1"` to visually hidden file inputs nested inside custom dropzones to remove them from the natural tab sequence, and ensure that programmatic focus restoration after async upload actions targets the visible wrapper element, not the hidden input.
+## 2024-07-21 - Better inline validation for BCEditor
+**Learning:** The single `touched` boolean in `BCEditor.svelte` delayed error visibility until submit and improperly validated unrelated fields simultaneously. When multiple inputs exist in an inline form, a single global touched state provides confusing UX since interacting with one field shows errors for unvisited fields.
+**Action:** Use an object (like `touchedFields`) to track `on:blur` state for each field individually, ensuring errors are only shown contextually after a user has actually interacted with the specific input, while still triggering all errors on form submit.

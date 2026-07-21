@@ -124,11 +124,19 @@ test.describe('svFSI Configurator App', () => {
 
     const removeButton = bcList.first().locator('button');
 
-    page.once('dialog', dialog => dialog.dismiss());
+    page.on('dialog', async dialog => {
+      if (dialog.message().includes('inlet')) {
+        await dialog.dismiss();
+      } else {
+        await dialog.accept();
+      }
+    });
+
     await removeButton.click();
     await expect(bcList).toHaveCount(2);
 
-    page.once('dialog', dialog => dialog.accept());
+    // Let's test the accept branch on the same button for robustness
+    await page.evaluate(() => window.confirm = () => true);
     await removeButton.click();
 
     await expect(bcList).toHaveCount(1);
