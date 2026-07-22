@@ -17,6 +17,7 @@ app = FastAPI()
 RATE_LIMIT_STORE = {}
 RATE_LIMIT_MAX = 30  # requests per window
 RATE_LIMIT_WINDOW = 60  # window in seconds
+_LAST_RL_CLEANUP = 0
 
 @app.middleware("http")
 async def limit_request_size(request: Request, call_next):
@@ -87,9 +88,16 @@ async def rate_limiter(request: Request, call_next):
 
         # Prevent memory leaks by explicitly cleaning up expired entries when the store grows too large
         if len(RATE_LIMIT_STORE) > 10000:
-            expired_ips = [ip for ip, data in RATE_LIMIT_STORE.items() if now - data["start_time"] > RATE_LIMIT_WINDOW]
-            for ip in expired_ips:
-                del RATE_LIMIT_STORE[ip]
+            global _LAST_RL_CLEANUP
+            # ⚡ Bolt: Debounce the O(N) dictionary cleanup to run at most once per rate limit window.
+            # If the store hits the 10,000 entry limit, iterating over it on EVERY request to find
+            # expired IPs creates a severe CPU bottleneck. Since entries only expire after RATE_LIMIT_WINDOW,
+            # running the cleanup more frequently than that is mathematically redundant and wastes CPU.
+            if now - _LAST_RL_CLEANUP > RATE_LIMIT_WINDOW:
+                _LAST_RL_CLEANUP = now
+                expired_ips = [ip for ip, data in RATE_LIMIT_STORE.items() if now - data["start_time"] > RATE_LIMIT_WINDOW]
+                for ip in expired_ips:
+                    del RATE_LIMIT_STORE[ip]
 
             # 🛡️ Sentinel: Failsafe to prevent CPU exhaustion DoS.
             # If an attacker floods unique IPs, the store exceeds 10,000 but no IPs expire immediately.
