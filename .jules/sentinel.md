@@ -38,3 +38,8 @@
 **Vulnerability:** The rate limiting middleware was successfully rejecting requests over the limit with a `429 Too Many Requests` status, but it failed to include standard `Retry-After` or `X-RateLimit-*` headers.
 **Learning:** Returning a bare 429 without standard headers forces well-behaved clients (or proxies) to guess when to back off, which can lead to continued aggressive polling. Adding these headers improves API reliability and standardizes the DoS protection response.
 **Prevention:** When implementing or enhancing custom rate limiting middleware (e.g., in FastAPI), always include standard HTTP headers like `Retry-After` for 429 responses, and `X-RateLimit-Limit`/`X-RateLimit-Remaining` for successful responses to guide client backoff behavior.
+
+## 2025-03-01 - Add Rate Limit Headers
+**Vulnerability:** The rate limiting middleware was successfully rejecting requests over the limit with a 429 Too Many Requests status, but it failed to include standard Retry-After or X-RateLimit-* headers in the response.
+**Learning:** Returning a bare 429 without standard headers forces well-behaved clients (or proxies) to guess when to back off, which can lead to continued aggressive polling. Adding these headers improves API reliability and standardizes the DoS protection response.
+**Prevention:** When implementing or enhancing custom rate limiting middleware (e.g., in FastAPI), always include standard HTTP headers like Retry-After for 429 responses, and X-RateLimit-Limit/X-RateLimit-Remaining for successful responses to guide client backoff behavior.
