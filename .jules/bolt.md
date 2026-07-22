@@ -93,3 +93,6 @@
 ## 2026-05-23 - [Optimize Client IP Extraction in FastAPI Middleware/Endpoints]
 **Learning:** In FastAPI/Starlette, accessing `request.client.host` forces the instantiation of an `Address` NamedTuple from the ASGI scope's client tuple. In high-frequency middleware or performance-critical endpoints (like rate limiting, file uploads, and generation endpoints), doing this repeatedly creates unnecessary object instantiation overhead. Accessing the raw tuple directly via `request.scope.get("client")` and indexing it is roughly 5x faster.
 **Action:** When a Starlette/FastAPI route or middleware only needs the client IP string, fetch the raw tuple directly from the ASGI scope via `client_tuple = request.scope.get("client")` and extract the IP (`client_tuple[0]`). This bypasses the expensive `Address` object instantiation overhead.
+## 2026-05-23 - [Debounce High-Frequency Dictionary Cleanups]
+**Learning:** In high-frequency operations like API rate limiting, running an O(N) cleanup loop (e.g., iterating over a large dictionary to find expired entries) on *every* request creates a severe CPU bottleneck when the dictionary is full.
+**Action:** Always debounce O(N) dictionary cleanups using a timestamp variable to ensure they only run as often as mathematically necessary (e.g., at most once per expiration window), completely eliminating the redundant CPU overhead.
