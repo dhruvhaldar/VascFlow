@@ -124,11 +124,19 @@ test.describe('svFSI Configurator App', () => {
 
     const removeButton = bcList.first().locator('button');
 
-    page.once('dialog', dialog => dialog.dismiss());
+    let dismissNext = true;
+    page.on('dialog', async dialog => {
+      if (dismissNext) {
+        await dialog.dismiss();
+      } else {
+        await dialog.accept();
+      }
+    });
+
     await removeButton.click();
     await expect(bcList).toHaveCount(2);
 
-    page.once('dialog', dialog => dialog.accept());
+    dismissNext = false;
     await removeButton.click();
 
     await expect(bcList).toHaveCount(1);
