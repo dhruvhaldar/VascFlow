@@ -163,3 +163,7 @@
 ## 2024-08-05 - [Fixing Double Tab Stops on Custom File Uploaders]
 **Learning:** When a native `<input type="file">` is visually hidden (e.g., with `sr-only`) and wrapped in a custom interactive dropzone `div` (with `tabindex="0"`), keyboard users experience a confusing "double tab stop" or a "ghost focus" where the focus ring disappears entirely because focus lands on the hidden input.
 **Action:** Always add `tabindex="-1"` to visually hidden file inputs nested inside custom dropzones to remove them from the natural tab sequence, and ensure that programmatic focus restoration after async upload actions targets the visible wrapper element, not the hidden input.
+
+## 2024-08-08 - [Explicitly Identifying Invalid Tabs in Global Tooltips]
+**Learning:** In a multi-tab interface, when a global action button (like "Generate XML") is disabled due to validation errors hidden in inactive tabs, a generic tooltip like "Fix validation errors in tabs" is unhelpful. Users must guess or click through every tab to find the mistake, increasing friction and cognitive load.
+**Action:** Always compute and pass specific validation states to global action components, and dynamically update the disabled button's tooltip to explicitly name the invalid tab(s) (e.g., "Fix validation errors in the Physics and General tabs"). This direct guidance eliminates hunting and drastically improves the micro-UX of form recovery.

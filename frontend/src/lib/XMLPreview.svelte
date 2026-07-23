@@ -3,7 +3,18 @@
     import { fade } from 'svelte/transition';
     import { simulationConfig, generatedXML } from '../stores';
 
-    export let hasValidationErrors = false;
+    export let isPhysicsInvalid = false;
+    export let isGeneralInvalid = false;
+
+    $: hasValidationErrors = isPhysicsInvalid || isGeneralInvalid;
+
+    $: validationErrorMessage = isPhysicsInvalid && isGeneralInvalid
+        ? "Physics and General tabs"
+        : isPhysicsInvalid
+            ? "Physics tab"
+            : isGeneralInvalid
+                ? "General tab"
+                : "";
 
     let generating = false;
     let copying = false;
@@ -155,7 +166,7 @@
                 on:click={(e) => { if (generating || isUpToDate || hasValidationErrors) { e.preventDefault(); return; } generate(); }}
                 aria-disabled={generating || isUpToDate || hasValidationErrors}
                 aria-busy={generating}
-                title={hasValidationErrors ? "Fix validation errors in tabs before generating" : (isUpToDate ? "XML is up to date with current settings" : "Generate XML (Ctrl/Cmd + Enter)")}
+                title={hasValidationErrors ? `Fix validation errors in the ${validationErrorMessage} before generating` : (isUpToDate ? "XML is up to date with current settings" : "Generate XML (Ctrl/Cmd + Enter)")}
                 aria-keyshortcuts="Control+Enter Meta+Enter"
                 class="generate-btn"
             >
@@ -186,7 +197,7 @@
             <div class="empty-state" transition:fade|local={{ duration: 150 }}>
                 {#if hasValidationErrors}
                     <p role="alert">⚠️ Validation Errors</p>
-                    <p class="subtext">Please fix the validation errors in the configuration tabs before generating XML.</p>
+                    <p class="subtext">Please fix the validation errors in the {validationErrorMessage} before generating XML.</p>
                 {:else}
                     <p>No XML generated yet.</p>
                     <p class="subtext">Configure your simulation and click 'Generate XML' (or press <kbd class="shortcut-hint" aria-hidden="true">⌘/Ctrl+↵</kbd><span class="sr-only">Command or Control plus Enter</span>).</p>
@@ -204,7 +215,7 @@
                     <p>Generating updated XML...</p>
                 {:else if hasValidationErrors}
                     <p role="alert">⚠️ Validation Errors</p>
-                    <p class="subtext">Please fix the validation errors in the configuration tabs to re-enable generation.</p>
+                    <p class="subtext">Please fix the validation errors in the {validationErrorMessage} to re-enable generation.</p>
                 {:else}
                     <p>⚠️ Outdated Preview</p>
                     <p class="subtext">Settings have changed. Click 'Generate XML' (or press <kbd class="shortcut-hint" aria-hidden="true">⌘/Ctrl+↵</kbd><span class="sr-only">Command or Control plus Enter</span>) to update.</p>
