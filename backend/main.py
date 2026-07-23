@@ -139,6 +139,33 @@ async def rate_limiter(request: Request, call_next):
 allowed_origins_env = os.environ.get("VITE_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173")
 allowed_origins = [origin.strip() for origin in allowed_origins_env.split(",") if origin.strip()]
 
+@app.middleware("http")
+async def validate_origin_csrf(request: Request, call_next):
+    """
+    🛡️ Sentinel: Mitigate Cross-Site Request Forgery (CSRF) for simple requests.
+    Browsers do not send preflight OPTIONS requests for "simple" cross-origin POSTs
+    (like multipart/form-data used in file uploads). CORS middleware alone won't block
+    the request from executing if an attacker constructs a malicious form.
+    This explicitly validates the Origin header against the allowed origins for state-changing requests.
+    """
+    if request.method in ("POST", "PUT", "DELETE", "PATCH"):
+        # ⚡ Bolt: Fast origin lookup from ASGI scope byte tuples to avoid lazily
+        # parsing all headers into a Starlette Headers object.
+        origin = None
+        for name, value in request.scope.get("headers", []):
+            if name == b"origin":
+                origin = value.decode("latin-1")
+                break
+
+        # If an origin is provided (i.e. browser request), it must be allowed.
+        # Note: Non-browser clients (like CLI scripts or tests) often don't send Origin,
+        # which is allowed. True CSRF only originates from a browser.
+        if origin and origin not in allowed_origins and "*" not in allowed_origins:
+            logging.warning("Audit: Blocked cross-origin request from %s", origin)
+            return Response(content="Forbidden: Invalid Origin", status_code=403)
+
+    return await call_next(request)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,

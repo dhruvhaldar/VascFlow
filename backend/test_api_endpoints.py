@@ -205,3 +205,48 @@ def test_large_mesh_upload_rejected_by_middleware():
     )
     assert response.status_code == 413
     assert response.text == "File too large. Maximum size is 50MB."
+
+
+def test_csrf_origin_validation_missing_origin_allowed():
+    # Non-browser clients (like this test client without an Origin header) should be allowed
+    response = client.post(
+        "/generate_input",
+        json={
+            "general": {"num_time_steps": 20, "time_step_size": 0.005, "save_results_frequency": 5, "start_time_step": 0},
+            "mesh": {"mesh_path": "mesh.vtu", "domain_type": "Fluid"},
+            "physics": {"physics_type": "Fluid", "density": 1.06, "viscosity": 0.04, "material_model": "Newtonian", "properties": []},
+            "boundary_conditions": []
+        }
+    )
+    assert response.status_code == 200
+
+
+def test_csrf_origin_validation_valid_origin_allowed():
+    # Valid origin present in allowed_origins should be allowed
+    response = client.post(
+        "/generate_input",
+        headers={"Origin": "http://localhost:5173"},
+        json={
+            "general": {"num_time_steps": 20, "time_step_size": 0.005, "save_results_frequency": 5, "start_time_step": 0},
+            "mesh": {"mesh_path": "mesh.vtu", "domain_type": "Fluid"},
+            "physics": {"physics_type": "Fluid", "density": 1.06, "viscosity": 0.04, "material_model": "Newtonian", "properties": []},
+            "boundary_conditions": []
+        }
+    )
+    assert response.status_code == 200
+
+
+def test_csrf_origin_validation_invalid_origin_rejected():
+    # Invalid origin should be rejected with 403
+    response = client.post(
+        "/generate_input",
+        headers={"Origin": "https://malicious-site.com"},
+        json={
+            "general": {"num_time_steps": 20, "time_step_size": 0.005, "save_results_frequency": 5, "start_time_step": 0},
+            "mesh": {"mesh_path": "mesh.vtu", "domain_type": "Fluid"},
+            "physics": {"physics_type": "Fluid", "density": 1.06, "viscosity": 0.04, "material_model": "Newtonian", "properties": []},
+            "boundary_conditions": []
+        }
+    )
+    assert response.status_code == 403
+    assert response.text == "Forbidden: Invalid Origin"
