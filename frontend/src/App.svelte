@@ -188,7 +188,7 @@
                 {/await}
             </div>
             <div class="bottom-pane glass-shell">
-                <XMLPreview hasValidationErrors={isPhysicsInvalid || isGeneralInvalid} />
+                <XMLPreview {isPhysicsInvalid} {isGeneralInvalid} />
             </div>
         </main>
     </div>
