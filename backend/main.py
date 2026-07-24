@@ -161,7 +161,8 @@ async def validate_origin_csrf(request: Request, call_next):
         # Note: Non-browser clients (like CLI scripts or tests) often don't send Origin,
         # which is allowed. True CSRF only originates from a browser.
         if origin and origin not in allowed_origins and "*" not in allowed_origins:
-            logging.warning("Audit: Blocked cross-origin request from %s", origin)
+            safe_log_origin = str(origin).replace("\n", "_").replace("\r", "_")[:255]
+            logging.warning("Audit: Blocked cross-origin request from %s", safe_log_origin)
             return Response(content="Forbidden: Invalid Origin", status_code=403)
 
     return await call_next(request)
