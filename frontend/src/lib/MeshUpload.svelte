@@ -133,8 +133,11 @@
 <div
     bind:this={dropzoneElement}
     class="mesh-upload" tabindex="0"
-    role="region"
+    role="group"
     aria-labelledby="mesh-upload-heading"
+    aria-disabled={loading}
+    aria-describedby={error ? "mesh-upload-error" : (!loading ? "mesh-upload-hint" : undefined)}
+    title={loading ? "Processing upload, please wait..." : "Choose a mesh file to upload (max 50MB)"}
     class:dragging={isDragging}
     class:clickable={!loading}
     on:dragover|preventDefault={handleDragOver}
@@ -144,9 +147,9 @@
     on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(e); } }}
 >
     <h3 id="mesh-upload-heading">Mesh Upload</h3>
-    <input tabindex="-1" type="file" class="sr-only" bind:this={fileInput} on:change={handleFileSelect} accept=".vtu,.vtp,.vtk" aria-label="Upload Mesh File (max 50MB)" title={loading ? "Processing upload, please wait..." : "Choose a mesh file to upload (max 50MB)"} disabled={loading} aria-invalid={!!error} aria-describedby={error ? "mesh-upload-error" : undefined} />
+    <input tabindex="-1" type="file" class="sr-only" bind:this={fileInput} on:change={handleFileSelect} accept=".vtu,.vtp,.vtk" aria-label="Upload Mesh File (max 50MB)" disabled={loading} aria-invalid={!!error} aria-describedby={error ? "mesh-upload-error" : undefined} />
     {#if !loading}
-        <p class="drop-hint" aria-hidden="true">{isDragging ? 'Drop file to upload...' : 'Click to select or drag and drop a file here (.vtu, .vtp, .vtk | max 50MB)'}</p>
+        <p id="mesh-upload-hint" class="drop-hint" aria-hidden="true">{isDragging ? 'Drop file to upload...' : 'Click to select or drag and drop a file here (.vtu, .vtp, .vtk | max 50MB)'}</p>
     {/if}
     {#if loading}
         <div class="loading-state" role="status" aria-live="polite" transition:slide|local>
