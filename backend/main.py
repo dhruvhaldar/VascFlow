@@ -243,7 +243,8 @@ async def generate_input(config: SimulationConfig, request: Request = None):
     # 🛡️ Sentinel: Audit log for sensitive operation
     # ⚡ Bolt: Parse client IP directly from ASGI scope to bypass Address object instantiation overhead.
     client_tuple = request.scope.get("client") if request else None
-    client_ip = client_tuple[0] if client_tuple else "unknown"
+    raw_ip = client_tuple[0] if client_tuple else "unknown"
+    client_ip = str(raw_ip).replace("\n", "_").replace("\r", "_")[:255]
     logging.info("Audit: generate_input called by IP: %s", client_ip)
 
     try:
@@ -265,7 +266,8 @@ def process_mesh(file: UploadFile, background_tasks: BackgroundTasks, request: R
     # 🛡️ Sentinel: Audit log for file upload DoS/Abuse tracking
     # ⚡ Bolt: Parse client IP directly from ASGI scope to bypass Address object instantiation overhead.
     client_tuple = request.scope.get("client") if request else None
-    client_ip = client_tuple[0] if client_tuple else "unknown"
+    raw_ip = client_tuple[0] if client_tuple else "unknown"
+    client_ip = str(raw_ip).replace("\n", "_").replace("\r", "_")[:255]
     # Sanitize filename to prevent Log Injection
     safe_log_filename = str(file.filename).replace("\n", "_").replace("\r", "_")[:255]
     logging.info("Audit: process_mesh called by IP: %s, filename: %s, size: %s", client_ip, safe_log_filename, file.size)
