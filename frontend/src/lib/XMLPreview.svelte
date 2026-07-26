@@ -75,6 +75,8 @@
             return;
         }
 
+        const wasFocusOnGenerate = document.activeElement === generateBtn || document.activeElement === document.body;
+
         generating = true;
         errorDetail = "";
         try {
@@ -112,10 +114,12 @@
         } finally {
             generating = false;
             await tick();
-            if (isUpToDate && copyBtn) {
-                copyBtn.focus();
-            } else if (generateBtn) {
-                generateBtn.focus();
+            if (wasFocusOnGenerate) {
+                if (isUpToDate && copyBtn) {
+                    copyBtn.focus();
+                } else if (generateBtn) {
+                    generateBtn.focus();
+                }
             }
         }
     }
