@@ -52,3 +52,7 @@
 **Vulnerability:** The CSRF middleware in `backend/main.py` logged the user-supplied `Origin` header directly without sanitization. Attackers could exploit this by sending a malformed `Origin` header containing carriage return (`\r`) or newline (`\n`) characters, injecting fake log entries or disrupting log analysis (CWE-117).
 **Learning:** Even internal security mechanisms like CSRF blockades can become vulnerability vectors if they trust incoming data implicitly. When logging untrusted headers, sanitization is paramount.
 **Prevention:** Always sanitize strings derived from user input before passing them to logging frameworks. Standardizing a `replace("\n", "_").replace("\r", "_")[:MAX_LEN]` pattern on logged headers and filenames mitigates injection risks.
+## 2025-02-27 - Fix Log Injection via spoofed client IP
+**Vulnerability:** The backend application logged the `client_ip` obtained from the ASGI scope directly to `logging.info` in `generate_input` and `process_mesh` endpoints without any sanitization. This allowed attackers to perform Log Injection (CWE-117) by injecting newline (`\n`) and carriage return (`\r`) characters through spoofed headers (e.g. `X-Forwarded-For`).
+**Learning:** Even fields usually thought of as safe, like client IP, need sanitization before logging if they can be manipulated by malicious requests.
+**Prevention:** Always sanitize user-supplied or network-derived data (like IPs, origins, or filenames) by replacing newline and carriage return characters before feeding them into logging statements.
