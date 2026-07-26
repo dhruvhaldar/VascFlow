@@ -128,9 +128,17 @@ async def rate_limiter(request: Request, call_next):
         RATE_LIMIT_STORE[client_ip] = client_data
 
         response = await call_next(request)
-        response.headers["X-RateLimit-Limit"] = str(RATE_LIMIT_MAX)
-        response.headers["X-RateLimit-Remaining"] = str(max(0, RATE_LIMIT_MAX - client_data["count"]))
-        response.headers["X-RateLimit-Reset"] = str(int(client_data["start_time"] + RATE_LIMIT_WINDOW - now))
+        # ⚡ Bolt: Optimize rate limit header injection for high-frequency endpoints.
+        # Assigning to response.headers forces expensive string encoding/validation.
+        # Mutating response.raw_headers directly bypasses this overhead safely.
+        rl_headers = [
+            (b"x-ratelimit-limit", b"%d" % RATE_LIMIT_MAX),
+            (b"x-ratelimit-remaining", b"%d" % max(0, RATE_LIMIT_MAX - client_data["count"])),
+            (b"x-ratelimit-reset", b"%d" % int(client_data["start_time"] + RATE_LIMIT_WINDOW - now))
+        ]
+        new_keys = {k for k, _ in rl_headers}
+        response.raw_headers[:] = [h for h in response.raw_headers if h[0].lower() not in new_keys]
+        response.raw_headers.extend(rl_headers)
         return response
 
     return await call_next(request)
@@ -223,7 +231,10 @@ async def add_security_headers(request: Request, call_next):
 
     # Remove any existing headers with the same keys to prevent duplicate/conflicting headers
     new_keys = {k for k, _ in headers}
-    response.raw_headers = [h for h in response.raw_headers if h[0].lower() not in new_keys]
+    # ⚡ Bolt: We must mutate the existing list in-place (`[:] =`) rather than reassigning it.
+    # Reassigning `response.raw_headers` breaks the reference held by the Starlette
+    # `MutableHeaders` object, which silently drops any headers added by subsequent middleware.
+    response.raw_headers[:] = [h for h in response.raw_headers if h[0].lower() not in new_keys]
     response.raw_headers.extend(headers)
 
     return response
