@@ -143,7 +143,7 @@
                 {:else if hasError}
                     <span class="error-text">Failed to load 3D model</span>
                 {:else if $meshMetadata.viz_file}
-                    Previewing {$simulationConfig.mesh.mesh_path || 'Mesh'}
+                    Previewing {$simulationConfig.mesh.mesh_path || 'Mesh'} <span aria-hidden="true" style="opacity: 0.6; margin-left: 0.5rem;">| <kbd class="shortcut-hint">Click+Drag</kbd> Rotate | <kbd class="shortcut-hint">Shift+Drag</kbd> Pan | <kbd class="shortcut-hint">Scroll</kbd> Zoom</span>
                 {:else}
                     Upload a mesh to render it
                 {/if}

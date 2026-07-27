@@ -175,3 +175,6 @@
 ## 2024-05-24 - Programmatic Focus and Global Shortcuts
 **Learning:** When async operations are triggered by global keyboard shortcuts (e.g., Ctrl+Enter) while a user is focused on a text input, unconditionally running programmatic focus handoffs (e.g., `.focus()`) at the end of the operation creates a frustrating experience by stealing focus away from their current typing activity.
 **Action:** When an action can be triggered both by a direct button click and a global keyboard shortcut, always cache the `document.activeElement` at the start of the handler. Only execute programmatic focus restoration in the `finally` block if the user's focus was explicitly on the trigger button (or lost to `document.body`), preserving their focus if they were working elsewhere.
+## 2024-06-19 - 3D Canvas Interaction Discoverability
+**Learning:** 3D canvases (like `vtk.js` integrations) often support complex interactions (Pan, Zoom, Rotate) that are entirely invisible to the user. Without explicit visual hints, users may assume the canvas is static or only try basic clicks.
+**Action:** Always provide subtle, context-aware interaction hints (`<kbd>`) overlaid on complex interactive components (like 3D viewers or maps) when they load successfully, ensuring the shortcuts are discoverable without overwhelming the interface.
