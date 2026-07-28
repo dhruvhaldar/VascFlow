@@ -178,3 +178,7 @@
 ## 2024-06-19 - 3D Canvas Interaction Discoverability
 **Learning:** 3D canvases (like `vtk.js` integrations) often support complex interactions (Pan, Zoom, Rotate) that are entirely invisible to the user. Without explicit visual hints, users may assume the canvas is static or only try basic clicks.
 **Action:** Always provide subtle, context-aware interaction hints (`<kbd>`) overlaid on complex interactive components (like 3D viewers or maps) when they load successfully, ensuring the shortcuts are discoverable without overwhelming the interface.
+
+## 2024-08-16 - Avoid Aggressive Alert Roles on Static Empty States
+**Learning:** Using `role="alert"` on a static empty state component (e.g. "Please upload a mesh file first") causes screen readers to aggressively and unnecessarily announce the empty state immediately on page load, even if the user's focus is elsewhere. This creates a noisy and intrusive initial experience.
+**Action:** Remove `role="alert"` from static empty state text. If the state updates dynamically in response to an action (e.g. an error message appearing), use `role="alert"` or `aria-live="assertive"` on the container, but reserve it strictly for critical, time-sensitive feedback.
