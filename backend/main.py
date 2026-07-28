@@ -106,7 +106,15 @@ async def rate_limiter(request: Request, call_next):
             if len(RATE_LIMIT_STORE) > 10000:
                 RATE_LIMIT_STORE.clear()
 
-        client_data = RATE_LIMIT_STORE.get(client_ip, {"count": 0, "start_time": now})
+        # ⚡ Bolt: Prevent redundant dictionary allocation in hot path.
+        # Using dict.get(key, {"count": 0, "start_time": now}) forces the Python interpreter
+        # to unconditionally instantiate a new dictionary object in memory on EVERY request,
+        # even if the IP already exists in the store. For high-frequency middlewares, this
+        # creates immense garbage collection pressure. By using explicit conditional assignment,
+        # we only allocate the default dictionary when mathematically necessary (e.g. for new IPs).
+        client_data = RATE_LIMIT_STORE.get(client_ip)
+        if client_data is None:
+            client_data = {"count": 0, "start_time": now}
 
         if now - client_data["start_time"] > RATE_LIMIT_WINDOW:
             client_data = {"count": 1, "start_time": now}
