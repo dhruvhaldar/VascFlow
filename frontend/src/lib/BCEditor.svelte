@@ -160,7 +160,7 @@
             {/if}
         </div>
     {:else}
-        <p class="empty-state" role="alert">Please upload a mesh file first to detect faces and configure boundary conditions.</p>
+        <p class="empty-state">Please upload a mesh file first to detect faces and configure boundary conditions.</p>
     {/if}
 </div>
 
