@@ -136,7 +136,7 @@
 
 <svelte:window on:keydown={handleGlobalKeydown} />
 
-<div class="xml-preview">
+<div class="xml-preview" role="region" aria-label="Input File Preview">
     <div class="header">
         <h3>Input File Preview</h3>
         <div class="actions">
