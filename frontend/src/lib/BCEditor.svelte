@@ -78,7 +78,7 @@
     }
 </script>
 
-<div class="bc-editor">
+<div class="bc-editor" role="region" aria-label="Boundary Conditions">
     <h3>Boundary Conditions</h3>
 
     {#if $meshMetadata.faces.length > 0}

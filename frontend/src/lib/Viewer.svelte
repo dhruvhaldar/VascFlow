@@ -133,7 +133,7 @@
 
 <svelte:window on:keydown={handleGlobalKeydown} />
 
-<div class="viewer-wrap">
+<div class="viewer-wrap" role="region" aria-label="3D Visualizer">
     <div class="viewer-header">
         <div class="title-group">
             <h3>3D Visualizer</h3>

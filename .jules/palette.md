@@ -182,3 +182,6 @@
 ## 2024-08-16 - Avoid Aggressive Alert Roles on Static Empty States
 **Learning:** Using `role="alert"` on a static empty state component (e.g. "Please upload a mesh file first") causes screen readers to aggressively and unnecessarily announce the empty state immediately on page load, even if the user's focus is elsewhere. This creates a noisy and intrusive initial experience.
 **Action:** Remove `role="alert"` from static empty state text. If the state updates dynamically in response to an action (e.g. an error message appearing), use `role="alert"` or `aria-live="assertive"` on the container, but reserve it strictly for critical, time-sensitive feedback.
+## 2024-05-24 - Region landmarks on major visual components
+**Learning:** The application uses several major interactive custom layout panels (`BCEditor`, `XMLPreview`, `Viewer`) which lack semantic sectioning HTML elements (`<section>`, `<main>`), making it difficult for screen readers to navigate quickly between the large structural areas of the application.
+**Action:** When building structural UI elements that group related controls or visualizations into distinct "panels", always add `role="region"` and an explicitly named `aria-label` to the container `<div>`. This exposes the element as a landmark in the accessibility tree and significantly improves structural navigability.
