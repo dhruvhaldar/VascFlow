@@ -185,3 +185,7 @@
 ## 2024-05-24 - Region landmarks on major visual components
 **Learning:** The application uses several major interactive custom layout panels (`BCEditor`, `XMLPreview`, `Viewer`) which lack semantic sectioning HTML elements (`<section>`, `<main>`), making it difficult for screen readers to navigate quickly between the large structural areas of the application.
 **Action:** When building structural UI elements that group related controls or visualizations into distinct "panels", always add `role="region"` and an explicitly named `aria-label` to the container `<div>`. This exposes the element as a landmark in the accessibility tree and significantly improves structural navigability.
+
+## 2024-05-18 - Prevent focus stealing during file upload
+**Learning:** Returning focus to a dropzone indiscriminately after a long-running async upload completes creates an aggressive "focus stealing" anti-pattern. If a user utilizes the waiting time to navigate away and fill out other form fields, their active typing is abruptly interrupted when the upload finishes and focus is yanked back to the dropzone.
+**Action:** When restoring focus in a `finally` block for async UI operations, always cache the `document.activeElement` before the operation starts. Conditionally restore focus *only* if the current active element remains the original trigger, the specific interaction container, or the document body (`document.activeElement === document.body`).

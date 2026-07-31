@@ -35,6 +35,7 @@
     async function handleFileSelect() {
         if (!fileInput.files.length) return;
         const file = fileInput.files[0];
+        const triggerElement = document.activeElement;
 
         // 🎨 Palette: Validate file extensions client-side.
         // Drag-and-drop bypasses the HTML accept attribute. Validating early prevents
@@ -121,7 +122,9 @@
             // The dropzone disabled state changes during upload, which can cause focus loss.
             // Wait for it to be re-enabled and explicitly restore focus so keyboard navigation can continue.
             await tick();
-            if (dropzoneElement) dropzoneElement.focus();
+            if (dropzoneElement && (document.activeElement === document.body || document.activeElement === triggerElement || document.activeElement === dropzoneElement)) {
+                dropzoneElement.focus();
+            }
         }
     }
 </script>
