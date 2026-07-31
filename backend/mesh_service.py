@@ -296,6 +296,18 @@ def get_mesh_metadata(file_path: str):
     if face_ids is not None:
         # ⚡ Bolt: Use O(N) bincount helper instead of O(N log N) np.unique.
         unique_ids, counts = _get_unique_counts(face_ids)
+
+        # ⚡ Bolt: Cap maximum number of faces to prevent JSON serialization/frontend DoS.
+        # If an array like GlobalElementID contains a unique ID for every single cell
+        # (e.g. 1M cells), it produces a massive JSON payload that blocks the backend
+        # event loop and crashes the browser UI when rendering options. Capping to the top
+        # 1000 largest faces prevents this while preserving actual boundary condition patches.
+        MAX_FACES = 1000
+        if len(unique_ids) > MAX_FACES:
+            top_indices = np.argsort(-counts)[:MAX_FACES]
+            unique_ids = unique_ids[top_indices]
+            counts = counts[top_indices]
+
         # Convert to list of dicts
         face_list = []
         for uid, count in zip(unique_ids, counts):
@@ -320,6 +332,14 @@ def get_mesh_metadata(file_path: str):
                     region_ids = conn.cell_data["RegionId"]
                     # ⚡ Bolt: Use O(N) bincount helper instead of O(N log N) np.unique.
                     unique_ids, counts = _get_unique_counts(region_ids)
+
+                    # ⚡ Bolt: Cap maximum number of faces to prevent JSON serialization/frontend DoS.
+                    MAX_FACES = 1000
+                    if len(unique_ids) > MAX_FACES:
+                        top_indices = np.argsort(-counts)[:MAX_FACES]
+                        unique_ids = unique_ids[top_indices]
+                        counts = counts[top_indices]
+
                     face_list = []
                     for uid, count in zip(unique_ids, counts):
                         face_list.append({
