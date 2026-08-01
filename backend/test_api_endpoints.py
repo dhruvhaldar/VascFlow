@@ -250,3 +250,25 @@ def test_csrf_origin_validation_invalid_origin_rejected():
     )
     assert response.status_code == 403
     assert response.text == "Forbidden: Invalid Origin"
+
+def test_chunked_upload_smuggling_bypass_rejected():
+    """
+    Test that an attacker cannot bypass the chunked restriction by sending
+    multiple Transfer-Encoding headers (HTTP Request Smuggling vector).
+    """
+    def generate_large_payload():
+        yield b'{"dummy": "' + b'A' * (3 * 1024 * 1024) + b'"}'
+
+    # Send multiple Transfer-Encoding headers.
+    # httpx/TestClient doesn't easily allow sending exact duplicate headers using a dict,
+    # but we can use a list of tuples to simulate a raw HTTP request with duplicates.
+    response = client.post(
+        "/generate_input",
+        content=generate_large_payload(),
+        headers=[
+            ("Transfer-Encoding", "chunked"),
+            ("Transfer-Encoding", "identity")
+        ]
+    )
+    assert response.status_code == 411
+    assert response.text == "Chunked requests not supported"

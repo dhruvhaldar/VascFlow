@@ -42,7 +42,13 @@ async def limit_request_size(request: Request, call_next):
     content_length = None
     for name, value in request.scope.get("headers", []):
         if name == b"transfer-encoding":
-            transfer_encoding = value
+            # 🛡️ Sentinel: Concatenate multiple Transfer-Encoding headers to prevent HTTP Request Smuggling
+            # where an attacker sends multiple headers (e.g. `Transfer-Encoding: chunked` followed by
+            # `Transfer-Encoding: identity`) to bypass this check while the server still treats it as chunked.
+            if transfer_encoding:
+                transfer_encoding += b"," + value
+            else:
+                transfer_encoding = value
         elif name == b"content-length":
             content_length = value
 
