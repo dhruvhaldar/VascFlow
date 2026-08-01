@@ -109,3 +109,6 @@
 ## 2024-05-24 - [Optimize high-cardinality mesh face extraction]
 **Learning:** If an array like `GlobalElementID` contains a unique ID for every single cell (e.g., millions of cells) in a PyVista mesh, counting unique faces returns millions of unique IDs. Serializing this to JSON blocks the backend event loop, consumes significant bandwidth, and causes the browser UI to crash or freeze when Svelte attempts to render millions of `<option>` tags in a dropdown.
 **Action:** When extracting mesh face regions, always sort by face count descending using `np.argsort(-counts)` and cap the output list to a reasonable maximum (e.g., 1000) to ensure an O(1) payload size and instant frontend rendering while still capturing the largest continuous surface patches for boundary condition assignment.
+## 2024-03-24 - Optimize top K items extraction with np.argpartition
+**Learning:** `np.argsort` Fully sorts an array in O(N log N) time, which causes severe latency for arrays with >1M elements. `np.argpartition` can extract the top K elements in O(N) linear time, which is substantially faster.
+**Action:** When extracting top K items from large numpy arrays (e.g. high-cardinality mesh IDs), conditionally use `np.argpartition` for a >100x speedup rather than unconditionally sorting the entire array with `np.argsort`.
