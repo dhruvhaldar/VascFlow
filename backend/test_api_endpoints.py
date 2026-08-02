@@ -272,3 +272,20 @@ def test_chunked_upload_smuggling_bypass_rejected():
     )
     assert response.status_code == 411
     assert response.text == "Chunked requests not supported"
+
+def test_duplicate_content_length_bypass_rejected():
+    """
+    Test that an attacker cannot bypass the content length restriction by sending
+    multiple Content-Length headers (HTTP Request Smuggling vector).
+    """
+    payload = b"A" * (3 * 1024 * 1024)
+    response = client.post(
+        "/generate_input",
+        content=payload,
+        headers=[
+            ("Content-Length", str(len(payload))),
+            ("Content-Length", "100")
+        ]
+    )
+    assert response.status_code == 400
+    assert response.text == "Multiple Content-Length headers are not allowed"
