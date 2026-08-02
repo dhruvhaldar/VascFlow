@@ -4,6 +4,8 @@
     import { simulationConfig, meshMetadata } from '../stores';
 
     let faceSelectElement;
+    let variableInputElement;
+    let valueInputElement;
     let selectedFace = "";
     let bcType = "Dirichlet";
     let variable = "Velocity";
@@ -36,7 +38,19 @@
 
     async function addBC() {
         touchedFields = { face: true, variable: true, value: true };
-        if (!selectedFace || !variable || value == null || value === "") return;
+
+        if (!selectedFace || !variable || value == null || value === "") {
+            // 🎨 Palette: Improve error recovery by automatically focusing the first invalid field.
+            // This prevents screen reader users from losing context and having to hunt for validation errors.
+            if (!selectedFace && faceSelectElement) {
+                faceSelectElement.focus();
+            } else if (!variable && variableInputElement) {
+                variableInputElement.focus();
+            } else if ((value == null || value === "") && valueInputElement) {
+                valueInputElement.focus();
+            }
+            return;
+        }
 
         simulationConfig.update(c => {
             const newBC = {
@@ -113,7 +127,7 @@
 
             <label>
                 <span>Variable<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                <input type="text" bind:value={variable} placeholder="Variable (e.g. Velocity)" required on:blur={() => touchedFields.variable = true} aria-invalid={touchedFields.variable && !variable} aria-describedby={touchedFields.variable && !variable ? "variable-error" : undefined} />
+                <input type="text" bind:this={variableInputElement} bind:value={variable} placeholder="Variable (e.g. Velocity)" required on:blur={() => touchedFields.variable = true} aria-invalid={touchedFields.variable && !variable} aria-describedby={touchedFields.variable && !variable ? "variable-error" : undefined} />
                 {#if touchedFields.variable && !variable}
                     <span id="variable-error" class="inline-error" role="alert">Variable name required</span>
                 {/if}
@@ -121,7 +135,7 @@
 
             <label>
                 <span>Value<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                <input type="number" bind:value={value} step="any" placeholder="e.g. 10.5" required on:focus={(e) => e.target.select()} on:wheel={(e) => e.currentTarget.blur()} on:blur={() => touchedFields.value = true} aria-invalid={touchedFields.value && (value == null || value === "")} aria-describedby={touchedFields.value && (value == null || value === "") ? "value-error" : undefined} />
+                <input type="number" bind:this={valueInputElement} bind:value={value} step="any" placeholder="e.g. 10.5" required on:focus={(e) => e.target.select()} on:wheel={(e) => e.currentTarget.blur()} on:blur={() => touchedFields.value = true} aria-invalid={touchedFields.value && (value == null || value === "")} aria-describedby={touchedFields.value && (value == null || value === "") ? "value-error" : undefined} />
                 {#if touchedFields.value && (value == null || value === "")}
                     <span id="value-error" class="inline-error" role="alert">Numeric value required</span>
                 {/if}

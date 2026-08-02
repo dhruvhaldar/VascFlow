@@ -189,3 +189,6 @@
 ## 2024-05-18 - Prevent focus stealing during file upload
 **Learning:** Returning focus to a dropzone indiscriminately after a long-running async upload completes creates an aggressive "focus stealing" anti-pattern. If a user utilizes the waiting time to navigate away and fill out other form fields, their active typing is abruptly interrupted when the upload finishes and focus is yanked back to the dropzone.
 **Action:** When restoring focus in a `finally` block for async UI operations, always cache the `document.activeElement` before the operation starts. Conditionally restore focus *only* if the current active element remains the original trigger, the specific interaction container, or the document body (`document.activeElement === document.body`).
+## 2025-02-23 - Focus Management on Validation Error
+**Learning:** Automatically focusing the first invalid field upon form submission significantly improves the experience for keyboard and screen reader users by preventing them from losing context and having to manually hunt for errors.
+**Action:** When implementing custom form validation logic, use `bind:this` to obtain references to input fields and programmatically focus the first invalid element if validation fails.
