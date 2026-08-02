@@ -50,6 +50,11 @@ async def limit_request_size(request: Request, call_next):
             else:
                 transfer_encoding = value
         elif name == b"content-length":
+            if content_length is not None:
+                # 🛡️ Sentinel: Reject requests with multiple Content-Length headers to prevent
+                # HTTP Request Smuggling and DoS bypasses where an attacker sends a large payload
+                # but bypasses the size limit by appending a second, smaller Content-Length header.
+                return Response(content="Multiple Content-Length headers are not allowed", status_code=400)
             content_length = value
 
     if b"chunked" in transfer_encoding.lower():
