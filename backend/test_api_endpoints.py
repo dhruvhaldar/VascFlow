@@ -289,3 +289,19 @@ def test_duplicate_content_length_bypass_rejected():
     )
     assert response.status_code == 400
     assert response.text == "Multiple Content-Length headers are not allowed"
+
+def test_reject_both_te_and_cl_smuggling():
+    """
+    Test that requests containing both Transfer-Encoding and Content-Length
+    are rejected to prevent classic TE.CL or CL.TE HTTP Request Smuggling.
+    """
+    response = client.post(
+        "/generate_input",
+        content=b'{"dummy": "A"}',
+        headers=[
+            ("Transfer-Encoding", "chunked"),
+            ("Content-Length", "100")
+        ]
+    )
+    assert response.status_code == 400
+    assert "Both Transfer-Encoding and Content-Length headers are not allowed" in response.text
