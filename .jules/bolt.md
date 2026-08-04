@@ -112,3 +112,6 @@
 ## 2024-03-24 - Optimize top K items extraction with np.argpartition
 **Learning:** `np.argsort` Fully sorts an array in O(N log N) time, which causes severe latency for arrays with >1M elements. `np.argpartition` can extract the top K elements in O(N) linear time, which is substantially faster.
 **Action:** When extracting top K items from large numpy arrays (e.g. high-cardinality mesh IDs), conditionally use `np.argpartition` for a >100x speedup rather than unconditionally sorting the entire array with `np.argsort`.
+## 2024-05-24 - [Optimize Static Header Pre-computation]
+**Learning:** In high-frequency ASGI middleware, even with optimized in-place modification of `response.raw_headers`, dynamically reconstructing the same static list of tuple headers (`headers = [(b"x-frame-options", b"DENY"), ...]`) and sets (`new_keys = {k for k, _ in headers}`) on *every single request* incurs unnecessary CPU overhead in the event loop.
+**Action:** When a middleware always injects a known static set of headers (like CSP or security headers), pre-compute the list of tuples and the frozen set of keys *outside* the request handler function at the module level.
