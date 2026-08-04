@@ -57,6 +57,12 @@ async def limit_request_size(request: Request, call_next):
                 return Response(content="Multiple Content-Length headers are not allowed", status_code=400)
             content_length = value
 
+    # 🛡️ Sentinel: Reject requests containing both Transfer-Encoding and Content-Length headers.
+    # This prevents classic HTTP Request Smuggling (TE.CL or CL.TE) attacks where a malicious
+    # client sends both headers to confuse the proxy and the backend about where the request ends.
+    if transfer_encoding and content_length:
+        return Response(content="Both Transfer-Encoding and Content-Length headers are not allowed", status_code=400)
+
     if b"chunked" in transfer_encoding.lower():
         # Prevent chunked upload bypasses for content-length limits
         # 🛡️ Sentinel: Exempt /process_mesh from this check because file upload endpoints
