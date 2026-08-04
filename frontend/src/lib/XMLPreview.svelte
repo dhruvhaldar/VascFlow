@@ -145,8 +145,7 @@
                     on:click={(e) => { if (!isUpToDate) { e.preventDefault(); return; } downloadXML(); }}
                     aria-disabled={!isUpToDate}
                     aria-label={!isUpToDate ? "Generate XML to download updated settings" : (downloaded ? "Downloaded XML file" : "Download generated XML file")}
-                    title={!isUpToDate ? "Settings have changed. Generate XML first to download." : "Download XML"}
-                    aria-live="polite"
+                    title={!isUpToDate ? "Settings have changed. Generate XML first to download." : (downloaded ? "Downloaded XML file" : "Download XML")}
                     class="secondary-button"
                     class:success={downloaded}
                 >
@@ -157,8 +156,7 @@
                     on:click={(e) => { if (copying || !isUpToDate) { e.preventDefault(); return; } copyXML(); }}
                     aria-disabled={copying || !isUpToDate}
                     aria-label={!isUpToDate ? "Generate XML to copy updated settings" : (copied ? "Copied to clipboard" : "Copy generated XML to clipboard")}
-                    title={!isUpToDate ? "Settings have changed. Generate XML first to copy." : "Copy XML"}
-                    aria-live="polite"
+                    title={!isUpToDate ? "Settings have changed. Generate XML first to copy." : (copied ? "Copied to clipboard" : "Copy XML")}
                     class="secondary-button"
                     class:success={copied}
                 >
@@ -190,9 +188,15 @@
 
     <div aria-live="polite" class="sr-only">
         {#if generating}
-            Generating XML...
+            <span>Generating XML...</span>
         {:else if $generatedXML && !isError && isUpToDate}
-            XML generated successfully.
+            <span>XML generated successfully.</span>
+        {/if}
+        {#if downloaded}
+            <span>XML file downloaded successfully.</span>
+        {/if}
+        {#if copied}
+            <span>XML copied to clipboard.</span>
         {/if}
     </div>
 

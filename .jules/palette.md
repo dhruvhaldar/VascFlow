@@ -192,3 +192,6 @@
 ## 2025-02-23 - Focus Management on Validation Error
 **Learning:** Automatically focusing the first invalid field upon form submission significantly improves the experience for keyboard and screen reader users by preventing them from losing context and having to manually hunt for errors.
 **Action:** When implementing custom form validation logic, use `bind:this` to obtain references to input fields and programmatically focus the first invalid element if validation fails.
+## 2025-04-10 - Fix aria-live on buttons
+**Learning:** Applying `aria-live` directly to interactive controls (like `<button>`) to announce transient success states (e.g., 'Copied!' or 'Downloaded!') is an accessibility anti-pattern that causes inconsistent screen reader behavior.
+**Action:** Instead, update the button's `title` or `aria-label` to reflect the new state, and render a visually hidden element inside a dedicated, pre-existing `aria-live="polite"` container to reliably trigger the announcement.
