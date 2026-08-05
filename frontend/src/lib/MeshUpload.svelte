@@ -21,6 +21,10 @@
         isDragging = false;
         if (loading) return;
         if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            if (e.dataTransfer.files.length > 1) {
+                error = "Please drop only one file at a time.";
+                return;
+            }
             fileInput.files = e.dataTransfer.files;
             handleFileSelect();
         }
