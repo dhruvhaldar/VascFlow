@@ -195,3 +195,6 @@
 ## 2025-04-10 - Fix aria-live on buttons
 **Learning:** Applying `aria-live` directly to interactive controls (like `<button>`) to announce transient success states (e.g., 'Copied!' or 'Downloaded!') is an accessibility anti-pattern that causes inconsistent screen reader behavior.
 **Action:** Instead, update the button's `title` or `aria-label` to reflect the new state, and render a visually hidden element inside a dedicated, pre-existing `aria-live="polite"` container to reliably trigger the announcement.
+## 2024-08-20 - Explicit Error Feedback on Custom Drag-and-Drop Constraints
+**Learning:** When native file inputs (which can naturally enforce single-file constraints) are bypassed by custom drag-and-drop zones, users who attempt to drop multiple files often experience a silent failure where only the first file is processed, causing confusion about why the other files were ignored.
+**Action:** Always manually validate `e.dataTransfer.files.length > 1` in custom drop handlers and explicitly surface an error message (e.g., "Please drop only one file at a time") instead of silently picking the first file.
