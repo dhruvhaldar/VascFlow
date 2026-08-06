@@ -198,3 +198,7 @@
 ## 2024-08-20 - Explicit Error Feedback on Custom Drag-and-Drop Constraints
 **Learning:** When native file inputs (which can naturally enforce single-file constraints) are bypassed by custom drag-and-drop zones, users who attempt to drop multiple files often experience a silent failure where only the first file is processed, causing confusion about why the other files were ignored.
 **Action:** Always manually validate `e.dataTransfer.files.length > 1` in custom drop handlers and explicitly surface an error message (e.g., "Please drop only one file at a time") instead of silently picking the first file.
+
+## 2024-05-25 - [Broken ARIA References on Hidden Descriptions]
+**Learning:** Applying `aria-hidden="true"` to an element referenced by `aria-describedby` breaks the reference. Screen readers will fail to announce the description text.
+**Action:** Always ensure elements providing accessible descriptions via `aria-describedby` are not hidden from the accessibility tree using `aria-hidden`.

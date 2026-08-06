@@ -204,7 +204,7 @@
         {#if !$generatedXML}
             <div class="empty-state" transition:fade|local={{ duration: 150 }}>
                 {#if hasValidationErrors}
-                    <p role="alert">⚠️ Validation Errors</p>
+                    <p>⚠️ Validation Errors</p>
                     <p class="subtext">Please fix the validation errors in the {validationErrorMessage} before generating XML.</p>
                 {:else}
                     <p>No XML generated yet.</p>
@@ -222,7 +222,7 @@
                     <span class="inline-spinner" style="width: 24px; height: 24px; margin-bottom: 0.5rem;" aria-hidden="true"></span>
                     <p>Generating updated XML...</p>
                 {:else if hasValidationErrors}
-                    <p role="alert">⚠️ Validation Errors</p>
+                    <p>⚠️ Validation Errors</p>
                     <p class="subtext">Please fix the validation errors in the {validationErrorMessage} to re-enable generation.</p>
                 {:else}
                     <p>⚠️ Outdated Preview</p>
