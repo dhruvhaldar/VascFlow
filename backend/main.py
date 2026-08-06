@@ -18,6 +18,7 @@ RATE_LIMIT_STORE = {}
 RATE_LIMIT_MAX = 30  # requests per window
 RATE_LIMIT_WINDOW = 60  # window in seconds
 _LAST_RL_CLEANUP = 0
+_RATE_LIMIT_HEADER_KEYS = frozenset([b"x-ratelimit-limit", b"x-ratelimit-remaining", b"x-ratelimit-reset"])
 
 @app.middleware("http")
 async def limit_request_size(request: Request, call_next):
@@ -131,26 +132,31 @@ async def rate_limiter(request: Request, call_next):
         # we only allocate the default dictionary when mathematically necessary (e.g. for new IPs).
         client_data = RATE_LIMIT_STORE.get(client_ip)
         if client_data is None:
-            client_data = {"count": 0, "start_time": now}
-
-        if now - client_data["start_time"] > RATE_LIMIT_WINDOW:
             client_data = {"count": 1, "start_time": now}
+            RATE_LIMIT_STORE[client_ip] = client_data
         else:
-            if client_data["count"] >= RATE_LIMIT_MAX:
-                reset_time = max(1, int(client_data["start_time"] + RATE_LIMIT_WINDOW - now))
-                return Response(
-                    content="Too Many Requests",
-                    status_code=429,
-                    headers={
-                        "Retry-After": str(reset_time),
-                        "X-RateLimit-Limit": str(RATE_LIMIT_MAX),
-                        "X-RateLimit-Remaining": "0",
-                        "X-RateLimit-Reset": str(reset_time)
-                    }
-                )
-            client_data["count"] += 1
-
-        RATE_LIMIT_STORE[client_ip] = client_data
+            if now - client_data["start_time"] > RATE_LIMIT_WINDOW:
+                # ⚡ Bolt: Mutate rate limit state dictionary in-place instead of reallocating.
+                # Assigning `client_data = {"count": 1, "start_time": now}` allocates a new dict
+                # and breaks the reference to the dict in RATE_LIMIT_STORE, requiring a redundant
+                # dict lookup and re-assignment. Mutating it in-place saves an allocation and avoids
+                # the re-assignment entirely, significantly reducing CPU overhead in the hot path.
+                client_data["count"] = 1
+                client_data["start_time"] = now
+            else:
+                if client_data["count"] >= RATE_LIMIT_MAX:
+                    reset_time = max(1, int(client_data["start_time"] + RATE_LIMIT_WINDOW - now))
+                    return Response(
+                        content="Too Many Requests",
+                        status_code=429,
+                        headers={
+                            "Retry-After": str(reset_time),
+                            "X-RateLimit-Limit": str(RATE_LIMIT_MAX),
+                            "X-RateLimit-Remaining": "0",
+                            "X-RateLimit-Reset": str(reset_time)
+                        }
+                    )
+                client_data["count"] += 1
 
         response = await call_next(request)
         # ⚡ Bolt: Optimize rate limit header injection for high-frequency endpoints.
@@ -161,8 +167,9 @@ async def rate_limiter(request: Request, call_next):
             (b"x-ratelimit-remaining", b"%d" % max(0, RATE_LIMIT_MAX - client_data["count"])),
             (b"x-ratelimit-reset", b"%d" % int(client_data["start_time"] + RATE_LIMIT_WINDOW - now))
         ]
-        new_keys = {k for k, _ in rl_headers}
-        response.raw_headers[:] = [h for h in response.raw_headers if h[0].lower() not in new_keys]
+        # ⚡ Bolt: Use pre-computed static set of rate limit header keys to bypass
+        # O(N) set allocation overhead on every request in the high-frequency handler loop.
+        response.raw_headers[:] = [h for h in response.raw_headers if h[0].lower() not in _RATE_LIMIT_HEADER_KEYS]
         response.raw_headers.extend(rl_headers)
         return response
 
