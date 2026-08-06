@@ -156,7 +156,7 @@
     <h3 id="mesh-upload-heading">Mesh Upload</h3>
     <input tabindex="-1" type="file" class="sr-only" bind:this={fileInput} on:change={handleFileSelect} accept=".vtu,.vtp,.vtk" aria-label="Upload Mesh File (max 50MB)" disabled={loading} aria-invalid={!!error} aria-describedby={error ? "mesh-upload-error" : undefined} />
     {#if !loading}
-        <p id="mesh-upload-hint" class="drop-hint" aria-hidden="true">{isDragging ? 'Drop file to upload...' : 'Click to select or drag and drop a file here (.vtu, .vtp, .vtk | max 50MB)'}</p>
+        <p id="mesh-upload-hint" class="drop-hint">{isDragging ? 'Drop file to upload...' : 'Click to select or drag and drop a file here (.vtu, .vtp, .vtk | max 50MB)'}</p>
     {/if}
     {#if loading}
         <div class="loading-state" role="status" aria-live="polite" transition:slide|local>
@@ -170,7 +170,7 @@
     {#if $meshMetadata.n_cells > 0}
         <div class="mesh-info" role="status" aria-live="polite" transition:slide|local>
             <p>Loaded: {$simulationConfig.mesh.mesh_path}</p>
-            <p>Cells: {$meshMetadata.n_cells}, Points: {$meshMetadata.n_points}</p>
+            <p>Cells: {$meshMetadata.n_cells.toLocaleString()}, Points: {$meshMetadata.n_points.toLocaleString()}</p>
             <p>Detected Faces: {$meshMetadata.faces.length}</p>
         </div>
     {/if}
