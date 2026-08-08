@@ -202,3 +202,6 @@
 ## 2024-05-25 - [Broken ARIA References on Hidden Descriptions]
 **Learning:** Applying `aria-hidden="true"` to an element referenced by `aria-describedby` breaks the reference. Screen readers will fail to announce the description text.
 **Action:** Always ensure elements providing accessible descriptions via `aria-describedby` are not hidden from the accessibility tree using `aria-hidden`.
+## 2024-05-26 - Await tick() before programmatic focus for validation errors
+**Learning:** When programmatically shifting focus to an invalid input field during form validation, if the error message elements (e.g. `aria-describedby` targets) are conditionally rendered in the DOM at the same time (e.g. by setting `touchedFields = true`), screen readers will fail to announce the error. The focus event fires before the DOM is updated to include the new error elements.
+**Action:** Always `await tick();` before programmatically calling `.focus()` on invalid inputs in Svelte to ensure that all conditionally rendered error states and ARIA attributes are fully present in the DOM before focus is shifted, so they can be reliably announced by screen readers.

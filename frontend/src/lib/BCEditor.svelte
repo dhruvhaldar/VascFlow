@@ -42,6 +42,8 @@
         if (!selectedFace || !variable || value == null || value === "") {
             // 🎨 Palette: Improve error recovery by automatically focusing the first invalid field.
             // This prevents screen reader users from losing context and having to hunt for validation errors.
+            // Awaiting tick() ensures conditionally rendered error elements are in the DOM before focus shifts.
+            await tick();
             if (!selectedFace && faceSelectElement) {
                 faceSelectElement.focus();
             } else if (!variable && variableInputElement) {
