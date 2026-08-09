@@ -169,7 +169,8 @@ async def rate_limiter(request: Request, call_next):
         ]
         # ⚡ Bolt: Use pre-computed static set of rate limit header keys to bypass
         # O(N) set allocation overhead on every request in the high-frequency handler loop.
-        response.raw_headers[:] = [h for h in response.raw_headers if h[0].lower() not in _RATE_LIMIT_HEADER_KEYS]
+        # ⚡ Bolt: Removed redundant .lower() call since ASGI raw_headers are guaranteed to be lowercase bytes.
+        response.raw_headers[:] = [h for h in response.raw_headers if h[0] not in _RATE_LIMIT_HEADER_KEYS]
         response.raw_headers.extend(rl_headers)
         return response
 
@@ -288,7 +289,8 @@ async def add_security_headers(request: Request, call_next):
     # `MutableHeaders` object, which silently drops any headers added by subsequent middleware.
     # ⚡ Bolt: Inline the dictionary lookup directly into the list comprehension to bypass
     # the function call overhead inside the tight loop.
-    response.raw_headers[:] = [h for h in response.raw_headers if h[0].lower() not in keys_to_remove]
+    # ⚡ Bolt: Avoid redundant .lower() call since ASGI raw_headers are guaranteed to be lowercase bytes.
+    response.raw_headers[:] = [h for h in response.raw_headers if h[0] not in keys_to_remove]
     response.raw_headers.extend(headers_to_add)
 
     return response
