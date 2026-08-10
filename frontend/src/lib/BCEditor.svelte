@@ -218,7 +218,7 @@
         background: rgba(16, 24, 50, 0.6);
     }
 
-    .add-bc input:invalid, .add-bc select:invalid {
+    .add-bc input[aria-invalid="true"], .add-bc select[aria-invalid="true"] {
         border-color: rgba(255, 77, 77, 0.5);
         background: rgba(255, 77, 77, 0.05);
     }
