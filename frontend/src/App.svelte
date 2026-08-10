@@ -432,7 +432,7 @@
         background: rgba(16, 24, 50, 0.6);
     }
 
-    input:invalid, select:invalid {
+    input[aria-invalid="true"], select[aria-invalid="true"] {
         border-color: rgba(255, 77, 77, 0.5);
         background: rgba(255, 77, 77, 0.05);
     }
