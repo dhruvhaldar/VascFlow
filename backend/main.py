@@ -27,6 +27,13 @@ async def limit_request_size(request: Request, call_next):
     to prevent Memory and Disk Exhaustion (DoS). Pydantic and UploadFile
     will eagerly consume/spool massive bodies if not capped at the HTTP layer.
     """
+    # ⚡ Bolt: Fast-path bypass for CORS preflight requests.
+    # Browsers send body-less OPTIONS requests before cross-origin POSTs.
+    # Bypassing the header-parsing loop for these requests eliminates redundant CPU
+    # overhead in the hot path.
+    if request.scope.get("method") == "OPTIONS":
+        return await call_next(request)
+
     # ⚡ Bolt: Use request.scope["path"] instead of request.url.path.
     # Accessing request.url lazily constructs an expensive URL object by parsing
     # headers. Accessing the scope dictionary directly is ~10x faster and prevents
@@ -90,6 +97,13 @@ async def limit_request_size(request: Request, call_next):
 
 @app.middleware("http")
 async def rate_limiter(request: Request, call_next):
+    # ⚡ Bolt: Fast-path bypass for CORS preflight requests.
+    # Rate limiting OPTIONS requests artificially depletes the user's quota (e.g.
+    # 1 upload = 2 requests) and adds unnecessary dictionary allocation and state
+    # mutation overhead for requests that execute no heavy backend logic.
+    if request.scope.get("method") == "OPTIONS":
+        return await call_next(request)
+
     # ⚡ Bolt: Use request.scope["path"] instead of request.url.path.
     req_path = request.scope.get("path", "")
     if req_path in ("/generate_input", "/process_mesh") or req_path.startswith("/files/"):
