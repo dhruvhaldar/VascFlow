@@ -209,3 +209,7 @@
 ## 2025-05-18 - [Targeting aria-invalid vs :invalid for Custom Form Validation]
 **Learning:** When implementing custom form validation logic that intentionally tracks a "touched" or "dirty" state (e.g. to hide error messages until a user has interacted with a field), relying on the native CSS `:invalid` pseudo-class defeats the purpose. The browser automatically applies `:invalid` to required fields immediately on page load, causing them to visually appear broken before the user has even focused them.
 **Action:** Always write CSS selectors for validation states using the explicit ARIA attribute `[aria-invalid="true"]` (e.g. `input[aria-invalid="true"]`) rather than `:invalid`. This ensures that the visual error styling stays perfectly synchronized with the custom conditional logic driving the application's accessible validation state.
+
+## 2024-05-24 - Initial Empty State Loading Indicators
+**Learning:** Initial empty states that transition into generated content via async operations often lack dedicated loading visuals, creating a jarring UX where the "click to start" text remains visible alongside a loading spinner on the action button.
+**Action:** Always replace or overlay static "empty state" instructional text with an explicit loading indicator (spinner/skeleton) when the initial async generation is triggered, maintaining consistency with subsequent update loading states.

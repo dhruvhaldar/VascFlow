@@ -203,7 +203,10 @@
     <div class="preview-container">
         {#if !$generatedXML}
             <div class="empty-state" transition:fade|local={{ duration: 150 }}>
-                {#if hasValidationErrors}
+                {#if generating}
+                    <span class="inline-spinner" style="width: 24px; height: 24px; margin-bottom: 0.5rem;" aria-hidden="true"></span>
+                    <p>Generating XML...</p>
+                {:else if hasValidationErrors}
                     <p>⚠️ Validation Errors</p>
                     <p class="subtext">Please fix the validation errors in the {validationErrorMessage} before generating XML.</p>
                 {:else}
