@@ -95,7 +95,7 @@
 </script>
 
 <div class="bc-editor" role="region" aria-label="Boundary Conditions">
-    <h3>Boundary Conditions</h3>
+    <h2>Boundary Conditions</h2>
 
     {#if $meshMetadata.faces.length > 0}
         <form class="add-bc" on:submit|preventDefault={addBC} novalidate>
