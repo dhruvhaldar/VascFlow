@@ -113,7 +113,7 @@
                 </div>
                 <div class="config-panel" role="tabpanel" id="panel-physics" aria-labelledby="tab-physics" tabindex={activeTab === 'physics' ? 0 : -1} style="display: {activeTab === 'physics' ? 'block' : 'none'}">
                     <div class="physics-config">
-                        <h3>Physics</h3>
+                        <h2>Physics</h2>
                         <label>
                             <span>Type<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
                             <select bind:value={$simulationConfig.physics.physics_type} required>
@@ -142,7 +142,7 @@
                 </div>
                 <div class="config-panel" role="tabpanel" id="panel-general" aria-labelledby="tab-general" tabindex={activeTab === 'general' ? 0 : -1} style="display: {activeTab === 'general' ? 'block' : 'none'}">
                     <div class="general-config">
-                        <h3>General Settings</h3>
+                        <h2>General Settings</h2>
                         <label>
                             <span>Time Steps<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
                             <input type="number" bind:value={$simulationConfig.general.num_time_steps} min="1" placeholder="e.g. 100" required on:focus={(e) => e.target.select()} on:wheel={(e) => e.currentTarget.blur()} on:blur={() => touchedFields.num_time_steps = true} aria-invalid={touchedFields.num_time_steps && ($simulationConfig.general.num_time_steps == null || $simulationConfig.general.num_time_steps < 1)} aria-describedby={touchedFields.num_time_steps && ($simulationConfig.general.num_time_steps == null || $simulationConfig.general.num_time_steps < 1) ? "time-steps-error" : undefined} />
@@ -170,7 +170,7 @@
                 {#await import('./lib/Viewer.svelte')}
                     <div class="viewer-fallback">
                         <div class="viewer-header">
-                            <h3>3D Visualizer</h3>
+                            <h2>3D Visualizer</h2>
                             <span role="status" aria-live="polite">Loading 3D Engine...</span>
                         </div>
                         <div class="viewer-container" data-testid="viewer-canvas"></div>
@@ -180,7 +180,7 @@
                 {:catch error}
                     <div class="viewer-fallback">
                         <div class="viewer-header">
-                            <h3>3D Visualizer</h3>
+                            <h2>3D Visualizer</h2>
                             <span class="error" role="alert" aria-live="assertive">Failed to load 3D Engine</span>
                         </div>
                         <div class="viewer-container" data-testid="viewer-canvas"></div>
@@ -451,7 +451,7 @@
         flex-direction: column;
         gap: 0.75rem;
     }
-    .viewer-header h3 {
+    .viewer-header h2 {
         margin: 0;
     }
     .viewer-header span {

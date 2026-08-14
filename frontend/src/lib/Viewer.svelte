@@ -136,7 +136,7 @@
 <div class="viewer-wrap" role="region" aria-label="3D Visualizer">
     <div class="viewer-header">
         <div class="title-group">
-            <h3>3D Visualizer</h3>
+            <h2>3D Visualizer</h2>
             <span role="status" aria-live="polite">
                 {#if isLoading}
                     Loading 3D model...
@@ -229,7 +229,7 @@
         flex-direction: column;
     }
 
-    .viewer-header h3 {
+    .viewer-header h2 {
         margin: 0;
     }
 

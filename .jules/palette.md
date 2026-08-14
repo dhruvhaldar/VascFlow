@@ -213,3 +213,6 @@
 ## 2024-05-24 - Initial Empty State Loading Indicators
 **Learning:** Initial empty states that transition into generated content via async operations often lack dedicated loading visuals, creating a jarring UX where the "click to start" text remains visible alongside a loading spinner on the action button.
 **Action:** Always replace or overlay static "empty state" instructional text with an explicit loading indicator (spinner/skeleton) when the initial async generation is triggered, maintaining consistency with subsequent update loading states.
+## 2024-05-14 - Fix Heading Hierarchy
+**Learning:** Found that section components were using `<h3>` tags directly without any preceding `<h2>` tags within the main content area (after the global `<h1>` header). This breaks logical document structure and makes navigation confusing for screen reader users relying on heading levels.
+**Action:** Replaced `<h3>` with `<h2>` on primary sections (Physics, General Settings, 3D Visualizer, Mesh Upload, Boundary Conditions, Input File Preview) to ensure sequential heading levels (h1 -> h2).

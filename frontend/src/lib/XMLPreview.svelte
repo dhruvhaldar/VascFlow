@@ -138,7 +138,7 @@
 
 <div class="xml-preview" role="region" aria-label="Input File Preview">
     <div class="header">
-        <h3>Input File Preview</h3>
+        <h2>Input File Preview</h2>
         <div class="actions">
             {#if $generatedXML && !isError}
                 <button

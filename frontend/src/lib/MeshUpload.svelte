@@ -153,7 +153,7 @@
     on:click={handleClick}
     on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(e); } }}
 >
-    <h3 id="mesh-upload-heading">Mesh Upload</h3>
+    <h2 id="mesh-upload-heading">Mesh Upload</h2>
     <input tabindex="-1" type="file" class="sr-only" bind:this={fileInput} on:change={handleFileSelect} accept=".vtu,.vtp,.vtk" aria-label="Upload Mesh File (max 50MB)" disabled={loading} aria-invalid={!!error} aria-describedby={error ? "mesh-upload-error" : undefined} />
     {#if !loading}
         <p id="mesh-upload-hint" class="drop-hint">{isDragging ? 'Drop file to upload...' : 'Click to select or drag and drop a file here (.vtu, .vtp, .vtk | max 50MB)'}</p>
