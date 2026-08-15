@@ -29,12 +29,15 @@
     // properties in the simulationConfig store (like Physics density) are updated.
     let bcs = [];
     let usedFaceNames = new Set();
+    let allFacesUsed = false;
+    let allUsedMessageElement;
     $: {
         if (bcs !== $simulationConfig.boundary_conditions) {
             bcs = $simulationConfig.boundary_conditions;
             usedFaceNames = new Set(bcs.map(bc => bc.face_name));
         }
     }
+    $: allFacesUsed = $meshMetadata.faces.length > 0 && bcs.length >= $meshMetadata.faces.length;
 
     async function addBC() {
         touchedFields = { face: true, variable: true, value: true };
@@ -71,9 +74,14 @@
 
         // 🎨 Palette: Manage focus after adding BC.
         // Wait for DOM to update and then return focus to the Face select input,
-        // so keyboard navigation can naturally continue.
+        // so keyboard navigation can naturally continue. If all faces are used,
+        // focus the success message instead.
         await tick();
-        if (faceSelectElement) faceSelectElement.focus();
+        if (faceSelectElement) {
+            faceSelectElement.focus();
+        } else if (allUsedMessageElement) {
+            allUsedMessageElement.focus();
+        }
     }
 
     // ⚡ Bolt: Remove by unique ID instead of array index.
@@ -89,7 +97,9 @@
             // Wait for DOM to update and return focus to the Face select input,
             // to prevent focus dropping to <body> when the remove button disappears.
             await tick();
-            if (faceSelectElement) faceSelectElement.focus();
+            if (faceSelectElement) {
+                faceSelectElement.focus();
+            }
         }
     }
 </script>
@@ -98,8 +108,9 @@
     <h2>Boundary Conditions</h2>
 
     {#if $meshMetadata.faces.length > 0}
-        <form class="add-bc" on:submit|preventDefault={addBC} novalidate>
-            <label>
+        {#if !allFacesUsed}
+            <form class="add-bc" on:submit|preventDefault={addBC} novalidate>
+                <label>
                 <span>Face<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
                 <select bind:this={faceSelectElement} bind:value={selectedFace} required on:blur={() => touchedFields.face = true} aria-invalid={touchedFields.face && !selectedFace} aria-describedby={touchedFields.face && !selectedFace ? "face-error" : undefined}>
                     <option value="" disabled selected>Select Face</option>
@@ -151,10 +162,15 @@
                 </select>
             </label>
 
-            <div class="submit-action">
-                <button type="submit" aria-disabled={!selectedFace} title={!selectedFace ? "Select a face first to add a boundary condition" : "Add boundary condition"} on:click={(e) => { if (!selectedFace) e.preventDefault(); }}>Add BC</button>
-            </div>
-        </form>
+                <div class="submit-action">
+                    <button type="submit" aria-disabled={!selectedFace} title={!selectedFace ? "Select a face first to add a boundary condition" : "Add boundary condition"} on:click={(e) => { if (!selectedFace) e.preventDefault(); }}>Add BC</button>
+                </div>
+            </form>
+        {:else}
+            <p class="empty-state" tabindex="-1" role="status" aria-live="polite" bind:this={allUsedMessageElement}>
+                All available faces have boundary conditions assigned. Remove an existing condition below to add a new one.
+            </p>
+        {/if}
 
         <div aria-live="polite">
             {#if $simulationConfig.boundary_conditions.length === 0}
