@@ -72,3 +72,7 @@
 **Vulnerability:** The Content Security Policy in `frontend/index.html` contained `'unsafe-inline'` in its `script-src` directive. This allows execution of inline scripts and opens the application to Cross-Site Scripting (XSS) attacks.
 **Learning:** Hardcoding `'unsafe-inline'` inside production CSP headers significantly weakens the CSP protection by allowing any inline scripts injected by an attacker to execute. Modern frontend frameworks like Svelte rarely need `'unsafe-inline'` for `script-src` in production.
 **Prevention:** Strictly maintain CSP directives and do not use `'unsafe-inline'` for `script-src` unless absolutely necessary and well-justified. Rely entirely on the external script sources that can be securely handled.
+## 2025-03-10 - Fix Legacy XSS Protection Header
+**Vulnerability:** The application was missing an explicitly defined `X-XSS-Protection` header. If present, it often defaults to the legacy `1; mode=block` configuration which is deprecated by modern browsers and can be abused to induce vulnerabilities (like Cross-Site Leaks).
+**Learning:** Modern security standards (such as OWASP) advise against using the legacy XSS Auditor built into older browsers. The current best practice is to explicitly disable it with `X-XSS-Protection: 0` and rely on a strict Content Security Policy (CSP) instead.
+**Prevention:** When defining static security headers for an application, set `X-XSS-Protection` to `0` instead of `1; mode=block` or leaving it undefined, to adhere to modern defensive standards.
