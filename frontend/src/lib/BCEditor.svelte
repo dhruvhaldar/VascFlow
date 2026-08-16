@@ -36,6 +36,9 @@
         }
     }
 
+    $: allFacesAssigned = $meshMetadata.faces.length > 0 && usedFaceNames.size === $meshMetadata.faces.length;
+    let successMessageElement;
+
     async function addBC() {
         touchedFields = { face: true, variable: true, value: true };
 
@@ -73,7 +76,11 @@
         // Wait for DOM to update and then return focus to the Face select input,
         // so keyboard navigation can naturally continue.
         await tick();
-        if (faceSelectElement) faceSelectElement.focus();
+        if (allFacesAssigned && successMessageElement) {
+            successMessageElement.focus();
+        } else if (faceSelectElement) {
+            faceSelectElement.focus();
+        }
     }
 
     // ⚡ Bolt: Remove by unique ID instead of array index.
@@ -98,6 +105,11 @@
     <h2>Boundary Conditions</h2>
 
     {#if $meshMetadata.faces.length > 0}
+        {#if allFacesAssigned}
+            <div bind:this={successMessageElement} class="all-assigned-message" tabindex="-1">
+                <p>✅ All available faces have been assigned boundary conditions.</p>
+            </div>
+        {:else}
         <form class="add-bc" on:submit|preventDefault={addBC} novalidate>
             <label>
                 <span>Face<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
@@ -155,6 +167,7 @@
                 <button type="submit" aria-disabled={!selectedFace} title={!selectedFace ? "Select a face first to add a boundary condition" : "Add boundary condition"} on:click={(e) => { if (!selectedFace) e.preventDefault(); }}>Add BC</button>
             </div>
         </form>
+        {/if}
 
         <div aria-live="polite">
             {#if $simulationConfig.boundary_conditions.length === 0}
@@ -267,6 +280,31 @@
             opacity: 1;
             transform: translateY(0);
         }
+    }
+
+    .all-assigned-message {
+        background: rgba(76, 175, 80, 0.15);
+        border: 1px solid rgba(76, 175, 80, 0.3);
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        margin-bottom: 1rem;
+        color: #e8f5e9;
+    }
+
+    .all-assigned-message p {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .all-assigned-message:focus {
+        outline: none;
+    }
+
+    .all-assigned-message:focus-visible {
+        outline: 2px solid #6093ff;
+        outline-offset: 2px;
     }
 
     .empty-state {
