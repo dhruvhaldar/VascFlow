@@ -6,6 +6,7 @@
     let faceSelectElement;
     let variableInputElement;
     let valueInputElement;
+    let exhaustedMessageElement;
     let selectedFace = "";
     let bcType = "Dirichlet";
     let variable = "Velocity";
@@ -72,8 +73,13 @@
         // 🎨 Palette: Manage focus after adding BC.
         // Wait for DOM to update and then return focus to the Face select input,
         // so keyboard navigation can naturally continue.
+        // If the form is now hidden (all faces used), focus the success message instead.
         await tick();
-        if (faceSelectElement) faceSelectElement.focus();
+        if (usedFaceNames.size === $meshMetadata.faces.length && exhaustedMessageElement) {
+            exhaustedMessageElement.focus();
+        } else if (faceSelectElement) {
+            faceSelectElement.focus();
+        }
     }
 
     // ⚡ Bolt: Remove by unique ID instead of array index.
@@ -98,7 +104,8 @@
     <h2>Boundary Conditions</h2>
 
     {#if $meshMetadata.faces.length > 0}
-        <form class="add-bc" on:submit|preventDefault={addBC} novalidate>
+        {#if usedFaceNames.size < $meshMetadata.faces.length}
+            <form class="add-bc" on:submit|preventDefault={addBC} novalidate>
             <label>
                 <span>Face<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
                 <select bind:this={faceSelectElement} bind:value={selectedFace} required on:blur={() => touchedFields.face = true} aria-invalid={touchedFields.face && !selectedFace} aria-describedby={touchedFields.face && !selectedFace ? "face-error" : undefined}>
@@ -155,6 +162,11 @@
                 <button type="submit" aria-disabled={!selectedFace} title={!selectedFace ? "Select a face first to add a boundary condition" : "Add boundary condition"} on:click={(e) => { if (!selectedFace) e.preventDefault(); }}>Add BC</button>
             </div>
         </form>
+        {:else}
+            <p class="success-state" bind:this={exhaustedMessageElement} tabindex="-1">
+                <span class="success-icon" aria-hidden="true">✓</span> All faces have been assigned a boundary condition.
+            </p>
+        {/if}
 
         <div aria-live="polite">
             {#if $simulationConfig.boundary_conditions.length === 0}
@@ -273,6 +285,28 @@
         color: #b8c5ef;
         font-style: italic;
         margin-top: 1rem;
+    }
+
+    .success-state {
+        color: #b8c5ef;
+        background: rgba(76, 175, 80, 0.1);
+        border: 1px solid rgba(76, 175, 80, 0.3);
+        padding: 0.75rem 1rem;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .success-state:focus-visible {
+        outline: 2px solid #6093ff;
+        outline-offset: 2px;
+    }
+
+    .success-icon {
+        color: #4CAF50;
+        font-weight: bold;
     }
 
     ul {
