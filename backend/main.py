@@ -238,7 +238,9 @@ app.add_middleware(
 # achieving nearly identical compression ratios for text and binary mesh data.
 app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=1)
 
+# 🛡️ Sentinel: Set X-XSS-Protection to 0 to disable the legacy XSS auditor which can be manipulated to introduce client-side vulnerabilities, relying instead on CSP.
 _SECURITY_HEADERS = [
+    (b"x-xss-protection", b"0"),
     (b"x-content-type-options", b"nosniff"),
     (b"x-frame-options", b"DENY"),
     (b"strict-transport-security", b"max-age=31536000; includeSubDomains"),
