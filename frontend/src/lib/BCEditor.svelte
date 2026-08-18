@@ -36,6 +36,10 @@
         }
     }
 
+    // 🎨 Palette: Determine if all faces have boundary conditions assigned
+    $: allFacesAssigned = $meshMetadata.faces.length > 0 && usedFaceNames.size === $meshMetadata.faces.length;
+    let allAssignedContainer;
+
     async function addBC() {
         touchedFields = { face: true, variable: true, value: true };
 
@@ -73,7 +77,11 @@
         // Wait for DOM to update and then return focus to the Face select input,
         // so keyboard navigation can naturally continue.
         await tick();
-        if (faceSelectElement) faceSelectElement.focus();
+        if (allFacesAssigned && allAssignedContainer) {
+            allAssignedContainer.focus();
+        } else if (faceSelectElement) {
+            faceSelectElement.focus();
+        }
     }
 
     // ⚡ Bolt: Remove by unique ID instead of array index.
@@ -98,7 +106,16 @@
     <h2>Boundary Conditions</h2>
 
     {#if $meshMetadata.faces.length > 0}
-        <form class="add-bc" on:submit|preventDefault={addBC} novalidate>
+        {#if allFacesAssigned}
+            <div class="all-faces-assigned" bind:this={allAssignedContainer} tabindex="-1" role="status" aria-live="polite" transition:slide|local>
+                <div class="success-icon" aria-hidden="true">✓</div>
+                <div>
+                    <p class="success-title">All faces assigned!</p>
+                    <p class="success-subtext">Boundary conditions have been configured for all detected faces.</p>
+                </div>
+            </div>
+        {:else}
+        <form class="add-bc" on:submit|preventDefault={addBC} novalidate transition:slide|local>
             <label>
                 <span>Face<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
                 <select bind:this={faceSelectElement} bind:value={selectedFace} required on:blur={() => touchedFields.face = true} aria-invalid={touchedFields.face && !selectedFace} aria-describedby={touchedFields.face && !selectedFace ? "face-error" : undefined}>
@@ -155,6 +172,7 @@
                 <button type="submit" aria-disabled={!selectedFace} title={!selectedFace ? "Select a face first to add a boundary condition" : "Add boundary condition"} on:click={(e) => { if (!selectedFace) e.preventDefault(); }}>Add BC</button>
             </div>
         </form>
+        {/if}
 
         <div aria-live="polite">
             {#if $simulationConfig.boundary_conditions.length === 0}
@@ -273,6 +291,47 @@
         color: #b8c5ef;
         font-style: italic;
         margin-top: 1rem;
+    }
+
+    .all-faces-assigned {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background: rgba(76, 175, 80, 0.1);
+        border: 1px solid rgba(76, 175, 80, 0.3);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .all-faces-assigned:focus-visible {
+        outline: 2px solid #6093ff;
+        outline-offset: 2px;
+    }
+
+    .success-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        background: rgba(76, 175, 80, 0.2);
+        color: #4caf50;
+        border-radius: 50%;
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    .success-title {
+        color: #eef2ff;
+        font-weight: 600;
+        margin: 0 0 0.2rem 0;
+    }
+
+    .success-subtext {
+        color: #b8c5ef;
+        font-size: 0.85rem;
+        margin: 0;
     }
 
     ul {
