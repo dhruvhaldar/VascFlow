@@ -160,16 +160,20 @@ async def rate_limiter(request: Request, call_next):
             else:
                 if client_data["count"] >= RATE_LIMIT_MAX:
                     reset_time = max(1, int(client_data["start_time"] + RATE_LIMIT_WINDOW - now))
-                    return Response(
-                        content="Too Many Requests",
-                        status_code=429,
-                        headers={
-                            "Retry-After": str(reset_time),
-                            "X-RateLimit-Limit": str(RATE_LIMIT_MAX),
-                            "X-RateLimit-Remaining": "0",
-                            "X-RateLimit-Reset": str(reset_time)
-                        }
-                    )
+                    # ⚡ Bolt: Optimize rate limit 429 response generation.
+                    # Passing a headers dictionary to the Response() constructor forces Starlette to
+                    # instantiate a MutableHeaders object, which performs expensive dictionary lookups
+                    # and string-to-bytes encoding (Latin-1) for every header.
+                    # By instantiating an empty response and appending pre-encoded byte tuples directly
+                    # to response.raw_headers, we bypass this overhead.
+                    response = Response(content="Too Many Requests", status_code=429)
+                    response.raw_headers.extend([
+                        (b"retry-after", b"%d" % reset_time),
+                        (b"x-ratelimit-limit", b"%d" % RATE_LIMIT_MAX),
+                        (b"x-ratelimit-remaining", b"0"),
+                        (b"x-ratelimit-reset", b"%d" % reset_time)
+                    ])
+                    return response
                 client_data["count"] += 1
 
         response = await call_next(request)
