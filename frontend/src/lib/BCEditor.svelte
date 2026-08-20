@@ -27,6 +27,7 @@
     // By explicitly tracking the boundary_conditions reference, we prevent Svelte
     // from re-evaluating this expensive O(N) block when completely unrelated
     // properties in the simulationConfig store (like Physics density) are updated.
+    let allAssignedElement;
     let bcs = [];
     let usedFaceNames = new Set();
     $: {
@@ -35,6 +36,7 @@
             usedFaceNames = new Set(bcs.map(bc => bc.face_name));
         }
     }
+    $: allFacesAssigned = $meshMetadata.faces.length > 0 && usedFaceNames.size >= $meshMetadata.faces.length;
 
     async function addBC() {
         touchedFields = { face: true, variable: true, value: true };
@@ -73,7 +75,11 @@
         // Wait for DOM to update and then return focus to the Face select input,
         // so keyboard navigation can naturally continue.
         await tick();
-        if (faceSelectElement) faceSelectElement.focus();
+        if (allFacesAssigned && allAssignedElement) {
+            allAssignedElement.focus();
+        } else if (faceSelectElement) {
+            faceSelectElement.focus();
+        }
     }
 
     // ⚡ Bolt: Remove by unique ID instead of array index.
@@ -81,6 +87,7 @@
     // index dependency from the rendered DOM elements.
     async function removeBC(faceName) {
         if (window.confirm(`Are you sure you want to remove the boundary condition for ${faceName}?`)) {
+            const wasAllAssigned = allFacesAssigned;
             simulationConfig.update(c => {
                 c.boundary_conditions = c.boundary_conditions.filter(bc => bc.face_name !== faceName);
                 return c;
@@ -89,7 +96,11 @@
             // Wait for DOM to update and return focus to the Face select input,
             // to prevent focus dropping to <body> when the remove button disappears.
             await tick();
-            if (faceSelectElement) faceSelectElement.focus();
+            if (wasAllAssigned && faceSelectElement) {
+                faceSelectElement.focus();
+            } else if (faceSelectElement && document.activeElement === document.body) {
+                faceSelectElement.focus();
+            }
         }
     }
 </script>
@@ -98,6 +109,12 @@
     <h2>Boundary Conditions</h2>
 
     {#if $meshMetadata.faces.length > 0}
+        {#if allFacesAssigned}
+            <div bind:this={allAssignedElement} tabindex="-1" class="all-assigned-msg" role="status" aria-live="polite">
+                <p>✅ All faces have boundary conditions assigned.</p>
+                <p class="subtext">You can remove a boundary condition below to reassign it.</p>
+            </div>
+        {:else}
         <form class="add-bc" on:submit|preventDefault={addBC} novalidate>
             <label>
                 <span>Face<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
@@ -155,6 +172,7 @@
                 <button type="submit" aria-disabled={!selectedFace} title={!selectedFace ? "Select a face first to add a boundary condition" : "Add boundary condition"} on:click={(e) => { if (!selectedFace) e.preventDefault(); }}>Add BC</button>
             </div>
         </form>
+        {/if}
 
         <div aria-live="polite">
             {#if $simulationConfig.boundary_conditions.length === 0}
@@ -289,6 +307,27 @@
 
     .bc-item:last-child {
         border-bottom: none;
+    }
+
+    .all-assigned-msg {
+        background: rgba(76, 175, 80, 0.1);
+        border: 1px solid rgba(76, 175, 80, 0.3);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    .all-assigned-msg p:first-child {
+        color: #81c784;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .all-assigned-msg .subtext {
+        font-size: 0.85rem;
+        color: #b8c5ef;
+        opacity: 0.8;
     }
 
     .remove-btn {
