@@ -17,6 +17,8 @@
         value: false
     };
 
+    let allAssignedContainer;
+
     // ⚡ Bolt: Cache used face names in a reactive Set for O(1) lookups.
     // Calling array.some() twice per option inside an #each loop creates an
     // O(N*M) rendering bottleneck for meshes with many faces. Using a Set
@@ -35,6 +37,7 @@
             usedFaceNames = new Set(bcs.map(bc => bc.face_name));
         }
     }
+    $: allFacesAssigned = $meshMetadata.faces.length > 0 && $meshMetadata.faces.length === usedFaceNames.size;
 
     async function addBC() {
         touchedFields = { face: true, variable: true, value: true };
@@ -73,7 +76,11 @@
         // Wait for DOM to update and then return focus to the Face select input,
         // so keyboard navigation can naturally continue.
         await tick();
-        if (faceSelectElement) faceSelectElement.focus();
+        if (allFacesAssigned && allAssignedContainer) {
+            allAssignedContainer.focus();
+        } else if (faceSelectElement) {
+            faceSelectElement.focus();
+        }
     }
 
     // ⚡ Bolt: Remove by unique ID instead of array index.
@@ -98,8 +105,9 @@
     <h2>Boundary Conditions</h2>
 
     {#if $meshMetadata.faces.length > 0}
-        <form class="add-bc" on:submit|preventDefault={addBC} novalidate>
-            <label>
+        {#if !allFacesAssigned}
+            <form class="add-bc" on:submit|preventDefault={addBC} novalidate>
+                <label>
                 <span>Face<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
                 <select bind:this={faceSelectElement} bind:value={selectedFace} required on:blur={() => touchedFields.face = true} aria-invalid={touchedFields.face && !selectedFace} aria-describedby={touchedFields.face && !selectedFace ? "face-error" : undefined}>
                     <option value="" disabled selected>Select Face</option>
@@ -151,10 +159,13 @@
                 </select>
             </label>
 
-            <div class="submit-action">
-                <button type="submit" aria-disabled={!selectedFace} title={!selectedFace ? "Select a face first to add a boundary condition" : "Add boundary condition"} on:click={(e) => { if (!selectedFace) e.preventDefault(); }}>Add BC</button>
-            </div>
-        </form>
+                <div class="submit-action">
+                    <button type="submit" aria-disabled={!selectedFace} title={!selectedFace ? "Select a face first to add a boundary condition" : "Add boundary condition"} on:click={(e) => { if (!selectedFace) e.preventDefault(); }}>Add BC</button>
+                </div>
+            </form>
+        {:else}
+            <p bind:this={allAssignedContainer} class="empty-state" tabindex="-1">All available faces have been assigned boundary conditions.</p>
+        {/if}
 
         <div aria-live="polite">
             {#if $simulationConfig.boundary_conditions.length === 0}
