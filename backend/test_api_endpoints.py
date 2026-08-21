@@ -305,3 +305,8 @@ def test_reject_both_te_and_cl_smuggling():
     )
     assert response.status_code == 400
     assert "Both Transfer-Encoding and Content-Length headers are not allowed" in response.text
+
+def test_security_headers_present():
+    response = client.get("/")
+    assert response.status_code == 200
+    assert response.headers.get("x-xss-protection") == "0"

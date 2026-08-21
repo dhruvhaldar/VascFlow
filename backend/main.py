@@ -245,7 +245,8 @@ _SECURITY_HEADERS = [
     (b"referrer-policy", b"strict-origin-when-cross-origin"),
     (b"permissions-policy", b"geolocation=(), microphone=(), camera=()"),
     (b"cross-origin-opener-policy", b"same-origin"),
-    (b"cross-origin-resource-policy", b"cross-origin")
+    (b"cross-origin-resource-policy", b"cross-origin"),
+    (b"x-xss-protection", b"0")
 ]
 
 # ⚡ Bolt: Pre-compute full header lists for different route types to completely eliminate
