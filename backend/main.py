@@ -241,6 +241,7 @@ app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=1)
 _SECURITY_HEADERS = [
     (b"x-content-type-options", b"nosniff"),
     (b"x-frame-options", b"DENY"),
+    (b"x-xss-protection", b"0"),
     (b"strict-transport-security", b"max-age=31536000; includeSubDomains"),
     (b"referrer-policy", b"strict-origin-when-cross-origin"),
     (b"permissions-policy", b"geolocation=(), microphone=(), camera=()"),
