@@ -56,3 +56,6 @@
 ## 2024-07-06 - Prevent Drag-and-Drop Hover State Flicker
 **Learning:** In custom drag-and-drop zones, dragging a file over child elements (like text, headings, or icons) inside the drop zone triggers `dragleave` events on the parent container, causing the zone's active hover state to rapidly flicker on and off. This creates a jarring and broken visual experience.
 **Action:** Always add `pointer-events: none;` to all child elements when the drag-and-drop container is in its active dragging state (e.g., `.dropzone.dragging * { pointer-events: none; }`). This ensures the drag state remains perfectly stable while the user moves the file across the area.
+## 2024-07-10 - Provide an explicit success message when all options are exhausted
+**Learning:** Leaving a finite-option form visible when all its options are exhausted (e.g., all available items have been assigned) creates a dead-end interaction. Conditionally hide the exhausted form and replace it with an explicit instructional or success state message. When doing so, ensure keyboard focus is programmatically shifted to the new message container if the previously focused element is removed from the DOM.
+**Action:** Hide finite-option forms when all options are exhausted and provide an explicit success state. Manage focus by shifting it to the success message to maintain keyboard accessibility.

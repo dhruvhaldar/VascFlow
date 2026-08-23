@@ -6,6 +6,7 @@
     let faceSelectElement;
     let variableInputElement;
     let valueInputElement;
+    let allAssignedMessageElement;
     let selectedFace = "";
     let bcType = "Dirichlet";
     let variable = "Velocity";
@@ -73,7 +74,11 @@
         // Wait for DOM to update and then return focus to the Face select input,
         // so keyboard navigation can naturally continue.
         await tick();
-        if (faceSelectElement) faceSelectElement.focus();
+        if ($meshMetadata.faces.length === usedFaceNames.size && allAssignedMessageElement) {
+            allAssignedMessageElement.focus();
+        } else if (faceSelectElement) {
+            faceSelectElement.focus();
+        }
     }
 
     // ⚡ Bolt: Remove by unique ID instead of array index.
@@ -98,63 +103,69 @@
     <h2>Boundary Conditions</h2>
 
     {#if $meshMetadata.faces.length > 0}
-        <form class="add-bc" on:submit|preventDefault={addBC} novalidate>
-            <label>
-                <span>Face<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                <select bind:this={faceSelectElement} bind:value={selectedFace} required on:blur={() => touchedFields.face = true} aria-invalid={touchedFields.face && !selectedFace} aria-describedby={touchedFields.face && !selectedFace ? "face-error" : undefined}>
-                    <option value="" disabled selected>Select Face</option>
-                    <!-- ⚡ Bolt: Use a keyed each block for face options. -->
-                    {#each $meshMetadata.faces as face (face.id)}
-                        <option
-                            value={face.name}
-                            disabled={usedFaceNames.has(face.name)}
-                        >
-                            {face.name} (ID: {face.id}) {usedFaceNames.has(face.name) ? '(Already Added)' : ''}
-                        </option>
-                    {/each}
-                </select>
-                {#if touchedFields.face && !selectedFace}
-                    <span id="face-error" class="inline-error" role="alert">Face selection required</span>
-                {/if}
-            </label>
+        {#if $meshMetadata.faces.length > usedFaceNames.size}
+            <form class="add-bc" on:submit|preventDefault={addBC} novalidate>
+                <label>
+                    <span>Face<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
+                    <select bind:this={faceSelectElement} bind:value={selectedFace} required on:blur={() => touchedFields.face = true} aria-invalid={touchedFields.face && !selectedFace} aria-describedby={touchedFields.face && !selectedFace ? "face-error" : undefined}>
+                        <option value="" disabled selected>Select Face</option>
+                        <!-- ⚡ Bolt: Use a keyed each block for face options. -->
+                        {#each $meshMetadata.faces as face (face.id)}
+                            <option
+                                value={face.name}
+                                disabled={usedFaceNames.has(face.name)}
+                            >
+                                {face.name} (ID: {face.id}) {usedFaceNames.has(face.name) ? '(Already Added)' : ''}
+                            </option>
+                        {/each}
+                    </select>
+                    {#if touchedFields.face && !selectedFace}
+                        <span id="face-error" class="inline-error" role="alert">Face selection required</span>
+                    {/if}
+                </label>
 
-            <label>
-                <span>Type<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                <select bind:value={bcType} required aria-invalid={!bcType}>
-                    <option value="Dirichlet">Dirichlet</option>
-                    <option value="Neumann">Neumann</option>
-                    <option value="Resistance">Resistance</option>
-                </select>
-            </label>
+                <label>
+                    <span>Type<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
+                    <select bind:value={bcType} required aria-invalid={!bcType}>
+                        <option value="Dirichlet">Dirichlet</option>
+                        <option value="Neumann">Neumann</option>
+                        <option value="Resistance">Resistance</option>
+                    </select>
+                </label>
 
-            <label>
-                <span>Variable<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                <input type="text" bind:this={variableInputElement} bind:value={variable} placeholder="Variable (e.g. Velocity)" required on:blur={() => touchedFields.variable = true} aria-invalid={touchedFields.variable && !variable} aria-describedby={touchedFields.variable && !variable ? "variable-error" : undefined} />
-                {#if touchedFields.variable && !variable}
-                    <span id="variable-error" class="inline-error" role="alert">Variable name required</span>
-                {/if}
-            </label>
+                <label>
+                    <span>Variable<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
+                    <input type="text" bind:this={variableInputElement} bind:value={variable} placeholder="Variable (e.g. Velocity)" required on:blur={() => touchedFields.variable = true} aria-invalid={touchedFields.variable && !variable} aria-describedby={touchedFields.variable && !variable ? "variable-error" : undefined} />
+                    {#if touchedFields.variable && !variable}
+                        <span id="variable-error" class="inline-error" role="alert">Variable name required</span>
+                    {/if}
+                </label>
 
-            <label>
-                <span>Value<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                <input type="number" bind:this={valueInputElement} bind:value={value} step="any" placeholder="e.g. 10.5" required on:focus={(e) => e.target.select()} on:wheel={(e) => e.currentTarget.blur()} on:blur={() => touchedFields.value = true} aria-invalid={touchedFields.value && (value == null || value === "")} aria-describedby={touchedFields.value && (value == null || value === "") ? "value-error" : undefined} />
-                {#if touchedFields.value && (value == null || value === "")}
-                    <span id="value-error" class="inline-error" role="alert">Numeric value required</span>
-                {/if}
-            </label>
+                <label>
+                    <span>Value<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
+                    <input type="number" bind:this={valueInputElement} bind:value={value} step="any" placeholder="e.g. 10.5" required on:focus={(e) => e.target.select()} on:wheel={(e) => e.currentTarget.blur()} on:blur={() => touchedFields.value = true} aria-invalid={touchedFields.value && (value == null || value === "")} aria-describedby={touchedFields.value && (value == null || value === "") ? "value-error" : undefined} />
+                    {#if touchedFields.value && (value == null || value === "")}
+                        <span id="value-error" class="inline-error" role="alert">Numeric value required</span>
+                    {/if}
+                </label>
 
-            <label>
-                <span>Profile<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
-                <select bind:value={profile} required aria-invalid={!profile}>
-                    <option value="Flat">Flat</option>
-                    <option value="Parabolic">Parabolic</option>
-                </select>
-            </label>
+                <label>
+                    <span>Profile<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
+                    <select bind:value={profile} required aria-invalid={!profile}>
+                        <option value="Flat">Flat</option>
+                        <option value="Parabolic">Parabolic</option>
+                    </select>
+                </label>
 
-            <div class="submit-action">
-                <button type="submit" aria-disabled={!selectedFace} title={!selectedFace ? "Select a face first to add a boundary condition" : "Add boundary condition"} on:click={(e) => { if (!selectedFace) e.preventDefault(); }}>Add BC</button>
+                <div class="submit-action">
+                    <button type="submit" aria-disabled={!selectedFace} title={!selectedFace ? "Select a face first to add a boundary condition" : "Add boundary condition"} on:click={(e) => { if (!selectedFace) e.preventDefault(); }}>Add BC</button>
+                </div>
+            </form>
+        {:else}
+            <div bind:this={allAssignedMessageElement} class="note glass-inline" tabindex="-1">
+                <p>All available faces have been assigned a boundary condition.</p>
             </div>
-        </form>
+        {/if}
 
         <div aria-live="polite">
             {#if $simulationConfig.boundary_conditions.length === 0}
