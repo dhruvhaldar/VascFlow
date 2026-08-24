@@ -36,6 +36,9 @@
         }
     }
 
+    let allAssignedMsgElement;
+    $: allFacesAssigned = $meshMetadata.faces.length > 0 && usedFaceNames.size >= $meshMetadata.faces.length;
+
     async function addBC() {
         touchedFields = { face: true, variable: true, value: true };
 
@@ -73,7 +76,11 @@
         // Wait for DOM to update and then return focus to the Face select input,
         // so keyboard navigation can naturally continue.
         await tick();
-        if (faceSelectElement) faceSelectElement.focus();
+        if (!allFacesAssigned && faceSelectElement) {
+            faceSelectElement.focus();
+        } else if (allFacesAssigned && allAssignedMsgElement) {
+            allAssignedMsgElement.focus();
+        }
     }
 
     // ⚡ Bolt: Remove by unique ID instead of array index.
@@ -89,7 +96,11 @@
             // Wait for DOM to update and return focus to the Face select input,
             // to prevent focus dropping to <body> when the remove button disappears.
             await tick();
-            if (faceSelectElement) faceSelectElement.focus();
+            if (!allFacesAssigned && faceSelectElement) {
+                faceSelectElement.focus();
+            } else if (allFacesAssigned && allAssignedMsgElement) {
+                allAssignedMsgElement.focus();
+            }
         }
     }
 </script>
@@ -98,6 +109,7 @@
     <h2>Boundary Conditions</h2>
 
     {#if $meshMetadata.faces.length > 0}
+        {#if !allFacesAssigned}
         <form class="add-bc" on:submit|preventDefault={addBC} novalidate>
             <label>
                 <span>Face<span class="required-indicator" aria-hidden="true" title="Required">*</span></span>
@@ -155,6 +167,11 @@
                 <button type="submit" aria-disabled={!selectedFace} title={!selectedFace ? "Select a face first to add a boundary condition" : "Add boundary condition"} on:click={(e) => { if (!selectedFace) e.preventDefault(); }}>Add BC</button>
             </div>
         </form>
+        {:else}
+            <div bind:this={allAssignedMsgElement} class="empty-state" tabindex="-1" role="status" style="outline: none; margin-bottom: 1rem; margin-top: 0;">
+                <p style="margin: 0;">✅ All available faces have been assigned boundary conditions.</p>
+            </div>
+        {/if}
 
         <div aria-live="polite">
             {#if $simulationConfig.boundary_conditions.length === 0}

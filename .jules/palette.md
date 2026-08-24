@@ -216,3 +216,6 @@
 ## 2024-05-14 - Fix Heading Hierarchy
 **Learning:** Found that section components were using `<h3>` tags directly without any preceding `<h2>` tags within the main content area (after the global `<h1>` header). This breaks logical document structure and makes navigation confusing for screen reader users relying on heading levels.
 **Action:** Replaced `<h3>` with `<h2>` on primary sections (Physics, General Settings, 3D Visualizer, Mesh Upload, Boundary Conditions, Input File Preview) to ensure sequential heading levels (h1 -> h2).
+## 2024-05-27 - [Exhausted Finite-Option Forms]
+**Learning:** Leaving a finite-option form visible when all its options are exhausted (e.g., all available items have been assigned) creates a dead-end interaction.
+**Action:** Conditionally hide the exhausted form and replace it with an explicit instructional or success state message. When doing so, ensure keyboard focus is programmatically shifted to the new message container if the previously focused element is removed from the DOM.
