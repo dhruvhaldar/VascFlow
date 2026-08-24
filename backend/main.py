@@ -160,16 +160,22 @@ async def rate_limiter(request: Request, call_next):
             else:
                 if client_data["count"] >= RATE_LIMIT_MAX:
                     reset_time = max(1, int(client_data["start_time"] + RATE_LIMIT_WINDOW - now))
-                    return Response(
+                    reset_time_bytes = b"%d" % reset_time
+
+                    response = Response(
                         content="Too Many Requests",
-                        status_code=429,
-                        headers={
-                            "Retry-After": str(reset_time),
-                            "X-RateLimit-Limit": str(RATE_LIMIT_MAX),
-                            "X-RateLimit-Remaining": "0",
-                            "X-RateLimit-Reset": str(reset_time)
-                        }
+                        status_code=429
                     )
+
+                    # ⚡ Bolt: Avoid dictionary allocation and string encoding for headers.
+                    # Appending raw byte tuples directly to raw_headers is significantly faster.
+                    response.raw_headers.extend([
+                        (b"retry-after", reset_time_bytes),
+                        (b"x-ratelimit-limit", b"%d" % RATE_LIMIT_MAX),
+                        (b"x-ratelimit-remaining", b"0"),
+                        (b"x-ratelimit-reset", reset_time_bytes)
+                    ])
+                    return response
                 client_data["count"] += 1
 
         response = await call_next(request)
