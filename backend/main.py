@@ -160,16 +160,22 @@ async def rate_limiter(request: Request, call_next):
             else:
                 if client_data["count"] >= RATE_LIMIT_MAX:
                     reset_time = max(1, int(client_data["start_time"] + RATE_LIMIT_WINDOW - now))
-                    return Response(
+                    # ⚡ Bolt: Optimize error response header instantiation.
+                    # Passing headers={} to Response() forces expensive MutableHeaders instantiation
+                    # and string-to-bytes encoding. Bypassing this with raw_headers.extend()
+                    # significantly reduces CPU overhead on this high-load 429 path.
+                    resp = Response(
                         content="Too Many Requests",
                         status_code=429,
-                        headers={
-                            "Retry-After": str(reset_time),
-                            "X-RateLimit-Limit": str(RATE_LIMIT_MAX),
-                            "X-RateLimit-Remaining": "0",
-                            "X-RateLimit-Reset": str(reset_time)
-                        }
                     )
+                    reset_time_bytes = b"%d" % reset_time
+                    resp.raw_headers.extend([
+                        (b"retry-after", reset_time_bytes),
+                        (b"x-ratelimit-limit", b"%d" % RATE_LIMIT_MAX),
+                        (b"x-ratelimit-remaining", b"0"),
+                        (b"x-ratelimit-reset", reset_time_bytes)
+                    ])
+                    return resp
                 client_data["count"] += 1
 
         response = await call_next(request)
