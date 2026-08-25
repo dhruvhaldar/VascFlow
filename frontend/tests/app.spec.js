@@ -141,6 +141,8 @@ test.describe('svFSI Configurator App', () => {
 
     await expect(bcList).toHaveCount(1);
     await expect(bcList.first()).toContainText('outlet: Neumann Velocity=0 (Flat)');
+    await expect(page.locator('.add-bc')).toBeVisible();
+    await expect(page.locator('.empty-state:has-text("All available faces have been assigned a boundary condition.")')).not.toBeVisible();
   });
 
   test('visualizer requests processed mesh file from static files endpoint', async ({ page }) => {
