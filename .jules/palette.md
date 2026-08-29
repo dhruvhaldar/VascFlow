@@ -216,3 +216,7 @@
 ## 2024-05-14 - Fix Heading Hierarchy
 **Learning:** Found that section components were using `<h3>` tags directly without any preceding `<h2>` tags within the main content area (after the global `<h1>` header). This breaks logical document structure and makes navigation confusing for screen reader users relying on heading levels.
 **Action:** Replaced `<h3>` with `<h2>` on primary sections (Physics, General Settings, 3D Visualizer, Mesh Upload, Boundary Conditions, Input File Preview) to ensure sequential heading levels (h1 -> h2).
+
+## 2025-05-24 - Semantic Roles for Interactive Dropzones
+**Learning:** When building custom drag-and-drop zones that are also click targets (focusable via `tabindex="0"`), applying a static role like `group` is an accessibility anti-pattern. It fails to communicate the element's interactive nature to screen readers.
+**Action:** Always assign a widget role like `role="button"` to custom interactive dropzones to accurately convey their purpose and properly support state attributes like `aria-disabled`.
