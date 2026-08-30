@@ -77,3 +77,8 @@
 **Vulnerability:** The application did not explicitly disable the legacy XSS auditor, which could be manipulated in older browsers to introduce client-side vulnerabilities.
 **Learning:** The `X-XSS-Protection: 1; mode=block` header is deprecated in modern browsers. The modern security standard (endorsed by OWASP) explicitly disables the legacy auditor by setting `X-XSS-Protection: 0` and relies on a strong Content Security Policy (CSP) instead.
 **Prevention:** Always explicitly set `X-XSS-Protection: 0` in the security headers to disable the legacy XSS auditor and rely on CSP for XSS protection.
+
+## 2026-08-30 - Fix Chunked Upload Disk Exhaustion DoS
+**Vulnerability:** The `limit_request_size` middleware in `backend/main.py` allowed `Transfer-Encoding: chunked` requests for the `/process_mesh` file upload endpoint. However, ASGI frameworks like FastAPI eagerly spool `UploadFile` payloads to disk *before* route handlers execute. An attacker could bypass the middleware's Content-Length limits by sending an infinitely chunked request, exhausting server disk space and causing a Denial of Service (DoS) before the application-layer size checks in `save_upload_file` ever ran.
+**Learning:** Application-layer size limits are ineffective if the underlying framework or server spools the payload before the application code is invoked.
+**Prevention:** To prevent Disk/Memory Exhaustion DoS, strict size limits and chunked request rejection must be enforced at the middleware or proxy level, prior to framework body parsing.
