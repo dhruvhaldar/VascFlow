@@ -71,7 +71,10 @@ async def limit_request_size(request: Request, call_next):
     if transfer_encoding and content_length:
         return Response(content="Both Transfer-Encoding and Content-Length headers are not allowed", status_code=400)
 
-    if b"chunked" in transfer_encoding.lower():
+    # ⚡ Bolt: Fast-path bypass for string processing on empty variables.
+    # When transfer_encoding is empty (b""), calling .lower() creates an
+    # unnecessary memory allocation and function call overhead.
+    if transfer_encoding and b"chunked" in transfer_encoding.lower():
         # Prevent chunked upload bypasses for content-length limits
         # 🛡️ Sentinel: Reject chunked requests globally.
         # FastAPI eagerly spools UploadFile to disk *before* route handlers execute.
