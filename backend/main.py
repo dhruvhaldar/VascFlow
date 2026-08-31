@@ -73,11 +73,10 @@ async def limit_request_size(request: Request, call_next):
 
     if b"chunked" in transfer_encoding.lower():
         # Prevent chunked upload bypasses for content-length limits
-        # 🛡️ Sentinel: Exempt /process_mesh from this check because file upload endpoints
-        # legitimately stream data in chunks. The application-layer logic in `save_upload_file`
-        # explicitly tracks bytes read to prevent disk exhaustion DoS.
-        if req_path != "/process_mesh":
-            return Response(content="Chunked requests not supported", status_code=411)
+        # 🛡️ Sentinel: Reject chunked requests globally.
+        # FastAPI eagerly spools UploadFile to disk *before* route handlers execute.
+        # Allowing chunked requests here allows attackers to bypass size limits and exhaust disk space.
+        return Response(content="Chunked requests not supported", status_code=411)
 
     if content_length:
         try:

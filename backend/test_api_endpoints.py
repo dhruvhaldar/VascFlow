@@ -170,14 +170,23 @@ def test_chunked_upload_size_limit():
 
     mock_upload = FakeUploadFile()
 
-    import pytest
-    from fastapi import BackgroundTasks
-    mock_bg = BackgroundTasks()
-    with pytest.raises(HTTPException) as exc_info:
-        main.process_mesh(mock_upload, background_tasks=mock_bg)
+    # With chunked requests rejected globally at the middleware level,
+    # we can no longer test chunked size limits inside the application handler.
+    # The middleware will intercept and return 411.
+    def generate_large_payload():
+        yield b"A" * (3 * 1024 * 1024)
 
-    assert exc_info.value.status_code == 413
-    assert "File too large" in exc_info.value.detail
+    from fastapi.testclient import TestClient
+    from main import app
+    test_client = TestClient(app)
+
+    response = test_client.post(
+        "/process_mesh",
+        content=generate_large_payload(),
+        headers=[("Transfer-Encoding", "chunked")]
+    )
+    assert response.status_code == 411
+    assert response.text == "Chunked requests not supported"
 
 def test_chunked_json_upload_bypass_rejected():
     def generate_large_payload():
