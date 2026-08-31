@@ -127,3 +127,7 @@
 ## 2026-05-24 - [Optimize Error Response Header Instantiation in FastAPI]
 **Learning:** In FastAPI/Starlette, passing a `headers={...}` dictionary to the `Response()` constructor forces expensive `MutableHeaders` instantiation, string-to-bytes encoding, and duplicate checks. On high-frequency or high-load paths (like returning a 429 rate limit response), this creates unnecessary CPU overhead.
 **Action:** When returning a `Response` in a performance-critical path, instantiate the `Response` without the `headers` argument. Then, convert your values to bytes and append the pre-encoded byte tuples directly to `response.raw_headers` (e.g., `response.raw_headers.extend([(b"retry-after", b"60")])`) to bypass string encoding overhead entirely.
+
+## 2025-05-24 - [Optimize Python Method Calls on Empty Variables]
+**Learning:** In Python hot paths (like ASGI middleware), calling string or byte methods like `.lower()` on mostly-empty variables (e.g. `transfer_encoding = b""`) incurs unnecessary memory allocation and function call overhead on every request.
+**Action:** Always use a short-circuit truthy check (e.g., `if val and b"chunked" in val.lower():`) to bypass the method call when the variable is empty.
