@@ -105,13 +105,13 @@
                  unmounting/remounting cycles when switching tabs. It also preserves local component state
                  (e.g., file input selections or half-filled boundary condition forms). -->
             <div class="config-panels-container">
-                <div class="config-panel" role="tabpanel" id="panel-mesh" aria-labelledby="tab-mesh" tabindex={activeTab === 'mesh' ? 0 : -1} style="display: {activeTab === 'mesh' ? 'block' : 'none'}">
+                <div class="config-panel" role="tabpanel" id="panel-mesh" aria-labelledby="tab-mesh" tabindex={activeTab === 'mesh' ? 0 : -1} style:display={activeTab === 'mesh' ? 'block' : 'none'}>
                     <MeshUpload />
                     <div class="note glass-inline">
                         <p>Upload a .vtu, .vtp, or .vtk file to visualize and assign BCs.</p>
                     </div>
                 </div>
-                <div class="config-panel" role="tabpanel" id="panel-physics" aria-labelledby="tab-physics" tabindex={activeTab === 'physics' ? 0 : -1} style="display: {activeTab === 'physics' ? 'block' : 'none'}">
+                <div class="config-panel" role="tabpanel" id="panel-physics" aria-labelledby="tab-physics" tabindex={activeTab === 'physics' ? 0 : -1} style:display={activeTab === 'physics' ? 'block' : 'none'}>
                     <div class="physics-config">
                         <h2>Physics</h2>
                         <label>
@@ -137,10 +137,10 @@
                         </label>
                     </div>
                 </div>
-                <div class="config-panel" role="tabpanel" id="panel-bcs" aria-labelledby="tab-bcs" tabindex={activeTab === 'bcs' ? 0 : -1} style="display: {activeTab === 'bcs' ? 'block' : 'none'}">
+                <div class="config-panel" role="tabpanel" id="panel-bcs" aria-labelledby="tab-bcs" tabindex={activeTab === 'bcs' ? 0 : -1} style:display={activeTab === 'bcs' ? 'block' : 'none'}>
                     <BCEditor />
                 </div>
-                <div class="config-panel" role="tabpanel" id="panel-general" aria-labelledby="tab-general" tabindex={activeTab === 'general' ? 0 : -1} style="display: {activeTab === 'general' ? 'block' : 'none'}">
+                <div class="config-panel" role="tabpanel" id="panel-general" aria-labelledby="tab-general" tabindex={activeTab === 'general' ? 0 : -1} style:display={activeTab === 'general' ? 'block' : 'none'}>
                     <div class="general-config">
                         <h2>General Settings</h2>
                         <label>

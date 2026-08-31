@@ -140,7 +140,7 @@
 <div
     bind:this={dropzoneElement}
     class="mesh-upload" tabindex="0"
-    role="group"
+    role="button"
     aria-labelledby="mesh-upload-heading"
     aria-disabled={loading}
     aria-describedby={error ? "mesh-upload-error" : (!loading ? "mesh-upload-hint" : undefined)}
