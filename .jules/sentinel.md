@@ -77,3 +77,8 @@
 **Vulnerability:** The application did not explicitly disable the legacy XSS auditor, which could be manipulated in older browsers to introduce client-side vulnerabilities.
 **Learning:** The `X-XSS-Protection: 1; mode=block` header is deprecated in modern browsers. The modern security standard (endorsed by OWASP) explicitly disables the legacy auditor by setting `X-XSS-Protection: 0` and relies on a strong Content Security Policy (CSP) instead.
 **Prevention:** Always explicitly set `X-XSS-Protection: 0` in the security headers to disable the legacy XSS auditor and rely on CSP for XSS protection.
+
+## 2024-05-18 - Fix Disk Exhaustion DoS via Eager File Spooling
+**Vulnerability:** A disk exhaustion DoS vulnerability existed because the `/process_mesh` endpoint explicitly allowed `Transfer-Encoding: chunked` requests to bypass the middleware size limits.
+**Learning:** The author incorrectly assumed that application-level size checking in `save_upload_file` was sufficient. However, FastAPI eagerly spools `UploadFile` payloads to disk *before* the route handler logic executes, allowing an attacker to fill the disk before the application logic runs.
+**Prevention:** File size limits must always be strictly enforced at the ASGI middleware (or proxy) level to protect the server from disk and memory exhaustion.
