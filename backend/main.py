@@ -84,6 +84,8 @@ async def limit_request_size(request: Request, call_next):
     if content_length:
         try:
             length = int(content_length)
+            if length < 0:
+                return Response(content="Invalid content-length", status_code=400)
             if req_path == "/process_mesh":
                 # Allow larger payloads for mesh uploads, but strictly cap at HTTP layer
                 # to prevent FastAPI from spooling infinitely to disk before the endpoint runs.

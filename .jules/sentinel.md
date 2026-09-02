@@ -82,3 +82,8 @@
 **Vulnerability:** A disk exhaustion DoS vulnerability existed because the `/process_mesh` endpoint explicitly allowed `Transfer-Encoding: chunked` requests to bypass the middleware size limits.
 **Learning:** The author incorrectly assumed that application-level size checking in `save_upload_file` was sufficient. However, FastAPI eagerly spools `UploadFile` payloads to disk *before* the route handler logic executes, allowing an attacker to fill the disk before the application logic runs.
 **Prevention:** File size limits must always be strictly enforced at the ASGI middleware (or proxy) level to protect the server from disk and memory exhaustion.
+
+## 2025-03-26 - Fix Negative Content-Length Bypass
+**Vulnerability:** The application parsed `Content-Length` headers as integers but failed to check if the value was negative. An attacker could send a negative `Content-Length` to bypass size limits or cause unexpected behavior in downstream parsers, leading to HTTP Request Smuggling or DoS.
+**Learning:** `Content-Length` headers must always be strictly non-negative integers according to HTTP specifications. Relying on simple `int()` parsing is insufficient if negative values are not explicitly rejected.
+**Prevention:** Always validate that `Content-Length` is non-negative after converting it to an integer to ensure compliance and prevent parsing bypasses.
