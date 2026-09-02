@@ -195,7 +195,8 @@
         pointer-events: none;
     }
 
-    .mesh-upload:focus-within {
+    .mesh-upload:focus-visible,
+    .mesh-upload:focus-within:has(:focus-visible) {
         border-color: #6093ff;
         background: rgba(96, 147, 255, 0.08);
     }

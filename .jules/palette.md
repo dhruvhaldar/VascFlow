@@ -219,3 +219,6 @@
 ## 2024-05-27 - [Interactive Dropzone Role]
 **Learning:** When building custom drag-and-drop zones that are also click targets (focusable via `tabindex="0"`), applying a landmark role like `region` or a static role like `group` is an accessibility anti-pattern because screen readers won't properly support states like `aria-disabled`, and users won't know it's clickable.
 **Action:** Instead, assign a widget role like `role="button"` to accurately communicate its interactive nature to screen readers and support state attributes.
+## 2024-11-20 - Dropzone Focus Indicator
+**Learning:** Using `:focus-within` on a container with `tabindex="0"` and nested focusable elements (like a file input) causes focus styles to apply persistently even when clicking (since the element receives focus). This can look like the element is stuck in an active/hover state after a click.
+**Action:** Use `:focus-visible, :focus-within:has(:focus-visible)` instead to ensure focus indicator styling is only applied when using keyboard navigation, leaving mouse interaction clean.
