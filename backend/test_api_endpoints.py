@@ -314,3 +314,12 @@ def test_reject_both_te_and_cl_smuggling():
     )
     assert response.status_code == 400
     assert "Both Transfer-Encoding and Content-Length headers are not allowed" in response.text
+
+def test_negative_content_length_rejected():
+    response = client.post(
+        "/generate_input",
+        content=b"A"*10,
+        headers={"Content-Length": "-1"}
+    )
+    assert response.status_code == 400
+    assert response.text == "Invalid content-length"
