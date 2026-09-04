@@ -130,15 +130,15 @@ def _get_unique_counts(ids):
     if max_val - min_val > 10_000_000:
         return np.unique(ids, return_counts=True)
 
-    if min_val >= 0:
-        counts = np.bincount(ids)
-        unique_ids = np.nonzero(counts)[0]
-        return unique_ids, counts[unique_ids]
-    else:
+    if min_val != 0:
         offset_ids = ids - min_val
         counts = np.bincount(offset_ids)
         unique_ids = np.nonzero(counts)[0]
         return unique_ids + min_val, counts[unique_ids]
+    else:
+        counts = np.bincount(ids)
+        unique_ids = np.nonzero(counts)[0]
+        return unique_ids, counts[unique_ids]
 
 
 def get_mesh_metadata(file_path: str):
