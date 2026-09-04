@@ -131,3 +131,6 @@
 ## 2025-05-24 - [Optimize Python Method Calls on Empty Variables]
 **Learning:** In Python hot paths (like ASGI middleware), calling string or byte methods like `.lower()` on mostly-empty variables (e.g. `transfer_encoding = b""`) incurs unnecessary memory allocation and function call overhead on every request.
 **Action:** Always use a short-circuit truthy check (e.g., `if val and b"chunked" in val.lower():`) to bypass the method call when the variable is empty.
+## 2026-09-04 - [Optimize np.bincount memory allocation for large positive IDs]
+**Learning:** `np.bincount(ids)` allocates memory based on the absolute maximum value in the array (`max(ids)`), not the range. If the array contains large positive IDs (e.g., `[10_000_000, 10_000_001]`), it will unnecessarily allocate a massive array, causing severe memory spikes or OOM, even if `max_val - min_val` is small.
+**Action:** When using `np.bincount` to count frequencies of arbitrary IDs, always offset the array by its minimum value (`offset_ids = ids - ids.min()`) before calling `np.bincount`. This ensures memory allocation is strictly proportional to the ID range rather than their absolute magnitude.
