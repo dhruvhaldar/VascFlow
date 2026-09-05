@@ -204,6 +204,13 @@ async def rate_limiter(request: Request, call_next):
 allowed_origins_env = os.environ.get("VITE_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173")
 allowed_origins = [origin.strip() for origin in allowed_origins_env.split(",") if origin.strip()]
 
+# ⚡ Bolt: Pre-compute allowed origins set.
+# Converting the allowed_origins list to a frozenset and pre-calculating the wildcard
+# bypasses two O(N) list traversals on every state-changing POST/PUT request, providing
+# a noticeable throughput boost for hot path APIs.
+_ALLOWED_ORIGINS_SET = frozenset(allowed_origins)
+_ALLOW_ALL_ORIGINS = "*" in _ALLOWED_ORIGINS_SET
+
 @app.middleware("http")
 async def validate_origin_csrf(request: Request, call_next):
     """
@@ -225,7 +232,7 @@ async def validate_origin_csrf(request: Request, call_next):
         # If an origin is provided (i.e. browser request), it must be allowed.
         # Note: Non-browser clients (like CLI scripts or tests) often don't send Origin,
         # which is allowed. True CSRF only originates from a browser.
-        if origin and origin not in allowed_origins and "*" not in allowed_origins:
+        if origin and not _ALLOW_ALL_ORIGINS and origin not in _ALLOWED_ORIGINS_SET:
             safe_log_origin = str(origin).replace("\n", "_").replace("\r", "_")[:255]
             logging.warning("Audit: Blocked cross-origin request from %s", safe_log_origin)
             return Response(content="Forbidden: Invalid Origin", status_code=403)
