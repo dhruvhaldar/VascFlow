@@ -134,3 +134,6 @@
 ## 2026-09-04 - [Optimize np.bincount memory allocation for large positive IDs]
 **Learning:** `np.bincount(ids)` allocates memory based on the absolute maximum value in the array (`max(ids)`), not the range. If the array contains large positive IDs (e.g., `[10_000_000, 10_000_001]`), it will unnecessarily allocate a massive array, causing severe memory spikes or OOM, even if `max_val - min_val` is small.
 **Action:** When using `np.bincount` to count frequencies of arbitrary IDs, always offset the array by its minimum value (`offset_ids = ids - ids.min()`) before calling `np.bincount`. This ensures memory allocation is strictly proportional to the ID range rather than their absolute magnitude.
+## 2026-05-24 - [Optimize Static List Lookups in Middleware]
+**Learning:** In ASGI middleware, validating incoming requests against a configured list of values (like allowed CORS origins or IP whitelists) using `in` performs an O(N) linear scan. On high-throughput APIs, evaluating `origin not in list` and `"*"` not in list on every request wastes CPU cycles.
+**Action:** Always pre-compute static configuration lists into a `frozenset` and extract boolean flags (like wildcard allowances) at module initialization. This transforms O(N) list traversals into O(1) hash lookups inside the hot path middleware.
