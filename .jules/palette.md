@@ -222,3 +222,6 @@
 ## 2024-11-20 - Dropzone Focus Indicator
 **Learning:** Using `:focus-within` on a container with `tabindex="0"` and nested focusable elements (like a file input) causes focus styles to apply persistently even when clicking (since the element receives focus). This can look like the element is stuck in an active/hover state after a click.
 **Action:** Use `:focus-visible, :focus-within:has(:focus-visible)` instead to ensure focus indicator styling is only applied when using keyboard navigation, leaving mouse interaction clean.
+## 2026-09-07 - [Attach hint descriptions to hidden inputs]
+**Learning:** In custom drag-and-drop zones, screen readers might interact with the hidden `<input type="file">`. Failing to attach `aria-describedby` hint descriptions to the input itself means users miss important instructions.
+**Action:** Always ensure that instructional hints in drag-and-drop components are linked via `aria-describedby` directly to the inner, hidden `<input>` element, even if the container role already has it.
