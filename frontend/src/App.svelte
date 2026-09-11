@@ -216,6 +216,15 @@
         cursor: not-allowed;
     }
 
+    :global(input[type="number"]::-webkit-inner-spin-button),
+    :global(input[type="number"]::-webkit-outer-spin-button) {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    :global(input[type="number"]) {
+        -moz-appearance: textfield;
+    }
+
     .skip-link {
         position: absolute;
         top: -40px;
