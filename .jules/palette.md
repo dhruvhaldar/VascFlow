@@ -225,3 +225,7 @@
 ## 2026-09-07 - [Attach hint descriptions to hidden inputs]
 **Learning:** In custom drag-and-drop zones, screen readers might interact with the hidden `<input type="file">`. Failing to attach `aria-describedby` hint descriptions to the input itself means users miss important instructions.
 **Action:** Always ensure that instructional hints in drag-and-drop components are linked via `aria-describedby` directly to the inner, hidden `<input>` element, even if the container role already has it.
+
+## 2025-10-27 - Remove Default Number Input Spinners
+**Learning:** When using `<input type="number">` for dense numerical configurations, the default browser spin arrows create visual clutter and increase the risk of accidental scroll-wheel mutation.
+**Action:** Use CSS (`::-webkit-inner-spin-button`, `-moz-appearance: textfield`) to hide default spin arrows and clean up the interface.
