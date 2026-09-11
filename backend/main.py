@@ -209,6 +209,7 @@ allowed_origins = [origin.strip() for origin in allowed_origins_env.split(",") i
 # bypasses two O(N) list traversals on every state-changing POST/PUT request, providing
 # a noticeable throughput boost for hot path APIs.
 _ALLOWED_ORIGINS_SET = frozenset(allowed_origins)
+_ALLOWED_ORIGINS_SET_BYTES = frozenset(origin.encode("latin-1") for origin in allowed_origins)
 _ALLOW_ALL_ORIGINS = "*" in _ALLOWED_ORIGINS_SET
 
 @app.middleware("http")
@@ -223,16 +224,17 @@ async def validate_origin_csrf(request: Request, call_next):
     if request.method in ("POST", "PUT", "DELETE", "PATCH"):
         # ⚡ Bolt: Fast origin lookup from ASGI scope byte tuples to avoid lazily
         # parsing all headers into a Starlette Headers object.
-        origin = None
+        origin_bytes = None
         for name, value in request.scope.get("headers", []):
             if name == b"origin":
-                origin = value.decode("latin-1")
+                origin_bytes = value
                 break
 
         # If an origin is provided (i.e. browser request), it must be allowed.
         # Note: Non-browser clients (like CLI scripts or tests) often don't send Origin,
         # which is allowed. True CSRF only originates from a browser.
-        if origin and not _ALLOW_ALL_ORIGINS and origin not in _ALLOWED_ORIGINS_SET:
+        if origin_bytes and not _ALLOW_ALL_ORIGINS and origin_bytes not in _ALLOWED_ORIGINS_SET_BYTES:
+            origin = origin_bytes.decode("latin-1")
             safe_log_origin = str(origin).replace("\n", "_").replace("\r", "_")[:255]
             logging.warning("Audit: Blocked cross-origin request from %s", safe_log_origin)
             return Response(content="Forbidden: Invalid Origin", status_code=403)

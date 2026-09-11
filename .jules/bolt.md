@@ -137,3 +137,7 @@
 ## 2026-05-24 - [Optimize Static List Lookups in Middleware]
 **Learning:** In ASGI middleware, validating incoming requests against a configured list of values (like allowed CORS origins or IP whitelists) using `in` performs an O(N) linear scan. On high-throughput APIs, evaluating `origin not in list` and `"*"` not in list on every request wastes CPU cycles.
 **Action:** Always pre-compute static configuration lists into a `frozenset` and extract boolean flags (like wildcard allowances) at module initialization. This transforms O(N) list traversals into O(1) hash lookups inside the hot path middleware.
+
+## 2026-05-24 - [Optimize ASGI header validation by avoiding unnecessary decoding]
+**Learning:** Inside a tight loop scanning ASGI scope headers (where values are `bytes`), calling `.decode("latin-1")` on every request to validate an origin header adds unnecessary CPU and memory allocation overhead.
+**Action:** When validating a raw ASGI header byte value against a static list of allowed strings, pre-encode the allowed strings into a `frozenset` of `bytes` at module initialization. This allows direct byte-to-byte comparison in the hot path, avoiding `.decode()` completely unless an error path is hit.
