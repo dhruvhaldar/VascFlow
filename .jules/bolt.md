@@ -141,3 +141,6 @@
 ## 2026-05-24 - [Optimize ASGI header validation by avoiding unnecessary decoding]
 **Learning:** Inside a tight loop scanning ASGI scope headers (where values are `bytes`), calling `.decode("latin-1")` on every request to validate an origin header adds unnecessary CPU and memory allocation overhead.
 **Action:** When validating a raw ASGI header byte value against a static list of allowed strings, pre-encode the allowed strings into a `frozenset` of `bytes` at module initialization. This allows direct byte-to-byte comparison in the hot path, avoiding `.decode()` completely unless an error path is hit.
+## 2024-10-24 - Pre-compute static sets in high-frequency functions
+**Learning:** Re-instantiating sets or lists (like `ALLOWED_EXTENSIONS = {".vtu", ".vtp", ".vtk"}`) inside hot-path functions (such as `save_upload_file` or `get_mesh_metadata`) forces the Python interpreter to allocate new memory on every request.
+**Action:** Always hoist static configuration lists or sets to module-level constants and convert them to `frozenset` (e.g. `_ALLOWED_EXTENSIONS = frozenset(...)`) to transform these into O(1), zero-allocation lookups.

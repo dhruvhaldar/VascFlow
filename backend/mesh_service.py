@@ -10,6 +10,15 @@ import uuid
 UPLOAD_DIR = "uploads"
 _LAST_CLEANUP_TIME = 0
 
+# ⚡ Bolt: Hoist static configuration sets to module-level constants.
+# Instantiating sets (like `ALLOWED_EXTENSIONS = {'.vtu', '.vtp', '.vtk'}`)
+# inside hot-path functions forces the Python interpreter to allocate new memory
+# on every request. Converting them to module-level `frozenset` objects transforms
+# these into O(1), zero-allocation lookups.
+_ALLOWED_EXTENSIONS = frozenset({'.vtu', '.vtp', '.vtk'})
+_KEEP_ARRAYS = frozenset({"FaceID", "BoundaryID", "RegionId", "ModelFaceID", "GlobalElementID", "Normals", "TCoords"})
+_POSSIBLE_NAMES = ("FaceID", "BoundaryID", "RegionId", "ModelFaceID", "GlobalElementID")
+
 def _cleanup_old_uploads(max_age_hours=1):
     """
     🛡️ Sentinel: Prune old uploaded and generated files to prevent Disk Exhaustion (DoS).
@@ -67,10 +76,10 @@ def save_upload_file(upload_file: UploadFile) -> str:
     safe_filename = os.path.basename(upload_file.filename.replace('\\', '/'))
 
     # Validate file extension to prevent unrestricted file upload
-    ALLOWED_EXTENSIONS = {'.vtu', '.vtp', '.vtk'}
     _, ext = os.path.splitext(safe_filename)
-    if ext.lower() not in ALLOWED_EXTENSIONS:
-        raise ValueError(f"Invalid file extension. Allowed extensions are: {', '.join(ALLOWED_EXTENSIONS)}")
+    # ⚡ Bolt: Fast O(1) frozen set lookup to prevent per-request memory allocation
+    if ext.lower() not in _ALLOWED_EXTENSIONS:
+        raise ValueError(f"Invalid file extension. Allowed extensions are: {', '.join(_ALLOWED_EXTENSIONS)}")
 
     # 🛡️ Sentinel: Enforce a strict application-layer file size limit (50MB)
     # to prevent Denial of Service (DoS) attacks via disk or memory exhaustion.
@@ -150,20 +159,20 @@ def get_mesh_metadata(file_path: str):
     # ⚡ Bolt: Lazy load the mesh using get_reader instead of pv.read.
     # By selectively enabling only essential topological and rendering arrays,
     # we bypass parsing massive physics simulation data arrays from disk into memory.
-    keep_arrays = {"FaceID", "BoundaryID", "RegionId", "ModelFaceID", "GlobalElementID", "Normals", "TCoords"}
-
     try:
         reader = pv.get_reader(file_path)
         if hasattr(reader, 'disable_all_point_arrays'):
             reader.disable_all_point_arrays()
             for name in getattr(reader, 'point_array_names', []):
-                if name in keep_arrays:
+                # ⚡ Bolt: Fast O(1) frozen set lookup to prevent per-request memory allocation
+                if name in _KEEP_ARRAYS:
                     reader.enable_point_array(name)
 
         if hasattr(reader, 'disable_all_cell_arrays'):
             reader.disable_all_cell_arrays()
             for name in getattr(reader, 'cell_array_names', []):
-                if name in keep_arrays:
+                # ⚡ Bolt: Fast O(1) frozen set lookup to prevent per-request memory allocation
+                if name in _KEEP_ARRAYS:
                     reader.enable_cell_array(name)
 
         mesh = reader.read()
@@ -285,9 +294,8 @@ def get_mesh_metadata(file_path: str):
     face_array_name = None
 
     # Common names for boundary markers
-    possible_names = ["FaceID", "BoundaryID", "RegionId", "ModelFaceID", "GlobalElementID"]
-
-    for name in possible_names:
+    # ⚡ Bolt: Iterate over static module-level tuple to prevent per-request list allocation
+    for name in _POSSIBLE_NAMES:
         if name in surface.cell_data:
             face_ids = surface.cell_data[name]
             face_array_name = name
