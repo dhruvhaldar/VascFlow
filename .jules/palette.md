@@ -229,3 +229,7 @@
 ## 2025-10-27 - Remove Default Number Input Spinners
 **Learning:** When using `<input type="number">` for dense numerical configurations, the default browser spin arrows create visual clutter and increase the risk of accidental scroll-wheel mutation.
 **Action:** Use CSS (`::-webkit-inner-spin-button`, `-moz-appearance: textfield`) to hide default spin arrows and clean up the interface.
+
+## 2026-11-26 - [Format Numeric Metrics]
+**Learning:** Large numeric metrics (e.g., cell or point counts, detected faces) without thousands separators are difficult to read and parse quickly, especially when they grow into the thousands or millions.
+**Action:** Always format large numeric metrics using `.toLocaleString()` in the UI to drastically improve visual readability.
