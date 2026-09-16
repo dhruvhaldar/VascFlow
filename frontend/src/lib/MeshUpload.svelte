@@ -171,7 +171,7 @@
         <div class="mesh-info" role="status" aria-live="polite" transition:slide|local>
             <p>Loaded: {$simulationConfig.mesh.mesh_path}</p>
             <p>Cells: {$meshMetadata.n_cells.toLocaleString()}, Points: {$meshMetadata.n_points.toLocaleString()}</p>
-            <p>Detected Faces: {$meshMetadata.faces.length}</p>
+            <p>Detected Faces: {$meshMetadata.faces.length.toLocaleString()}</p>
         </div>
     {/if}
 </div>
