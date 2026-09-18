@@ -233,3 +233,6 @@
 ## 2026-11-26 - [Format Numeric Metrics]
 **Learning:** Large numeric metrics (e.g., cell or point counts, detected faces) without thousands separators are difficult to read and parse quickly, especially when they grow into the thousands or millions.
 **Action:** Always format large numeric metrics using `.toLocaleString()` in the UI to drastically improve visual readability.
+## 2026-09-18 - Always Clear Custom File Inputs
+**Learning:** When handling custom `<input type="file">`, clearing the input's value only in the error block prevents the native `change` event from firing if the user tries to re-upload the exact same file (e.g., after modifying it locally) following a successful upload.
+**Action:** Always clear the file input's value (e.g., `input.value = ""`) inside a `finally` block or after any successful upload to ensure identical subsequent uploads trigger the change handler.
