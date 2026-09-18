@@ -314,12 +314,11 @@ def get_mesh_metadata(file_path: str):
         # yields a >100x speedup when extracting the top K faces from massive arrays (e.g. >1M elements).
         MAX_FACES = 1000
         if len(unique_ids) > MAX_FACES:
-            kth = MAX_FACES - 1
-            if len(counts) > kth:
-                top_indices_unsorted = np.argpartition(-counts, kth)[:MAX_FACES]
-                top_indices = top_indices_unsorted[np.argsort(-counts[top_indices_unsorted])]
+            if len(counts) > MAX_FACES:
+                top_indices_unsorted = np.argpartition(counts, -MAX_FACES)[-MAX_FACES:]
+                top_indices = top_indices_unsorted[np.argsort(counts[top_indices_unsorted])[::-1]]
             else:
-                top_indices = np.argsort(-counts)
+                top_indices = np.argsort(counts)[::-1]
             unique_ids = unique_ids[top_indices]
             counts = counts[top_indices]
 
@@ -351,12 +350,11 @@ def get_mesh_metadata(file_path: str):
                     # ⚡ Bolt: Cap maximum number of faces to prevent JSON serialization/frontend DoS.
                     MAX_FACES = 1000
                     if len(unique_ids) > MAX_FACES:
-                        kth = MAX_FACES - 1
-                        if len(counts) > kth:
-                            top_indices_unsorted = np.argpartition(-counts, kth)[:MAX_FACES]
-                            top_indices = top_indices_unsorted[np.argsort(-counts[top_indices_unsorted])]
+                        if len(counts) > MAX_FACES:
+                            top_indices_unsorted = np.argpartition(counts, -MAX_FACES)[-MAX_FACES:]
+                            top_indices = top_indices_unsorted[np.argsort(counts[top_indices_unsorted])[::-1]]
                         else:
-                            top_indices = np.argsort(-counts)
+                            top_indices = np.argsort(counts)[::-1]
                         unique_ids = unique_ids[top_indices]
                         counts = counts[top_indices]
 
