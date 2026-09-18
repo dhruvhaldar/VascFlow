@@ -144,3 +144,6 @@
 ## 2024-10-24 - Pre-compute static sets in high-frequency functions
 **Learning:** Re-instantiating sets or lists (like `ALLOWED_EXTENSIONS = {".vtu", ".vtp", ".vtk"}`) inside hot-path functions (such as `save_upload_file` or `get_mesh_metadata`) forces the Python interpreter to allocate new memory on every request.
 **Action:** Always hoist static configuration lists or sets to module-level constants and convert them to `frozenset` (e.g. `_ALLOWED_EXTENSIONS = frozenset(...)`) to transform these into O(1), zero-allocation lookups.
+## 2024-11-20 - [Avoid Negative Array Copies in np.argpartition]
+**Learning:** Using `-counts` inside `np.argpartition(-counts, kth)` creates a full temporary copy of the array in memory, doubling the memory requirement and increasing CPU overhead for allocation and garbage collection, especially on large arrays.
+**Action:** When extracting the top K largest items from a numpy array, use positive `counts` and partition around the negative index `-K` (e.g., `np.argpartition(counts, -K)[-K:]`), then sort the extracted subset descending `[::-1]` to avoid creating a massive intermediate negative array.
