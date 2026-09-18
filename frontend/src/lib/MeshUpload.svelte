@@ -118,8 +118,8 @@
             } else {
                 error = e.message;
             }
-            if (fileInput) fileInput.value = "";
         } finally {
+            if (fileInput) fileInput.value = "";
             loading = false;
 
             // 🎨 Palette: Manage focus after async operation
