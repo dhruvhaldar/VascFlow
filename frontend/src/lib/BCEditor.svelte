@@ -178,7 +178,7 @@
                     {#each $simulationConfig.boundary_conditions as bc (bc.face_name)}
                         <li class="bc-item" transition:slide|local>
                             <span>{bc.face_name}: {bc.bc_type} {bc.variable}={bc.value} ({bc.profile})</span>
-                            <button class="remove-btn" on:click={() => removeBC(bc.face_name)} aria-label="Remove boundary condition for {bc.face_name}" title="Remove boundary condition for {bc.face_name}">&times;</button>
+                            <button class="remove-btn" on:click={() => removeBC(bc.face_name)} aria-label="Remove boundary condition for {bc.face_name}" title="Remove boundary condition for {bc.face_name}"><span aria-hidden="true">&times;</span></button>
                         </li>
                     {/each}
                 </ul>
