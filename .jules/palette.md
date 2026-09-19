@@ -236,3 +236,6 @@
 ## 2026-09-18 - Always Clear Custom File Inputs
 **Learning:** When handling custom `<input type="file">`, clearing the input's value only in the error block prevents the native `change` event from firing if the user tries to re-upload the exact same file (e.g., after modifying it locally) following a successful upload.
 **Action:** Always clear the file input's value (e.g., `input.value = ""`) inside a `finally` block or after any successful upload to ensure identical subsequent uploads trigger the change handler.
+## 2025-02-28 - Screen Reader Redundancy on Icon-Only Text Nodes
+**Learning:** Even when a button has a robust `aria-label`, standalone text nodes used as icons (like `&times;`) inside the button can be redundantly or poorly announced by screen readers (e.g., "Remove boundary condition, times").
+**Action:** Always wrap text-based icons or symbols inside an `aria-label`ed interactive element with a `<span aria-hidden="true">` to ensure screen readers only announce the intended label.
