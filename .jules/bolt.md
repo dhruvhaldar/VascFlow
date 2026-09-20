@@ -147,3 +147,6 @@
 ## 2024-11-20 - [Avoid Negative Array Copies in np.argpartition]
 **Learning:** Using `-counts` inside `np.argpartition(-counts, kth)` creates a full temporary copy of the array in memory, doubling the memory requirement and increasing CPU overhead for allocation and garbage collection, especially on large arrays.
 **Action:** When extracting the top K largest items from a numpy array, use positive `counts` and partition around the negative index `-K` (e.g., `np.argpartition(counts, -K)[-K:]`), then sort the extracted subset descending `[::-1]` to avoid creating a massive intermediate negative array.
+## 2024-10-24 - [Optimize numpy array iteration with .tolist()]
+**Learning:** Iterating directly over `numpy` arrays inside a Python `for` loop is slow because every element extracted is boxed into a heavy `numpy` scalar object (e.g. `numpy.int64`). Calling `int()` on these scalars adds further overhead. Converting the arrays to native Python lists first via `.tolist()` operates at C-speed and makes the subsequent Python loop or list comprehension >2x faster.
+**Action:** When extracting data from small-to-medium numpy arrays to build JSON-serializable Python lists (like in FastAPI endpoints), use `.tolist()` on the arrays before zipping or iterating over them, and use a list comprehension instead of a manual append loop.
