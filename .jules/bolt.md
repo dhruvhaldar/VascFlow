@@ -150,3 +150,6 @@
 ## 2024-10-24 - [Optimize numpy array iteration with .tolist()]
 **Learning:** Iterating directly over `numpy` arrays inside a Python `for` loop is slow because every element extracted is boxed into a heavy `numpy` scalar object (e.g. `numpy.int64`). Calling `int()` on these scalars adds further overhead. Converting the arrays to native Python lists first via `.tolist()` operates at C-speed and makes the subsequent Python loop or list comprehension >2x faster.
 **Action:** When extracting data from small-to-medium numpy arrays to build JSON-serializable Python lists (like in FastAPI endpoints), use `.tolist()` on the arrays before zipping or iterating over them, and use a list comprehension instead of a manual append loop.
+## 2024-11-20 - [Fix memory leak from bypassing VTP decimation]
+**Learning:** Returning large .vtp files verbatim to avoid redundant disk writes skipped decimation, sending massive meshes to the browser and freezing it. The frontend also wrongly assumed all .vtp files were untouched and used a local Blob URL, leaking memory for decimated ones.
+**Action:** Before skipping processing to save disk I/O, explicitly check if decimation is required (`n_cells > MAX`). If so, override the destination path to force generation. Coordinate the frontend Blob bypass to only trigger when the backend confirms the file was returned unmodified.

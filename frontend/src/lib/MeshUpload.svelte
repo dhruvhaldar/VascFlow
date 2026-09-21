@@ -99,11 +99,12 @@
             }
 
             // ⚡ Bolt: Eliminate redundant network download for .vtp files.
-            // If the user uploads a surface mesh (.vtp), the backend returns it as-is.
+            // If the user uploads a surface mesh (.vtp) and it didn't need decimation,
+            // the backend returns it as-is (viz_file == filename).
             // By passing a local Blob URL instead of the filename, we prevent the Viewer
             // from re-downloading the exact same file from the server, saving huge amounts
             // of network bandwidth and instantly rendering the mesh.
-            if (file.name.toLowerCase().endsWith('.vtp')) {
+            if (file.name.toLowerCase().endsWith('.vtp') && data.viz_file === file.name) {
                 data.viz_file = URL.createObjectURL(file);
             }
 
