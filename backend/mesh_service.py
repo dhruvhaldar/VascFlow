@@ -212,6 +212,17 @@ def get_mesh_metadata(file_path: str):
         viz_filename = viz_filename + "_surface.vtp"
 
     viz_path = os.path.join(os.path.dirname(file_path), viz_filename)
+    MAX_VIZ_CELLS = 100000
+
+    # ⚡ Bolt: Ensure massive .vtp files are decimated.
+    # If a massive .vtp file is uploaded, viz_path == file_path. We must not skip
+    # processing if it needs decimation or normals, otherwise we send millions of
+    # cells to the frontend causing WebGL to freeze.
+    needs_processing = surface.n_cells > MAX_VIZ_CELLS or ('Normals' not in surface.point_data and 'Normals' not in surface.cell_data)
+    if viz_path == file_path and needs_processing:
+        viz_filename = viz_filename.replace(".vtp", "_surface.vtp")
+        viz_path = os.path.join(os.path.dirname(file_path), viz_filename)
+
     # ⚡ Bolt: Only save the surface if it's a new file.
     # If the user uploaded a .vtp file, viz_path == file_path, and calling
     # surface.save(viz_path) would unnecessarily rewrite the entire file to disk.
@@ -398,7 +409,9 @@ def cleanup_mesh_files(file_path: str):
     viz_path = file_path
     if viz_path.endswith(".vtu"):
         viz_path = viz_path.replace(".vtu", "_surface.vtp")
-    elif not viz_path.endswith(".vtp"):
+    elif viz_path.endswith(".vtp"):
+        viz_path = viz_path.replace(".vtp", "_surface.vtp")
+    else:
         viz_path = viz_path + "_surface.vtp"
 
     if viz_path != file_path and os.path.exists(viz_path):
