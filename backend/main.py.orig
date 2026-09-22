@@ -7,7 +7,6 @@ import shutil
 import os
 import logging
 import time
-import json
 from models import SimulationConfig
 from xml_generator import generate_svfsi_xml
 from mesh_service import save_upload_file, get_mesh_metadata, cleanup_mesh_files, _cleanup_old_uploads
@@ -387,11 +386,7 @@ def process_mesh(file: UploadFile, background_tasks: BackgroundTasks, request: R
     try:
         file_path = save_upload_file(file)
         metadata = get_mesh_metadata(file_path)
-        # ⚡ Bolt: Bypass FastAPI's default jsonable_encoder for large JSON responses.
-        # Returning a raw dict forces FastAPI to recursively parse and encode the entire
-        # object before JSON serialization. For meshes with thousands of detected faces,
-        # this blocks the event loop. Direct json.dumps yields a >3x speedup.
-        return Response(content=json.dumps(metadata).encode('utf-8'), media_type="application/json")
+        return metadata
     except ValueError as e:
         if file_path:
             cleanup_mesh_files(file_path)
