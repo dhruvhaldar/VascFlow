@@ -391,6 +391,10 @@
         gap: 1rem;
         min-width: 0;
     }
+    .content:focus-visible {
+        outline: none;
+    }
+
 
     .top-pane,
     .bottom-pane {
