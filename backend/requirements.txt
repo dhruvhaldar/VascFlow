@@ -1,8 +1,0 @@
-fastapi
-uvicorn
-pydantic
-pyvista
-vtk
-numpy
-scipy
-python-multipart
